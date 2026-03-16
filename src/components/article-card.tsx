@@ -31,6 +31,7 @@ function getNextAction(article: Article): string {
 
   if (article.status === 'shared') return 'Awaiting review';
   if (article.status === 'approved') return 'Approved';
+  if (article.status === 'revision') return 'Needs revision';
 
   return 'Start editing';
 }
@@ -57,6 +58,10 @@ function getAIProgressLine(article: Article): { color: string; text: string } {
       };
     case 'shared':
       return { color: 'var(--pink)', text: 'Reviewed and shared' };
+    case 'approved':
+      return { color: '#16a34a', text: 'Approved — verified facts extracted' };
+    case 'revision':
+      return { color: '#d97706', text: 'Revision requested by Steward' };
     default:
       return { color: 'var(--blue)', text: 'AI draft — not yet reviewed' };
   }
@@ -76,6 +81,8 @@ function getStatusLabel(status: string): string {
       return 'Shared';
     case 'approved':
       return 'Approved';
+    case 'revision':
+      return 'Revision';
     default:
       return status;
   }
@@ -88,7 +95,11 @@ function getStatusColor(status: string): { bg: string; color: string } {
     case 'generated':
       return { bg: 'var(--blue-light)', color: 'var(--blue-dark)' };
     case 'shared':
-      return { bg: 'var(--pink-light)', color: 'var(--pink-dark)' };
+      return { bg: '#f3e8ff', color: '#7c3aed' };
+    case 'approved':
+      return { bg: '#dcfce7', color: '#166534' };
+    case 'revision':
+      return { bg: '#ffedd5', color: '#9a3412' };
     default:
       return { bg: 'var(--bg-surface)', color: 'var(--text-secondary)' };
   }
@@ -200,6 +211,15 @@ export default function ArticleCard({ article, onClick, onDelete }: ArticleCardP
         >
           {getStatusLabel(article.status)}
         </span>
+        {article.isUpdate && (
+          <span
+            className="badge"
+            data-testid="updated-badge"
+            style={{ background: 'var(--teal-light)', color: 'var(--teal-dark)' }}
+          >
+            Updated
+          </span>
+        )}
       </div>
 
       {/* AI progress line */}

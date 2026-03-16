@@ -197,6 +197,9 @@ export async function mockGenerateApiThinData(page: Page): Promise<void> {
       createdAt: now,
       updatedAt: now,
       sharedAt: null,
+      approvedAt: null,
+      revisionReason: null,
+      revisionRequestedAt: null,
       content: {
         howto: {
           overview: '[INSUFFICIENT CONTEXT] The description provided does not contain enough detail to generate a complete overview.',
@@ -221,6 +224,131 @@ export async function mockGenerateApiThinData(page: Page): Promise<void> {
 
     return route.fulfill({
       status: 201,
+      contentType: 'application/json',
+      body: JSON.stringify(article),
+    });
+  });
+}
+
+/**
+ * Install a mock that intercepts the Next.js /api/scan route. Returns
+ * deterministic scan results with HIGH, MEDIUM, and LOW confidence matches.
+ */
+export async function mockScanApi(page: Page): Promise<void> {
+  await page.route('**/api/scan', (route: Route) => {
+    const matches = [
+      {
+        articleId: 'mock-article-001',
+        title: 'Search Criteria for Volunteers',
+        module: 'Volunteers',
+        types: ['howto', 'wn'],
+        confidence: 'high',
+        reason: 'This article directly covers the Search Criteria feature that was changed.',
+      },
+      {
+        articleId: 'mock-article-002',
+        title: 'Managing Volunteer Assignments',
+        module: 'Volunteers',
+        types: ['howto'],
+        confidence: 'medium',
+        reason: 'References the assignment status filter which may have been affected by this change.',
+      },
+      {
+        articleId: 'mock-article-003',
+        title: 'Volunteer Overview Dashboard',
+        module: 'Volunteers',
+        types: ['howto', 'wn'],
+        confidence: 'low',
+        reason: 'Mentions volunteer filtering in passing but is unlikely to need updates.',
+      },
+    ];
+
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ matches }),
+    });
+  });
+}
+
+/**
+ * Install a mock that intercepts the Next.js /api/scan route and returns
+ * zero matches (empty results).
+ */
+export async function mockScanApiEmpty(page: Page): Promise<void> {
+  await page.route('**/api/scan', (route: Route) => {
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ matches: [] }),
+    });
+  });
+}
+
+/**
+ * Install a mock that intercepts the Next.js /api/update route. Returns
+ * a deterministic updated article.
+ */
+export async function mockUpdateApi(page: Page): Promise<void> {
+  await page.route('**/api/update', (route: Route) => {
+    const request = route.request();
+    const postData = request.postData();
+    let articleId = 'mock-article-001';
+
+    if (postData) {
+      try {
+        const body = JSON.parse(postData);
+        articleId = body.articleId || articleId;
+      } catch {
+        // default
+      }
+    }
+
+    const now = new Date().toISOString();
+
+    const article = {
+      id: articleId,
+      title: 'Search Criteria for Volunteers',
+      module: 'Volunteers',
+      source: 'update',
+      changeType: 'enhancement',
+      status: 'generated',
+      types: ['howto', 'wn'],
+      activeType: 'howto',
+      writer: null,
+      featureId: null,
+      featureUrl: null,
+      terminologyValidated: false,
+      reviewNote: null,
+      description:
+        'Updated Search Criteria feature in Volunteers module.',
+      isUpdate: true,
+      updatedSteps: [2, 3],
+      updateReason: 'Search criteria UI was redesigned',
+      originals: { 2: 'Original step 3 text', 3: 'Original step 4 text' },
+      parentArticleIds: [],
+      createdAt: now,
+      updatedAt: now,
+      sharedAt: null,
+      approvedAt: null,
+      revisionReason: null,
+      revisionRequestedAt: null,
+      content: {
+        howto: JSON.parse(HOWTO_ARTICLE_JSON),
+        wn: JSON.parse(WN_ARTICLE_JSON),
+      },
+      screenshots: {
+        howto: [false, false, false, false, false],
+        wn: [],
+      },
+      confidence: {
+        howto: [null, null, null, null, null],
+        wn: [],
+      },
+    };
+
+    return route.fulfill({
+      status: 200,
       contentType: 'application/json',
       body: JSON.stringify(article),
     });
@@ -260,6 +388,9 @@ export async function mockGenerateApi(page: Page): Promise<void> {
       createdAt: now,
       updatedAt: now,
       sharedAt: null,
+      approvedAt: null,
+      revisionReason: null,
+      revisionRequestedAt: null,
       content: {
         howto: JSON.parse(HOWTO_ARTICLE_JSON),
         wn: JSON.parse(WN_ARTICLE_JSON),

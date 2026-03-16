@@ -338,6 +338,24 @@ export default function EditorPage() {
         onBack={() => router.push("/")}
       />
 
+      {/* Revision banner */}
+      {article.status === "revision" && article.revisionReason && (
+        <div
+          data-testid="revision-banner"
+          data-print-hide
+          style={{
+            backgroundColor: "#fef3c7",
+            color: "#92400e",
+            padding: "10px 24px",
+            fontSize: 13,
+            fontWeight: 500,
+            textAlign: "center",
+          }}
+        >
+          Revision requested by Steward: {article.revisionReason}
+        </div>
+      )}
+
       {/* Info banner */}
       {banner && (
         <div

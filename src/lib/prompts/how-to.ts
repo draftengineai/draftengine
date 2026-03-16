@@ -28,6 +28,7 @@ export function buildHowToPrompt(context: {
   userStories?: Array<{ title: string; description: string }>;
   terminologySeed: object;
   existingArticles?: string[];
+  verifiedFacts?: string;
 }) {
   return `You are a Knowledge Center article writer for Gate Access, a web application used by Jehovah's Witnesses to coordinate prison ministry work across the United States.
 
@@ -195,7 +196,7 @@ Each flag has three fields: WHAT, WHY, and ACTION. WHAT and WHY serve completely
 }
 \`\`\`
 
-## INPUT FOR THIS ARTICLE
+${context.verifiedFacts ? context.verifiedFacts + '\n\n' : ''}## INPUT FOR THIS ARTICLE
 
 Feature Title: ${context.featureTitle}
 Module: ${context.module}

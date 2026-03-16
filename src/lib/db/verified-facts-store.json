@@ -1,0 +1,229 @@
+{
+  "verified-facts:Applicants": [
+    {
+      "articleId": "fl-test-1",
+      "facts": {
+        "module": "Applicants",
+        "navPath": "Applicants",
+        "cards": [],
+        "buttons": [
+          "Search",
+          "Apply"
+        ],
+        "filters": [
+          "Search",
+          "Search Criteria",
+          "Status Filter"
+        ],
+        "uiElements": [
+          "Applicants",
+          "Search",
+          "Search Criteria",
+          "Status Filter",
+          "Apply"
+        ]
+      },
+      "storedAt": "2026-03-16T18:28:26.532Z"
+    },
+    {
+      "articleId": "fl-test-3",
+      "facts": {
+        "module": "Applicants",
+        "navPath": "Applicants",
+        "cards": [],
+        "buttons": [
+          "Search",
+          "Apply"
+        ],
+        "filters": [
+          "Search",
+          "Search Criteria",
+          "Status Filter"
+        ],
+        "uiElements": [
+          "Applicants",
+          "Search",
+          "Search Criteria",
+          "Status Filter",
+          "Apply"
+        ]
+      },
+      "storedAt": "2026-03-16T18:28:28.114Z"
+    },
+    {
+      "articleId": "fl-test-4a",
+      "facts": {
+        "module": "Applicants",
+        "navPath": "Applicants",
+        "cards": [],
+        "buttons": [
+          "Search",
+          "Apply"
+        ],
+        "filters": [
+          "Search",
+          "Search Criteria",
+          "Status Filter"
+        ],
+        "uiElements": [
+          "Applicants",
+          "Search",
+          "Search Criteria",
+          "Status Filter",
+          "Apply"
+        ]
+      },
+      "storedAt": "2026-03-16T18:28:29.138Z"
+    },
+    {
+      "articleId": "vf-test-4",
+      "facts": {
+        "module": "Applicants",
+        "navPath": "Applicants",
+        "cards": [],
+        "buttons": [
+          "Search",
+          "Apply"
+        ],
+        "filters": [
+          "Search",
+          "Search Criteria",
+          "Status Filter"
+        ],
+        "uiElements": [
+          "Applicants",
+          "Search",
+          "Search Criteria",
+          "Status Filter",
+          "Apply"
+        ]
+      },
+      "storedAt": "2026-03-16T18:28:43.350Z"
+    },
+    {
+      "articleId": "vf-test-6",
+      "facts": {
+        "module": "Applicants",
+        "navPath": "Applicants",
+        "cards": [],
+        "buttons": [
+          "Search",
+          "Apply"
+        ],
+        "filters": [
+          "Search",
+          "Search Criteria",
+          "Status Filter"
+        ],
+        "uiElements": [
+          "Applicants",
+          "Search",
+          "Search Criteria",
+          "Status Filter",
+          "Apply"
+        ]
+      },
+      "storedAt": "2026-03-16T18:28:44.235Z"
+    }
+  ],
+  "verified-facts:Volunteers": [
+    {
+      "articleId": "approve-t1",
+      "facts": {
+        "module": "Volunteers",
+        "navPath": "Volunteers",
+        "cards": [],
+        "buttons": [
+          "Search Criteria",
+          "Apply",
+          "Reset"
+        ],
+        "filters": [
+          "Search Criteria",
+          "Availability",
+          "Assignment Status"
+        ],
+        "uiElements": [
+          "Volunteers",
+          "Search Criteria",
+          "Availability",
+          "Assignment Status",
+          "Apply",
+          "Reset"
+        ]
+      },
+      "storedAt": "2026-03-16T18:28:19.679Z"
+    },
+    {
+      "articleId": "approve-t3a",
+      "facts": {
+        "module": "Volunteers",
+        "navPath": "Volunteers",
+        "cards": [],
+        "buttons": [
+          "Search Criteria",
+          "Apply",
+          "Reset"
+        ],
+        "filters": [
+          "Search Criteria",
+          "Availability",
+          "Assignment Status"
+        ],
+        "uiElements": [
+          "Volunteers",
+          "Search Criteria",
+          "Availability",
+          "Assignment Status",
+          "Apply",
+          "Reset"
+        ]
+      },
+      "storedAt": "2026-03-16T18:28:22.156Z"
+    },
+    {
+      "articleId": "approve-t3b",
+      "facts": {
+        "module": "Volunteers",
+        "navPath": "Volunteers",
+        "cards": [
+          "Assignment Dialog"
+        ],
+        "buttons": [
+          "Bulk Assign",
+          "Confirm"
+        ],
+        "filters": [],
+        "uiElements": [
+          "Volunteers",
+          "Bulk Assign",
+          "Assignment Dialog",
+          "Confirm"
+        ]
+      },
+      "storedAt": "2026-03-16T18:28:22.242Z"
+    },
+    {
+      "articleId": "approve-t5b",
+      "facts": {
+        "module": "Volunteers",
+        "navPath": "Volunteers",
+        "cards": [
+          "Assignment Dialog"
+        ],
+        "buttons": [
+          "Bulk Assign",
+          "Confirm"
+        ],
+        "filters": [],
+        "uiElements": [
+          "Volunteers",
+          "Bulk Assign",
+          "Assignment Dialog",
+          "Confirm"
+        ]
+      },
+      "storedAt": "2026-03-16T18:28:24.739Z"
+    }
+  ]
+}

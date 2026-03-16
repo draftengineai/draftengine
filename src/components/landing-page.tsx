@@ -36,9 +36,22 @@ export default function LandingPage() {
     fetchArticles();
   }, [fetchArticles]);
 
-  const inProgress = articles.filter(
-    (a) => a.status !== 'approved'
-  );
+  const inProgress = articles
+    .filter((a) => a.status !== 'approved')
+    .sort((a, b) => {
+      // Revision articles sort to top (highest priority for the writer)
+      if (a.status === 'revision' && b.status !== 'revision') return -1;
+      if (a.status !== 'revision' && b.status === 'revision') return 1;
+      // Updated articles sort to top
+      if (a.isUpdate && !b.isUpdate) return -1;
+      if (!a.isUpdate && b.isUpdate) return 1;
+      // Within same group, most recently updated first
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
+    });
+
+  const completed = articles
+    .filter((a) => a.status === 'approved')
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
 
   return (
     <>
@@ -221,6 +234,54 @@ export default function LandingPage() {
             ))}
           </div>
         )}
+
+        {/* Completed section */}
+        {!loading && completed.length > 0 && (
+          <>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                marginTop: 32,
+                marginBottom: 14,
+              }}
+            >
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: 'var(--text-secondary)',
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                Completed
+              </span>
+              <span
+                style={{
+                  fontSize: 11,
+                  fontWeight: 700,
+                  color: 'var(--text-secondary)',
+                  backgroundColor: 'var(--bg-surface)',
+                  padding: '1px 7px',
+                  borderRadius: 10,
+                }}
+              >
+                {completed.length}
+              </span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {completed.map((article) => (
+                <ArticleCard
+                  key={article.id}
+                  article={article}
+                  onClick={() => router.push(`/editor/${article.id}`)}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </main>
 
       {/* Intake modal */}
@@ -249,6 +310,11 @@ export default function LandingPage() {
               err instanceof Error ? err.message : 'Failed to generate articles'
             );
           }
+        }}
+        onUpdate={(firstArticleId: string) => {
+          setIntakeOpen(false);
+          fetchArticles();
+          router.push(`/editor/${firstArticleId}`);
         }}
       />
 

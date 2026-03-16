@@ -28,6 +28,9 @@ const thinArticle = {
   createdAt: '2026-03-16T00:00:00.000Z',
   updatedAt: '2026-03-16T00:00:00.000Z',
   sharedAt: null,
+  approvedAt: null,
+  revisionReason: null,
+  revisionRequestedAt: null,
   content: {
     howto: {
       overview:

@@ -143,9 +143,13 @@ export default function EditorSidebar({
 
   const sharedDone = article.status === "shared" || article.status === "approved";
 
+  // Update-specific: "Review changes" item
+  const isUpdateArticle = article.isUpdate && article.updatedSteps.length > 0;
+
   // Determine "current" item (first non-done)
   const items = [
     { done: textReviewed },
+    ...(isUpdateArticle ? [{ done: false }] : []),
     ...(hasScreenshots ? [{ done: screenshotsDone }] : []),
     { done: flagsDone },
     { done: sharedDone },
@@ -331,6 +335,26 @@ export default function EditorSidebar({
             document.querySelector("[data-article-overview]")?.scrollIntoView({ behavior: "smooth", block: "center" });
           }}
         />
+
+        {/* 1b. Review changes (update articles only) */}
+        {isUpdateArticle && (
+          <CheckItem
+            label="Review changes"
+            done={false}
+            isCurrent={currentIndex === checkIdx++}
+            detail={
+              <span style={{ fontSize: 11, color: "#0d9488" }}>
+                {article.updatedSteps.length} change{article.updatedSteps.length !== 1 ? "s" : ""}
+              </span>
+            }
+            onClick={() => {
+              const firstChanged = article.updatedSteps[0];
+              document
+                .querySelector(`[data-step="${firstChanged}"]`)
+                ?.scrollIntoView({ behavior: "smooth", block: "center" });
+            }}
+          />
+        )}
 
         {/* 2. Screenshots (howto only) */}
         {hasScreenshots && (

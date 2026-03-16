@@ -217,6 +217,36 @@ export default function ArticleCanvas({
         </div>
       )}
 
+      {/* Update banner */}
+      {article.isUpdate && article.updateReason && (
+        <div
+          data-testid="update-banner"
+          style={{
+            backgroundColor: "rgba(13,148,136,0.10)",
+            border: "1px solid rgba(13,148,136,0.25)",
+            borderRadius: 8,
+            padding: "10px 16px",
+            marginBottom: 20,
+            fontSize: 13,
+            color: "#0d9488",
+            fontWeight: 500,
+            lineHeight: 1.5,
+          }}
+        >
+          <div>
+            This article was updated based on: {article.updateReason}
+          </div>
+          {article.updatedSteps.length > 0 &&
+            activeType === "howto" &&
+            article.content.howto && (
+              <div style={{ marginTop: 4, fontSize: 12, fontWeight: 400 }}>
+                {article.updatedSteps.length} of{" "}
+                {article.content.howto.steps.length} steps were revised
+              </div>
+            )}
+        </div>
+      )}
+
       {/* Overview */}
       <div
         data-article-overview
@@ -330,6 +360,8 @@ export default function ArticleCanvas({
               onScreenshotToggle={handleScreenshotToggle}
               onFlagDismiss={handleFlagDismiss}
               readOnly={readOnly}
+              isChanged={article.isUpdate && article.updatedSteps.includes(i)}
+              originalText={article.originals[i]}
             />
           ))}
         </>

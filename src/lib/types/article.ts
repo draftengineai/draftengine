@@ -1,5 +1,5 @@
 export type ArticleType = 'howto' | 'wn';
-export type ArticleStatus = 'new' | 'generated' | 'editing' | 'shared' | 'approved';
+export type ArticleStatus = 'new' | 'generated' | 'editing' | 'shared' | 'approved' | 'revision';
 export type ChangeType = 'enhancement' | 'feature' | 'bugfix' | string;
 
 export interface Article {
@@ -28,6 +28,9 @@ export interface Article {
   createdAt: string;
   updatedAt: string;
   sharedAt: string | null;
+  approvedAt: string | null;
+  revisionReason: string | null;
+  revisionRequestedAt: string | null;
 
   content: {
     howto?: HowToContent;

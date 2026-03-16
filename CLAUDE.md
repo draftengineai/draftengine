@@ -26,9 +26,14 @@ src/
     api/
       auth/route.ts                 # POST — simple password auth
       auth/[...nextauth]/route.ts   # Auth.js (user identity)
-      generate/route.ts             # POST — new article generation
+      generate/route.ts             # POST — new article generation (injects verified facts)
       articles/route.ts             # GET all, POST new
       articles/[id]/route.ts        # GET one, PATCH update
+      scan/route.ts                 # POST — AI scan for affected articles
+      update/route.ts               # POST — generate updated article with revised steps
+      approve/route.ts              # POST — approve article, extract verified facts
+      request-revision/route.ts     # POST — request revision, remove verified facts
+      verified-facts/route.ts       # GET — retrieve stored verified facts by module
   components/
     nav.tsx
     article-card.tsx
@@ -54,9 +59,14 @@ src/
     config/
       terminology-seed.json
       modules.json
+    verified-facts/
+      extractor.ts                  # Extract verified facts from approved article content
+      store.ts                      # Module-scoped fact storage (Vercel KV / local JSON)
+      block-builder.ts              # Build VERIFIED FACTS prompt block
     db/
       storage.ts                    # Article CRUD — Vercel KV (prod) / store.json (dev)
       articles.ts                   # Legacy sync CRUD (kept for reference)
+      verified-facts-store.json     # Local dev store for verified facts
 tests/
   fixtures/
     ftr-3849-input.json
@@ -64,9 +74,12 @@ tests/
     thin-data-input.json
     mock-anthropic.ts              # Mock Anthropic API / generate route for E2E
     mock-article.ts                # Pre-built Article objects for editor tests
+    mock-scan-results.ts           # Mock scan API responses
+    mock-update-results.ts         # Mock update API responses
     sample-intake.ts               # FTR #3849 FeatureIntake data
   e2e/
     writer-journey.spec.ts
+    feedback-loop.spec.ts          # Full feedback loop integration (4 tests)
   unit/
     pii-filter.test.ts
     article-structure.test.ts
@@ -78,7 +91,7 @@ tests/
 - **Terminology**: Organization-specific terms loaded from `src/lib/config/terminology-seed.json`. Non-negotiable usage rules.
 - **Prompts**: Versioned in `src/lib/prompts/`. Each prompt file has a version constant and a builder function.
 - **Phase 2 fields in data model**: Article type includes `isUpdate`, `updatedSteps`, `updateReason`, `originals`, `parentArticleIds` from day one — all default to empty/false/null.
-- **Phase 2 UI/routes deferred**: No update mode in intake, no scan API, no revision API, no comparison view.
+- **Phase 2 complete**: All update mode, scan API, approve/revision API, comparison view, and feedback loop features are shipped.
 
 ## How to Run
 
@@ -141,9 +154,9 @@ Tests use mocked API responses — no real Anthropic API calls are made. Set `GA
 - Project name: `gatedoc`
 - Environment variables must be set in Vercel dashboard
 
-## Current Status — Phase 2 IN PROGRESS (2026-03-16)
+## Current Status — Phase 2 COMPLETE (2026-03-16)
 
-### Phase 2 Sprint 1: Regression Test Infrastructure — COMPLETE (2026-03-16)
+### Phase 2 Sprint 1: Regression Test Infrastructure — COMPLETE
 
 - **73 E2E tests** across 10 spec files — all passing
 - Playwright config: `testDir: ./tests/e2e`, `retries: 1`, Chromium only, dev server auto-start
@@ -151,6 +164,56 @@ Tests use mocked API responses — no real Anthropic API calls are made. Set `GA
 - Package scripts: `test` → Playwright, `test:ui` → Playwright UI, `test:unit` → Jest
 - GitHub Actions CI: `.github/workflows/test.yml` — runs on push to main/phase-2 and PRs to main
 - All tests use mocked API responses — no real Anthropic calls
+
+### Phase 2 Sprint 2: Article Update Flow — COMPLETE
+
+- **Scan API** (`/api/scan`) — AI-powered article scanning to find articles affected by feature changes
+- **Update API** (`/api/update`) — Generates revised articles with updated steps, originals preserved
+- **Update intake mode** — Mode toggle in intake form, "Find affected articles" scan flow, confidence badges (HIGH/MEDIUM/LOW)
+- **Scan results UI** — Checkboxes pre-checked for HIGH/MEDIUM, Update selected triggers batch updates
+- **Editor update indicators** — Teal left border on changed steps, "Changed" badge, "View original" toggle
+- **Update banner** — Shows update reason and changed step count in editor
+- **Landing page badges** — Updated, Approved, Revision status badges; revision articles sort to top
+- **Tests:** `scan-api.spec.ts` (3), `scan-results.spec.ts` (6), `update-api.spec.ts` (5), `update-editor.spec.ts` (7), `update-intake.spec.ts` (6) — **27 tests**
+
+### Phase 2 Sprint 3: Confidence Feedback Loop — COMPLETE
+
+- **Approve API** (`/api/approve`) — Sets article status to "approved", extracts verified facts from content
+- **Request Revision API** (`/api/request-revision`) — Sets status to "revision", removes verified facts, stores reason
+- **Verified Facts Extractor** (`src/lib/verified-facts/extractor.ts`) — Parses bold elements, nav paths, buttons, filters, cards from How To steps
+- **Verified Facts Store** (`src/lib/verified-facts/store.ts`) — Module-scoped fact storage with per-article entries (Vercel KV / local JSON)
+- **Block Builder** (`src/lib/verified-facts/block-builder.ts`) — Builds VERIFIED FACTS prompt block from stored facts
+- **Prompt injection** — Generate route fetches module facts, builds block, injects into How To + What's New prompts before INPUT section
+- **Preview page Steward actions** — Approve/Request revision buttons on shared articles, success banners, approved/revision status display
+- **Editor revision banner** — Shows Steward's revision reason when article is in revision status
+- **Cross-module isolation** — Facts are scoped per module, no leakage between modules
+- **Tests:** `approve.spec.ts` (6), `approve-ui.spec.ts` (8), `verified-facts.spec.ts` (7), `feedback-loop.spec.ts` (4) — **25 tests**
+
+### Phase 2 Total Test Count — 132 tests
+
+| Spec file | Tests | Sprint | Coverage |
+|---|---|---|---|
+| `auth.spec.ts` | 6 | S1 | Login, password auth, redirect, preview access, session |
+| `landing.spec.ts` | 6 | S1 | Empty state, cards, badges, new/update buttons, delete |
+| `generate.spec.ts` | 6 | S1 | Intake form, validation, short-description warning, generation flow |
+| `editor-howto.spec.ts` | 8 | S1 | How To editor: title, overview, steps, bold, screenshots, sidebar |
+| `editor-whatsnew.spec.ts` | 7 | S1 | What's New editor: tabs, title, overview, sections, persistence |
+| `flags.spec.ts` | 10 | S1 | Confidence flags: render, WHAT/WHY/ACTION, dismiss, sidebar, persistence |
+| `regenerate.spec.ts` | 8 | S1 | Regenerate: modal, pre-fill, feedback, warning, cancel, replacement |
+| `share.spec.ts` | 7 | S1 | Share: button, modal, preview URL, Steward note, save & copy |
+| `preview.spec.ts` | 10 | S1 | Preview: banner, Steward label, content, steps, bold, screenshots |
+| `thin-data.spec.ts` | 5 | S1 | Thin data: detection, banner, write-manually, regenerate, INSUFFICIENT CONTEXT |
+| `scan-api.spec.ts` | 3 | S2 | Scan API: valid scan, no matches, missing fields |
+| `scan-results.spec.ts` | 6 | S2 | Scan results: badges, checkboxes, update flow, landing badges |
+| `update-api.spec.ts` | 5 | S2 | Update API: revised steps, isUpdate/originals, unchanged steps, errors |
+| `update-editor.spec.ts` | 7 | S2 | Editor update indicators: teal border, badges, view original, banner |
+| `update-intake.spec.ts` | 6 | S2 | Update intake: mode toggle, scan flow, checkboxes, update selected |
+| `approve.spec.ts` | 6 | S3 | Approve API: status, facts stored, merge, revision, facts removal |
+| `approve-ui.spec.ts` | 8 | S3 | Preview Steward actions, landing badges, editor revision banner |
+| `verified-facts.spec.ts` | 7 | S3 | Extractor, API, feedback loop integration, empty module |
+| `feedback-loop.spec.ts` | 4 | S3 | Full cycle, approve→revision, re-approve, cross-module isolation |
+| **Unit tests** | **7** | S1 | PII filter, article structure |
+| **Total** | **132** | | |
 
 ## Phase 1 COMPLETE (2026-03-15)
 
@@ -189,13 +252,18 @@ All Phase 1 features are built, tested, and working. The full new-article flow (
 - Accessibility keyboard navigation audit needed
 - Thin-spec flag regression test needed
 
-## Phase 2 Readiness
+## Phase 2 Features Shipped
 
-- Data model includes Phase 2 fields (`isUpdate`, `updatedSteps`, `updateReason`, `originals`, `parentArticleIds`) with defaults
-- Scan articles prompt exists in `src/lib/prompts/scan-articles.ts` (v0.1.0)
-- Update How To prompt exists in `src/lib/prompts/update-how-to.ts` (v0.1.0)
-- Confidence feedback loop architecture documented
-- Update existing UI placeholder ready to be activated
+1. **Article scanning** — AI-powered scan to find articles affected by feature changes, confidence-ranked results (HIGH/MEDIUM/LOW)
+2. **Article updates** — Generate revised articles preserving originals, teal change indicators, "View original" toggle
+3. **Update intake mode** — Mode toggle, scan flow with checkboxes, batch update selected articles
+4. **Approve flow** — Steward approves articles from preview page, extracts verified facts from content
+5. **Request revision flow** — Steward requests revision with reason, removes verified facts, revision banner in editor
+6. **Verified facts extraction** — Parses bold UI elements, navigation paths, buttons, filters, cards from approved articles
+7. **Confidence feedback loop** — Approved article facts injected into subsequent generation prompts as VERIFIED FACTS block
+8. **Cross-module fact isolation** — Facts scoped per module, no cross-contamination
+9. **Landing page enhancements** — Approved/Revision/Updated status badges, revision articles sort to top
+10. **Preview page Steward actions** — Approve + Request revision buttons, success banners, status displays
 
 ## Branching Strategy
 
@@ -206,16 +274,22 @@ All Phase 1 features are built, tested, and working. The full new-article flow (
 
 ## Phase 1 vs Phase 2 Boundary
 
-### Phase 1 (current sprint):
-New article flow: intake → generation → editing → share → print
+### Phase 1 — New article flow:
+Intake → generation → editing → share → print
 
-### Phase 2 (deferred):
-- Update existing article mode in intake modal
-- AI article scanning (`api/scan/route.ts`)
-- Revision prompt (`update-how-to.ts` usage)
-- Comparison view in editor (teal borders, View original)
-- Stale results detection
-- `api/revise/route.ts`
+### Phase 2 — Article updates + confidence feedback loop:
+- Update existing article mode in intake modal — SHIPPED
+- AI article scanning (`api/scan/route.ts`) — SHIPPED
+- Article update generation (`api/update/route.ts`) — SHIPPED
+- Comparison view in editor (teal borders, View original) — SHIPPED
+- Approve/revision flow with verified facts — SHIPPED
+- Confidence feedback loop (facts injected into generation prompts) — SHIPPED
+
+### Known Issues / Post-Phase 2 Polish
+- Stale results detection not implemented (deferred to Phase 3)
+- Writer assignment not implemented
+- Terminology doc not yet uploaded
+- Accessibility keyboard navigation audit needed
 
 ## Spec Compliance (vs implementation-kickoff-v2.md)
 
@@ -232,9 +306,8 @@ Audited 2026-03-15. Reference spec: `implementation-kickoff-v2.md` in project ro
 ### Intentional divergences
 
 - **Intake modal update mode** — Spec defers update mode UI to Phase 2, but the modal now opens in update mode with a "Coming soon" placeholder when clicking "Update existing" on the landing page. This is a UX improvement over the original toast-only behavior — the mode toggle is visible so users understand both modes exist.
-- **Phase 2 API routes not created** — `api/scan/route.ts` and `api/revise/route.ts` do not exist as files yet. The spec lists them in the file structure but they are Phase 2 deliverables.
-- **Phase 2 components not created** — `mode-toggle.tsx`, `article-scanner.tsx`, `step-comparison.tsx` do not exist. Mode toggle logic is inline in `intake-form.tsx`. Scanner and comparison are Phase 2.
-- **Phase 2 test fixtures** — `ftr-3126-update-input.json`, `update-journey.spec.ts`, `scan-matching.test.ts` do not exist yet (Phase 2).
+- **Phase 2 API routes** — `api/scan/route.ts`, `api/update/route.ts`, `api/approve/route.ts`, `api/request-revision/route.ts`, `api/verified-facts/route.ts` all implemented. Original spec listed `api/revise/route.ts` which was implemented as `api/update/route.ts` instead.
+- **Phase 2 components** — Mode toggle logic is inline in `intake-form.tsx` rather than separate `mode-toggle.tsx`. Scanner and comparison view are inline in their respective components rather than separate files.
 - **Regenerate modal** — `regenerate-modal.tsx` exists but is not listed in the spec file structure. Added post-spec as a UX enhancement.
 - **Toast component** — `toast.tsx` exists but is not listed in the spec. Added for user feedback.
 - **Generation loading** — `generation-loading.tsx` exists but is not in the spec file structure. Added to match v8 mockup loading screen.

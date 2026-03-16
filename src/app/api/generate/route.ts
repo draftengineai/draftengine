@@ -6,6 +6,8 @@ import { PIIFreePayload, assertPIIFree } from '@/lib/types/pii';
 import { buildHowToPrompt } from '@/lib/prompts/how-to';
 import { buildWhatsNewPrompt } from '@/lib/prompts/whats-new';
 import { saveArticle } from '@/lib/db/storage';
+import { getFacts } from '@/lib/verified-facts/store';
+import { buildVerifiedFactsBlock } from '@/lib/verified-facts/block-builder';
 import terminologySeed from '@/lib/config/terminology-seed.json';
 
 function getAnthropicClient(): Anthropic {
@@ -472,6 +474,10 @@ export async function POST(request: NextRequest) {
 
     const piiPayload = buildPIIFreePayload(intake);
 
+    // Look up verified facts from previously approved articles for this module
+    const moduleFacts = await getFacts(intake.module);
+    const verifiedFactsBlock = buildVerifiedFactsBlock(moduleFacts);
+
     const now = new Date().toISOString();
     const article: Article = {
       id: uuidv4(),
@@ -496,6 +502,9 @@ export async function POST(request: NextRequest) {
       createdAt: now,
       updatedAt: now,
       sharedAt: null,
+      approvedAt: null,
+      revisionReason: null,
+      revisionRequestedAt: null,
       content: {},
       screenshots: { howto: [], wn: [] },
       confidence: { howto: [], wn: [] },
@@ -511,6 +520,7 @@ export async function POST(request: NextRequest) {
         behaviorRules: piiPayload.behaviorRules || undefined,
         userStories: intake.userStories.length > 0 ? intake.userStories : undefined,
         terminologySeed,
+        verifiedFacts: verifiedFactsBlock,
       });
 
       // Inject VERIFIED INPUTS section before the input block so the AI can
@@ -572,6 +582,7 @@ export async function POST(request: NextRequest) {
         behaviorRules: piiPayload.behaviorRules || undefined,
         userStories: intake.userStories.length > 0 ? intake.userStories : undefined,
         terminologySeed,
+        verifiedFacts: verifiedFactsBlock,
       });
 
       const wnResponse = await anthropic.messages.create({

@@ -202,3 +202,9 @@ a {
     transform: translateX(-50%) translateY(16px);
   }
 }
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

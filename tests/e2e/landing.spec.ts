@@ -48,6 +48,16 @@ test.describe('Landing page', () => {
     });
 
     test('card renders with title, badges, and AI status', async ({ page }) => {
+      // Intercept to return only our seeded article (avoids cross-test pollution)
+      await page.route('**/api/articles', (route, request) => {
+        if (request.method() === 'GET') {
+          return route.fulfill({ status: 200, json: [mockGeneratedArticle] });
+        }
+        return route.continue();
+      });
+      await page.reload();
+      await page.locator('.article-card').first().waitFor();
+
       const card = page.locator('.article-card').first();
 
       // Title
@@ -67,9 +77,20 @@ test.describe('Landing page', () => {
       await expect(card.locator('.ac-ai-line')).toContainText('AI draft — not yet reviewed');
     });
 
-    test('IN PROGRESS count matches number of article cards', async ({ page }) => {
+    test('IN PROGRESS count matches number of in-progress article cards', async ({ page }) => {
+      // Intercept the articles API to return only our seeded article
+      // This avoids cross-test interference with approved articles in COMPLETED section
+      await page.route('**/api/articles', (route, request) => {
+        if (request.method() === 'GET') {
+          return route.fulfill({ status: 200, json: [mockGeneratedArticle] });
+        }
+        return route.continue();
+      });
+      await page.reload();
+      await page.locator('.article-card').first().waitFor();
+
       const cardCount = await page.locator('.article-card').count();
-      expect(cardCount).toBeGreaterThan(0);
+      expect(cardCount).toBe(1);
 
       // The count badge is the second span inside the "In progress" section
       const countBadge = page.locator('text=In progress').locator('..').locator('span').last();
@@ -84,11 +105,12 @@ test.describe('Landing page', () => {
       await expect(page.locator('form#intake-form')).toBeVisible();
     });
 
-    test('Update existing button opens modal with Phase 2 coming soon', async ({ page }) => {
+    test('Update existing button opens modal in update mode with WHAT CHANGED label', async ({ page }) => {
       await page.click('button:has-text("Update existing")');
 
-      // Modal opens in update mode — use exact match to avoid strict-mode violation
-      await expect(page.getByText('Coming soon in Phase 2', { exact: true })).toBeVisible();
+      // Modal opens in update mode with the update form
+      await expect(page.locator('label', { hasText: 'What changed' })).toBeVisible();
+      await expect(page.locator('button', { hasText: 'Find affected articles' })).toBeVisible();
     });
 
     test('delete button appears on hover, confirmation dialog works', async ({ page }) => {

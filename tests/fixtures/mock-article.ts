@@ -111,6 +111,9 @@ export const mockGeneratedArticle: Article = {
   createdAt: '2026-03-16T00:00:00.000Z',
   updatedAt: '2026-03-16T00:00:00.000Z',
   sharedAt: null,
+  approvedAt: null,
+  revisionReason: null,
+  revisionRequestedAt: null,
   content: {
     howto: howToContent,
     wn: whatsNewContent,
@@ -147,10 +150,101 @@ export const mockEditingArticle: Article = {
 // Shared article (with review note)
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Updated article — isUpdate: true, steps 1 and 4 changed, originals populated
+// ---------------------------------------------------------------------------
+
+export const mockUpdatedArticle: Article = {
+  ...mockGeneratedArticle,
+  id: 'mock-article-update-001',
+  status: 'generated',
+  source: 'update',
+  isUpdate: true,
+  updatedSteps: [1, 4],
+  updateReason: 'Search Criteria button moved to the sidebar in v8.3',
+  originals: {
+    1: '<p>Click the <b>Search Criteria</b> link in the left sidebar navigation.</p>',
+    4: '<p>To clear all filters, click <b>Clear</b> at the bottom of the Search Criteria panel.</p>',
+  },
+  content: {
+    howto: {
+      overview:
+        'This article explains how to use the new Search Criteria feature in the Volunteers module to filter volunteer lists by availability and assignment status.',
+      steps: [
+        {
+          heading: 'Step 1 of 5:',
+          text: '<p>Navigate to the <b>Volunteers</b> module from the main menu.</p>',
+          imgDesc: 'Screenshot showing the main menu with Volunteers highlighted',
+          imgPath: null,
+        },
+        {
+          heading: 'Step 2 of 5:',
+          text: '<p>Click the <b>Search Criteria</b> button in the toolbar above the volunteer list.</p>',
+          imgDesc: 'Screenshot showing the Search Criteria button in the toolbar',
+          imgPath: null,
+        },
+        {
+          heading: 'Step 3 of 5:',
+          text: '<p>In the Search Criteria panel, select the desired <b>Availability</b> filter from the dropdown and choose an <b>Assignment Status</b>.</p>',
+          imgDesc:
+            'Screenshot showing the Search Criteria panel with Availability and Assignment Status filters',
+          imgPath: null,
+        },
+        {
+          heading: 'Step 4 of 5:',
+          text: '<p>Click <b>Apply</b> to filter the volunteer list based on your selected criteria.</p>',
+          imgDesc: 'Screenshot showing the Apply button and filtered results',
+          imgPath: null,
+        },
+        {
+          heading: 'Step 5 of 5:',
+          text: '<p>To clear all filters, click <b>Reset</b> in the Search Criteria panel.</p>',
+          imgDesc: 'Screenshot showing the Reset button in the Search Criteria panel',
+          imgPath: null,
+        },
+      ],
+    },
+    wn: whatsNewContent,
+  },
+  screenshots: {
+    howto: [false, false, false, false, false],
+    wn: [],
+  },
+  confidence: {
+    howto: [null, null, null, null, null],
+    wn: [],
+  },
+};
+
 export const mockSharedArticle: Article = {
   ...mockGeneratedArticle,
   id: 'mock-article-003',
   status: 'shared',
   sharedAt: '2026-03-16T12:00:00.000Z',
   reviewNote: 'Please verify step 3 — the Search Criteria panel layout may differ from the mockup.',
+};
+
+// ---------------------------------------------------------------------------
+// Approved article
+// ---------------------------------------------------------------------------
+
+export const mockApprovedArticle: Article = {
+  ...mockGeneratedArticle,
+  id: 'mock-article-approved-001',
+  status: 'approved',
+  sharedAt: '2026-03-16T10:00:00.000Z',
+  approvedAt: '2026-03-16T14:30:00.000Z',
+};
+
+// ---------------------------------------------------------------------------
+// Revision article
+// ---------------------------------------------------------------------------
+
+export const mockRevisionArticle: Article = {
+  ...mockGeneratedArticle,
+  id: 'mock-article-revision-001',
+  status: 'revision',
+  sharedAt: '2026-03-16T10:00:00.000Z',
+  revisionReason: 'Step 3 screenshot does not match the current UI. Please update.',
+  revisionRequestedAt: '2026-03-16T15:00:00.000Z',
 };

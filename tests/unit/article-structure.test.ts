@@ -25,6 +25,9 @@ describe('Article type structure', () => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       sharedAt: null,
+      approvedAt: null,
+      revisionReason: null,
+      revisionRequestedAt: null,
       content: {},
       screenshots: { howto: [], wn: [] },
       confidence: { howto: [], wn: [] },
@@ -79,6 +82,9 @@ describe('Article type structure', () => {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       sharedAt: null,
+      approvedAt: null,
+      revisionReason: null,
+      revisionRequestedAt: null,
       content: {
         howto: {
           overview: 'Test overview',

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import type { FeatureIntake, ChangeType } from '@/lib/types/article';
+import type { FeatureIntake, ChangeType, ScanResult } from '@/lib/types/article';
 import modulesData from '@/lib/config/modules.json';
 
 interface IntakeFormProps {
@@ -9,6 +9,7 @@ interface IntakeFormProps {
   initialMode?: Mode;
   onClose: () => void;
   onGenerate: (intake: FeatureIntake) => void;
+  onUpdate?: (firstArticleId: string) => void;
 }
 
 type Mode = 'new' | 'update';
@@ -23,10 +24,16 @@ const CHANGE_TYPES: { value: ChangeType; label: string }[] = [
 const MODE_DESCRIPTIONS: Record<Mode, string> = {
   new: 'Describe a new feature or change and GateDoc will generate fresh How To and What\u2019s New articles.',
   update:
-    'Coming soon in Phase 2 \u2014 select existing articles and describe what changed. GateDoc will revise only the affected steps.',
+    'Describe what changed about an existing feature. GateDoc will find affected articles and revise only the steps that need updating.',
 };
 
-export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate }: IntakeFormProps) {
+const CONFIDENCE_COLORS: Record<string, { bg: string; text: string }> = {
+  high: { bg: '#FEE2E2', text: '#DC2626' },
+  medium: { bg: '#FEF3C7', text: '#D97706' },
+  low: { bg: '#F3F4F6', text: '#6B7280' },
+};
+
+export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, onUpdate }: IntakeFormProps) {
   const [mode, setMode] = useState<Mode>(initialMode ?? 'new');
   const [title, setTitle] = useState('');
   const [module, setModule] = useState('');
@@ -38,6 +45,15 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate }:
   const [userStories, setUserStories] = useState<{ title: string; description: string }[]>([]);
   const [generateHowTo, setGenerateHowTo] = useState(true);
   const [generateWhatsNew, setGenerateWhatsNew] = useState(true);
+
+  // Update mode state
+  const [scanning, setScanning] = useState(false);
+  const [scanResults, setScanResults] = useState<ScanResult[] | null>(null);
+  const [selectedArticles, setSelectedArticles] = useState<Set<string>>(new Set());
+  const [updating, setUpdating] = useState(false);
+  const [updateProgress, setUpdateProgress] = useState<{ current: number; total: number; title: string } | null>(null);
+  const [updateResults, setUpdateResults] = useState<{ succeeded: string[]; failed: string[] } | null>(null);
+  const [scanError, setScanError] = useState<string | null>(null);
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -67,6 +83,13 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate }:
     setUserStories([]);
     setGenerateHowTo(true);
     setGenerateWhatsNew(true);
+    setScanning(false);
+    setScanResults(null);
+    setSelectedArticles(new Set());
+    setUpdating(false);
+    setUpdateProgress(null);
+    setUpdateResults(null);
+    setScanError(null);
   }, []);
 
   const handleClose = useCallback(() => {
@@ -117,6 +140,110 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate }:
     ],
   );
 
+  // -- Scan + Update handlers (update mode) --
+  const handleScan = useCallback(async () => {
+    const resolvedModule = module === '__other__' ? customModule : module;
+    if (!resolvedModule.trim() || !description.trim()) return;
+
+    setScanning(true);
+    setScanResults(null);
+    setScanError(null);
+    setSelectedArticles(new Set());
+
+    try {
+      const res = await fetch('/api/scan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          changeDescription: description.trim(),
+          module: resolvedModule.trim(),
+          changeType,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Scan failed');
+      }
+      const data = await res.json();
+      const matches: ScanResult[] = data.matches || [];
+      setScanResults(matches);
+
+      // Pre-check HIGH and MEDIUM confidence matches
+      const preChecked = new Set<string>();
+      for (const m of matches) {
+        if (m.confidence === 'high' || m.confidence === 'medium') {
+          preChecked.add(m.articleId);
+        }
+      }
+      setSelectedArticles(preChecked);
+    } catch (err) {
+      setScanError(err instanceof Error ? err.message : 'Scan failed');
+    } finally {
+      setScanning(false);
+    }
+  }, [module, customModule, description, changeType]);
+
+  const handleUpdateSelected = useCallback(async () => {
+    if (selectedArticles.size === 0 || !scanResults) return;
+    setUpdating(true);
+    setUpdateResults(null);
+    setScanError(null);
+
+    const articleIds = [...selectedArticles];
+    const succeeded: string[] = [];
+    const failed: string[] = [];
+    let firstSuccessId: string | null = null;
+
+    for (let i = 0; i < articleIds.length; i++) {
+      const articleId = articleIds[i];
+      const match = scanResults.find((m) => m.articleId === articleId);
+      const title = match?.title ?? articleId;
+
+      setUpdateProgress({ current: i + 1, total: articleIds.length, title });
+
+      try {
+        const res = await fetch('/api/update', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            articleId,
+            changeDescription: description.trim(),
+            changeType,
+            affectedSteps: [],
+          }),
+        });
+        if (!res.ok) throw new Error(`Update failed for ${title}`);
+        const data = await res.json();
+        succeeded.push(title);
+        if (!firstSuccessId) firstSuccessId = data.id;
+      } catch {
+        failed.push(title);
+      }
+    }
+
+    setUpdateProgress(null);
+
+    if (failed.length > 0) {
+      setUpdateResults({ succeeded, failed });
+      setUpdating(false);
+    } else if (firstSuccessId && onUpdate) {
+      onUpdate(firstSuccessId);
+      resetForm();
+      onClose();
+    } else {
+      setUpdating(false);
+    }
+  }, [selectedArticles, scanResults, description, changeType, onUpdate, resetForm, onClose]);
+
+  const toggleArticleSelection = useCallback((articleId: string) => {
+    setSelectedArticles((prev) => {
+      const next = new Set(prev);
+      if (next.has(articleId)) next.delete(articleId);
+      else next.add(articleId);
+      return next;
+    });
+  }, []);
+
   // -- Behavior links helpers --
   const addBehaviorLink = () => setBehaviorLinks((prev) => [...prev, '']);
   const updateBehaviorLink = (idx: number, val: string) =>
@@ -137,6 +264,10 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate }:
   const isFormValid =
     mode === 'new' &&
     title.trim() !== '' &&
+    (module !== '__other__' ? module.trim() !== '' : customModule.trim() !== '') &&
+    description.trim() !== '';
+
+  const isUpdateScanValid =
     (module !== '__other__' ? module.trim() !== '' : customModule.trim() !== '') &&
     description.trim() !== '';
 
@@ -174,9 +305,10 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate }:
 
         {/* Mode toggle */}
         <div style={styles.body}>
-          <div style={styles.modeToggle}>
+          <div style={styles.modeToggle} data-testid="mode-toggle">
             <button
               type="button"
+              data-testid="mode-new"
               style={{
                 ...styles.modeBtn,
                 ...(mode === 'new' ? styles.modeBtnActive : {}),
@@ -187,6 +319,7 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate }:
             </button>
             <button
               type="button"
+              data-testid="mode-update"
               style={{
                 ...styles.modeBtn,
                 ...(mode === 'update' ? styles.modeBtnActive : {}),
@@ -200,28 +333,167 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate }:
           <div style={styles.modeDesc}>{MODE_DESCRIPTIONS[mode]}</div>
 
           {mode === 'update' ? (
-            <div style={styles.comingSoon}>
-              <div style={styles.comingSoonIcon}>
-                <svg
-                  width="32"
-                  height="32"
-                  viewBox="0 0 32 32"
-                  fill="none"
-                  stroke="var(--text-tertiary)"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="16" cy="16" r="12" />
-                  <polyline points="16,10 16,16 20,18" />
-                </svg>
-              </div>
-              <p style={styles.comingSoonTitle}>Coming soon in Phase 2</p>
-              <p style={styles.comingSoonText}>
-                Article update mode is coming soon. For now, use <strong>New article</strong> to
-                generate fresh content, or use <strong>Regenerate</strong> in the editor to revise
-                existing articles with updated details.
-              </p>
+            <div>
+              <form
+                id="update-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleScan();
+                }}
+              >
+                {/* Module + Type of change row */}
+                <div style={styles.formRow}>
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>
+                      Module <span style={styles.req}>*</span>
+                    </label>
+                    <select
+                      value={module}
+                      onChange={(e) => setModule(e.target.value)}
+                      style={styles.formSelect}
+                      required
+                    >
+                      <option value="" disabled>
+                        Select module
+                      </option>
+                      {modulesData.modules.map((m) => (
+                        <option key={m} value={m}>
+                          {m}
+                        </option>
+                      ))}
+                      <option value="__other__">Other</option>
+                    </select>
+                    {module === '__other__' && (
+                      <input
+                        type="text"
+                        value={customModule}
+                        onChange={(e) => setCustomModule(e.target.value)}
+                        placeholder="Enter module name"
+                        style={{ ...styles.formInput, marginTop: 8 }}
+                        required
+                      />
+                    )}
+                  </div>
+
+                  <div style={styles.formGroup}>
+                    <label style={styles.formLabel}>
+                      Type of change <span style={styles.req}>*</span>
+                    </label>
+                    <select
+                      value={changeType}
+                      onChange={(e) => setChangeType(e.target.value as ChangeType)}
+                      style={styles.formSelect}
+                      required
+                    >
+                      {CHANGE_TYPES.map((ct) => (
+                        <option key={ct.value} value={ct.value}>
+                          {ct.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* What changed */}
+                <div style={styles.formGroup}>
+                  <label style={styles.formLabel}>
+                    What changed <span style={styles.req}>*</span>
+                  </label>
+                  <textarea
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Describe what changed about this feature. Be specific about which UI elements, buttons, or steps were affected..."
+                    rows={4}
+                    style={styles.formTextarea}
+                    required
+                  />
+                </div>
+              </form>
+
+              {/* Scan results */}
+              {scanning && (
+                <div style={styles.scanLoading} data-testid="scan-loading">
+                  <div style={styles.spinner} />
+                  <span>Scanning articles...</span>
+                </div>
+              )}
+
+              {scanError && (
+                <div style={styles.scanError}>
+                  {scanError}
+                </div>
+              )}
+
+              {scanResults !== null && !scanning && (
+                <div data-testid="scan-results">
+                  {scanResults.length === 0 ? (
+                    <div style={styles.noMatches} data-testid="no-matches">
+                      No affected articles found. Try broadening your description or check the module.
+                    </div>
+                  ) : (
+                    <div style={styles.matchList}>
+                      <div style={styles.matchListHeader}>
+                        Affected articles ({scanResults.length})
+                      </div>
+                      {scanResults.map((match) => {
+                        const colors = CONFIDENCE_COLORS[match.confidence] || CONFIDENCE_COLORS.low;
+                        return (
+                          <label
+                            key={match.articleId}
+                            style={styles.matchItem}
+                            data-testid="scan-match"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={selectedArticles.has(match.articleId)}
+                              onChange={() => toggleArticleSelection(match.articleId)}
+                              style={styles.checkbox}
+                            />
+                            <div style={{ flex: 1 }}>
+                              <div style={styles.matchTitleRow}>
+                                <span style={styles.matchTitle}>{match.title}</span>
+                                <span
+                                  style={{
+                                    ...styles.confidenceBadge,
+                                    backgroundColor: colors.bg,
+                                    color: colors.text,
+                                  }}
+                                  data-testid={`confidence-${match.confidence}`}
+                                >
+                                  {match.confidence.toUpperCase()}
+                                </span>
+                              </div>
+                              <p style={styles.matchReason}>{match.reason}</p>
+                            </div>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Updating loading */}
+              {updating && updateProgress && (
+                <div style={styles.scanLoading} data-testid="update-loading">
+                  <div style={styles.spinner} />
+                  <span>Updating article {updateProgress.current} of {updateProgress.total}... {updateProgress.title}</span>
+                </div>
+              )}
+
+              {/* Update results with failures */}
+              {updateResults && updateResults.failed.length > 0 && (
+                <div data-testid="update-results" style={{ marginTop: 12 }}>
+                  {updateResults.succeeded.length > 0 && (
+                    <div style={styles.updateSuccess}>
+                      Succeeded: {updateResults.succeeded.join(', ')}
+                    </div>
+                  )}
+                  <div style={styles.scanError}>
+                    Failed: {updateResults.failed.join(', ')}
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <form onSubmit={handleSubmit} id="intake-form">
@@ -441,37 +713,70 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate }:
 
         {/* Footer */}
         <div style={styles.footer}>
-          <div style={styles.checkboxGroup}>
-            <label style={styles.checkLabel}>
-              <input
-                type="checkbox"
-                checked={generateHowTo}
-                onChange={(e) => setGenerateHowTo(e.target.checked)}
-                style={styles.checkbox}
-              />
-              How to
-            </label>
-            <label style={styles.checkLabel}>
-              <input
-                type="checkbox"
-                checked={generateWhatsNew}
-                onChange={(e) => setGenerateWhatsNew(e.target.checked)}
-                style={styles.checkbox}
-              />
-              What&apos;s new
-            </label>
-          </div>
-          <button
-            type="submit"
-            form="intake-form"
-            disabled={!isFormValid}
-            style={{
-              ...styles.generateBtn,
-              ...(!isFormValid ? styles.generateBtnDisabled : {}),
-            }}
-          >
-            Generate articles
-          </button>
+          {mode === 'new' ? (
+            <>
+              <div style={styles.checkboxGroup}>
+                <label style={styles.checkLabel}>
+                  <input
+                    type="checkbox"
+                    checked={generateHowTo}
+                    onChange={(e) => setGenerateHowTo(e.target.checked)}
+                    style={styles.checkbox}
+                  />
+                  How to
+                </label>
+                <label style={styles.checkLabel}>
+                  <input
+                    type="checkbox"
+                    checked={generateWhatsNew}
+                    onChange={(e) => setGenerateWhatsNew(e.target.checked)}
+                    style={styles.checkbox}
+                  />
+                  What&apos;s new
+                </label>
+              </div>
+              <button
+                type="submit"
+                form="intake-form"
+                disabled={!isFormValid}
+                style={{
+                  ...styles.generateBtn,
+                  ...(!isFormValid ? styles.generateBtnDisabled : {}),
+                }}
+              >
+                Generate articles
+              </button>
+            </>
+          ) : (
+            <>
+              <div />
+              {scanResults && scanResults.length > 0 && !updating ? (
+                <button
+                  type="button"
+                  onClick={handleUpdateSelected}
+                  disabled={selectedArticles.size === 0}
+                  style={{
+                    ...styles.generateBtn,
+                    ...(selectedArticles.size === 0 ? styles.generateBtnDisabled : {}),
+                  }}
+                >
+                  Update selected articles
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  form="update-form"
+                  disabled={!isUpdateScanValid || scanning}
+                  style={{
+                    ...styles.generateBtn,
+                    ...(!isUpdateScanValid || scanning ? styles.generateBtnDisabled : {}),
+                  }}
+                >
+                  Find affected articles
+                </button>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -574,28 +879,6 @@ const styles: Record<string, React.CSSProperties> = {
     background: 'var(--bg-surface)',
     borderRadius: 8,
     marginBottom: 16,
-    lineHeight: 1.5,
-  },
-
-  /* Coming soon */
-  comingSoon: {
-    textAlign: 'center' as const,
-    padding: '48px 24px',
-  },
-  comingSoonIcon: {
-    marginBottom: 12,
-  },
-  comingSoonTitle: {
-    fontSize: 15,
-    fontWeight: 600,
-    color: 'var(--text)',
-    marginBottom: 6,
-  },
-  comingSoonText: {
-    fontSize: 13,
-    color: 'var(--text-tertiary)',
-    maxWidth: 360,
-    margin: '0 auto',
     lineHeight: 1.5,
   },
 
@@ -760,5 +1043,98 @@ const styles: Record<string, React.CSSProperties> = {
   generateBtnDisabled: {
     opacity: 0.5,
     cursor: 'not-allowed',
+  },
+
+  /* Scan results */
+  scanLoading: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 10,
+    padding: '16px 0',
+    fontSize: 13,
+    color: 'var(--text-secondary)',
+  },
+  spinner: {
+    width: 18,
+    height: 18,
+    border: '2px solid var(--border)',
+    borderTopColor: 'var(--accent)',
+    borderRadius: '50%',
+    animation: 'spin 0.8s linear infinite',
+    flexShrink: 0,
+  },
+  scanError: {
+    fontSize: 13,
+    color: 'var(--red)',
+    padding: '8px 12px',
+    background: '#FEE2E2',
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  updateSuccess: {
+    fontSize: 13,
+    color: '#047857',
+    padding: '8px 12px',
+    background: '#D1FAE5',
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  noMatches: {
+    fontSize: 13,
+    color: 'var(--text-tertiary)',
+    padding: '24px 12px',
+    textAlign: 'center' as const,
+    background: 'var(--bg-surface)',
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  matchList: {
+    marginTop: 12,
+    border: '1px solid var(--border)',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  matchListHeader: {
+    fontSize: 11,
+    fontWeight: 700,
+    textTransform: 'uppercase' as const,
+    letterSpacing: '0.5px',
+    color: 'var(--text-secondary)',
+    padding: '10px 12px',
+    background: 'var(--bg-surface)',
+    borderBottom: '1px solid var(--border)',
+  },
+  matchItem: {
+    display: 'flex',
+    gap: 10,
+    padding: '12px',
+    borderBottom: '1px solid var(--border)',
+    cursor: 'pointer',
+    alignItems: 'flex-start',
+  },
+  matchTitleRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 4,
+  },
+  matchTitle: {
+    fontSize: 14,
+    fontWeight: 600,
+    color: 'var(--text)',
+  },
+  confidenceBadge: {
+    fontSize: 10,
+    fontWeight: 700,
+    padding: '2px 6px',
+    borderRadius: 4,
+    letterSpacing: '0.5px',
+    flexShrink: 0,
+  },
+  matchReason: {
+    fontSize: 12,
+    color: 'var(--text-tertiary)',
+    lineHeight: 1.4,
+    margin: 0,
   },
 };

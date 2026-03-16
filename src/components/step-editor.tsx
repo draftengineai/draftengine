@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import type { Step, ConfidenceFlag as ConfidenceFlagType } from "@/lib/types/article";
 import ConfidenceFlag from "./confidence-flag";
 import ScreenshotSlot from "./screenshot-slot";
@@ -15,6 +15,8 @@ interface StepEditorProps {
   onScreenshotToggle: (index: number) => void;
   onFlagDismiss: (index: number) => void;
   readOnly?: boolean;
+  isChanged?: boolean;
+  originalText?: string;
 }
 
 export default function StepEditor({
@@ -27,8 +29,11 @@ export default function StepEditor({
   onScreenshotToggle,
   onFlagDismiss,
   readOnly,
+  isChanged,
+  originalText,
 }: StepEditorProps) {
   const textRef = useRef<HTMLDivElement>(null);
+  const [showOriginal, setShowOriginal] = useState(false);
 
   // Set content via ref only when step.text changes externally (not during typing)
   useEffect(() => {
@@ -41,11 +46,13 @@ export default function StepEditor({
   return (
     <div
       data-step={index}
+      data-changed={isChanged ? "true" : undefined}
       style={{
         border: "1px solid var(--border)",
+        borderLeft: isChanged ? "4px solid #0d9488" : "1px solid var(--border)",
         borderRadius: 12,
         overflow: "hidden",
-        backgroundColor: "#FFFFFF",
+        backgroundColor: isChanged ? "rgba(13,148,136,0.04)" : "#FFFFFF",
         marginBottom: 20,
       }}
     >
@@ -62,6 +69,21 @@ export default function StepEditor({
         <span style={{ fontSize: 17, fontWeight: 700, color: "var(--text)" }}>
           Step {index + 1} of {totalSteps}:
         </span>
+        {isChanged && (
+          <span
+            data-testid="changed-badge"
+            style={{
+              fontSize: 11,
+              fontWeight: 600,
+              backgroundColor: "rgba(13,148,136,0.12)",
+              color: "#0d9488",
+              padding: "2px 8px",
+              borderRadius: 20,
+            }}
+          >
+            Changed
+          </span>
+        )}
         {flag && (
           <span
             style={{
@@ -114,6 +136,56 @@ export default function StepEditor({
           />
           {flag && (
             <ConfidenceFlag flag={flag} onDismiss={() => onFlagDismiss(index)} />
+          )}
+
+          {/* View original toggle for changed steps */}
+          {isChanged && originalText && (
+            <div>
+              <button
+                data-testid={`toggle-original-${index}`}
+                onClick={() => setShowOriginal(!showOriginal)}
+                style={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: "#0d9488",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  padding: 0,
+                }}
+              >
+                {showOriginal ? "Hide original" : "View original"}
+              </button>
+              {showOriginal && (
+                <div
+                  data-testid={`original-text-${index}`}
+                  style={{
+                    marginTop: 8,
+                    padding: "10px 12px",
+                    backgroundColor: "#f3f4f6",
+                    borderRadius: 6,
+                    border: "1px solid #e5e7eb",
+                  }}
+                >
+                  <div
+                    style={{
+                      fontSize: 10,
+                      fontWeight: 700,
+                      textTransform: "uppercase",
+                      color: "#9ca3af",
+                      marginBottom: 4,
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    Original:
+                  </div>
+                  <div
+                    style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.6 }}
+                    dangerouslySetInnerHTML={{ __html: originalText }}
+                  />
+                </div>
+              )}
+            </div>
           )}
         </div>
 

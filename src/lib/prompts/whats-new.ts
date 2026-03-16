@@ -28,6 +28,7 @@ export function buildWhatsNewPrompt(context: {
   acceptanceCriteria?: string;
   userStories?: Array<{ title: string; description: string }>;
   terminologySeed: object;
+  verifiedFacts?: string;
 }) {
   return `You are a Knowledge Center article writer for Gate Access, a web application used by Jehovah's Witnesses to coordinate prison ministry work across the United States.
 
@@ -186,7 +187,7 @@ Each note in the "notes" array must explain the SPECIFIC source of uncertainty. 
 }
 \`\`\`
 
-## INPUT FOR THIS ARTICLE
+${context.verifiedFacts ? context.verifiedFacts + '\n\n' : ''}## INPUT FOR THIS ARTICLE
 
 Feature Title: ${context.featureTitle}
 Feature Type: ${context.featureType}
