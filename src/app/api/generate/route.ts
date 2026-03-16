@@ -5,7 +5,7 @@ import { Article, FeatureIntake, HowToContent, WhatsNewContent, ConfidenceFlag, 
 import { PIIFreePayload, assertPIIFree } from '@/lib/types/pii';
 import { buildHowToPrompt } from '@/lib/prompts/how-to';
 import { buildWhatsNewPrompt } from '@/lib/prompts/whats-new';
-import { createArticle } from '@/lib/db/articles';
+import { saveArticle } from '@/lib/db/storage';
 import terminologySeed from '@/lib/config/terminology-seed.json';
 
 const anthropic = new Anthropic();
@@ -603,7 +603,7 @@ export async function POST(request: NextRequest) {
     // Save to store — skip when caller only needs the generated content
     // (e.g. editor regeneration, which PATCHes the existing article itself)
     const skipPersist = request.nextUrl.searchParams.get('skipPersist') === 'true';
-    const result = skipPersist ? article : createArticle(article);
+    const result = skipPersist ? article : await saveArticle(article);
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {

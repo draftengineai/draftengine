@@ -6,7 +6,8 @@ GateDoc is a Next.js application that generates Knowledge Center articles for Ga
 
 - **Framework:** Next.js 14+ (App Router, TypeScript, src directory)
 - **Styling:** Tailwind CSS + custom CSS variables matching v8 mockup
-- **Auth:** Auth.js (next-auth) with credentials provider, 3 hardcoded users
+- **Auth:** Simple password gate via middleware (env var `GATEDOC_PASSWORD`) + Auth.js (next-auth) for user identity
+- **Persistence:** Vercel KV in production, local `store.json` fallback in dev
 - **AI:** Anthropic SDK (@anthropic-ai/sdk) — Claude for article generation
 - **Testing:** Jest (unit) + Playwright (E2E)
 - **Deployment:** Vercel, project name "gatedoc"
@@ -15,13 +16,16 @@ GateDoc is a Next.js application that generates Knowledge Center articles for Ga
 
 ```
 src/
+  middleware.ts                     # Auth gate — redirects to /login without cookie
   app/
     page.tsx                        # Landing — article list
     layout.tsx                      # Root layout with auth provider
     editor/[id]/page.tsx            # Editor workbench
     preview/[id]/page.tsx           # Read-only preview
+    login/page.tsx                  # Password gate login page
     api/
-      auth/[...nextauth]/route.ts   # Auth.js
+      auth/route.ts                 # POST — simple password auth
+      auth/[...nextauth]/route.ts   # Auth.js (user identity)
       generate/route.ts             # POST — new article generation
       articles/route.ts             # GET all, POST new
       articles/[id]/route.ts        # GET one, PATCH update
@@ -51,7 +55,8 @@ src/
       terminology-seed.json
       modules.json
     db/
-      articles.ts                   # Article CRUD — JSON file for MVP
+      storage.ts                    # Article CRUD — Vercel KV (prod) / store.json (dev)
+      articles.ts                   # Legacy sync CRUD (kept for reference)
 tests/
   fixtures/
     ftr-3849-input.json
@@ -85,6 +90,12 @@ npm run dev
 ANTHROPIC_API_KEY=sk-ant-...
 NEXTAUTH_SECRET=<openssl rand -base64 32>
 NEXTAUTH_URL=http://localhost:3000
+GATEDOC_PASSWORD=<shared demo password>
+
+# Optional — Vercel KV (auto-set by Vercel when KV store is linked):
+# KV_REST_API_URL=https://...
+# KV_REST_API_TOKEN=...
+# When KV env vars are absent, articles are stored in src/lib/db/store.json
 ```
 
 ## How to Test
@@ -144,6 +155,13 @@ All Phase 1 features are built, tested, and working. The full new-article flow (
 - Update How To prompt exists in `src/lib/prompts/update-how-to.ts` (v0.1.0)
 - Confidence feedback loop architecture documented
 - Update existing UI placeholder ready to be activated
+
+## Branching Strategy
+
+- **main** = stable demo (Phase 1 complete, deployed to Vercel)
+- **phase-2** = active development
+- All Phase 2 work happens on the `phase-2` branch
+- Merge to `main` only when Phase 2 is demo-ready
 
 ## Phase 1 vs Phase 2 Boundary
 

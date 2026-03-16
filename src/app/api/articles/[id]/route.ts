@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getArticleById, updateArticle, deleteArticle } from '@/lib/db/articles';
+import { getArticle, updateArticle, deleteArticle } from '@/lib/db/storage';
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const article = getArticleById(id);
+  const article = await getArticle(id);
   if (!article) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
@@ -19,7 +19,7 @@ export async function PATCH(
 ) {
   const { id } = await params;
   const updates = await request.json();
-  const updated = updateArticle(id, updates);
+  const updated = await updateArticle(id, updates);
   if (!updated) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
@@ -31,7 +31,7 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const deleted = deleteArticle(id);
+  const deleted = await deleteArticle(id);
   if (!deleted) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 });
   }
