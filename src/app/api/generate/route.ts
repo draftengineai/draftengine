@@ -8,7 +8,15 @@ import { buildWhatsNewPrompt } from '@/lib/prompts/whats-new';
 import { saveArticle } from '@/lib/db/storage';
 import terminologySeed from '@/lib/config/terminology-seed.json';
 
-const anthropic = new Anthropic();
+function getAnthropicClient(): Anthropic {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) {
+    throw new Error(
+      'ANTHROPIC_API_KEY environment variable is not set. Add it in the Vercel dashboard under Settings → Environment Variables.'
+    );
+  }
+  return new Anthropic({ apiKey });
+}
 
 function buildPIIFreePayload(intake: FeatureIntake): PIIFreePayload {
   const payload: Record<string, unknown> = {
@@ -451,6 +459,7 @@ FLAGGING RULE: Steps that use ONLY information from VERIFIED INPUTS or explicitl
 
 export async function POST(request: NextRequest) {
   try {
+    const anthropic = getAnthropicClient();
     const intake: FeatureIntake = await request.json();
 
     // Validate required fields

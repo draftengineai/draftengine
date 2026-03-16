@@ -11,6 +11,14 @@ function useKV(): boolean {
   return !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 }
 
+function requireKVInProduction(): void {
+  if (process.env.VERCEL && !useKV()) {
+    throw new Error(
+      'Vercel KV is not configured. Link a KV store in the Vercel dashboard, or set KV_REST_API_URL and KV_REST_API_TOKEN environment variables.'
+    );
+  }
+}
+
 // --------------- KV helpers ---------------
 
 async function kvGet(): Promise<Article[]> {
@@ -57,6 +65,7 @@ export async function getArticle(id: string): Promise<Article | undefined> {
 }
 
 export async function saveArticle(article: Article): Promise<Article> {
+  requireKVInProduction();
   const articles = await getArticles();
   articles.unshift(article);
   if (useKV()) {
@@ -68,6 +77,7 @@ export async function saveArticle(article: Article): Promise<Article> {
 }
 
 export async function updateArticle(id: string, updates: Partial<Article>): Promise<Article | undefined> {
+  requireKVInProduction();
   const articles = await getArticles();
   const index = articles.findIndex(a => a.id === id);
   if (index === -1) return undefined;
@@ -81,6 +91,7 @@ export async function updateArticle(id: string, updates: Partial<Article>): Prom
 }
 
 export async function deleteArticle(id: string): Promise<boolean> {
+  requireKVInProduction();
   const articles = await getArticles();
   const index = articles.findIndex(a => a.id === id);
   if (index === -1) return false;
