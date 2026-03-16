@@ -62,6 +62,9 @@ tests/
     ftr-3849-input.json
     pii-test-cases.json
     thin-data-input.json
+    mock-anthropic.ts              # Mock Anthropic API / generate route for E2E
+    mock-article.ts                # Pre-built Article objects for editor tests
+    sample-intake.ts               # FTR #3849 FeatureIntake data
   e2e/
     writer-journey.spec.ts
   unit/
@@ -101,9 +104,36 @@ GATEDOC_PASSWORD=<shared demo password>
 ## How to Test
 
 ```bash
-npm test
-npx playwright test
+# E2E tests (Playwright — Chromium)
+npm test                  # run all E2E specs headless
+npm run test:ui           # open Playwright UI mode
+
+# Unit tests (Jest)
+npm run test:unit
 ```
+
+Tests use mocked API responses — no real Anthropic API calls are made. Set `GATEDOC_PASSWORD=test` and `ANTHROPIC_API_KEY=test-key` when running outside of `.env.local`.
+
+### Sprint 1 Test Summary — 10 spec files, 73 tests
+
+| Spec file | Tests | Coverage |
+|---|---|---|
+| `auth.spec.ts` | 6 | Login page, password auth, redirect protection, preview access, session persistence |
+| `landing.spec.ts` | 6 | Empty state, article cards, badges, new/update buttons, delete with confirmation |
+| `generate.spec.ts` | 6 | Intake form fields, validation, short-description warning, generation flow, article type checkboxes |
+| `editor-howto.spec.ts` | 8 | How To editor: title, overview, steps, bold elements, screenshots, contenteditable, sidebar tabs/checklist |
+| `editor-whatsnew.spec.ts` | 7 | What's New editor: tab switching, title, overview, sections (intro/where/closing), tab persistence |
+| `flags.spec.ts` | 10 | Confidence flags: render, WHAT/WHY/ACTION fields, dismiss, sidebar count, persistence, verified-input skip |
+| `regenerate.spec.ts` | 8 | Regenerate button, modal pre-fill, optional feedback field, warning, cancel, content replacement, flag reset |
+| `share.spec.ts` | 7 | Share button, modal, preview URL, Steward note, save & copy, cancel |
+| `preview.spec.ts` | 10 | Preview banner, Steward label, article content, steps, bold, screenshots, no raw HTML, Steward note, no-auth access |
+| `thin-data.spec.ts` | 5 | Thin data detection, banner, write-manually recovery, regenerate from thin, INSUFFICIENT CONTEXT display |
+
+### Test Fixtures (tests/fixtures/)
+
+- **mock-anthropic.ts** — Intercepts Anthropic API / `/api/generate` calls with deterministic responses. Provides `mockAnthropicApi(page)` for upstream interception and `mockGenerateApi(page)` for route-level interception.
+- **mock-article.ts** — Pre-built `Article` objects: `mockGeneratedArticle`, `mockEditingArticle`, `mockSharedArticle`. How To has 5 steps with 1 confidence flag on step 3; What's New has all 4 sections.
+- **sample-intake.ts** — FTR #3849 `FeatureIntake` data (`ftr3849Intake`): "Search Criteria for Volunteers", module Volunteers, 2 user stories.
 
 ## Deployment
 
@@ -111,7 +141,18 @@ npx playwright test
 - Project name: `gatedoc`
 - Environment variables must be set in Vercel dashboard
 
-## Current Status — Phase 1 COMPLETE (2026-03-15)
+## Current Status — Phase 2 IN PROGRESS (2026-03-16)
+
+### Phase 2 Sprint 1: Regression Test Infrastructure — COMPLETE (2026-03-16)
+
+- **73 E2E tests** across 10 spec files — all passing
+- Playwright config: `testDir: ./tests/e2e`, `retries: 1`, Chromium only, dev server auto-start
+- Test fixtures: `mock-anthropic.ts`, `mock-article.ts`, `sample-intake.ts`
+- Package scripts: `test` → Playwright, `test:ui` → Playwright UI, `test:unit` → Jest
+- GitHub Actions CI: `.github/workflows/test.yml` — runs on push to main/phase-2 and PRs to main
+- All tests use mocked API responses — no real Anthropic calls
+
+## Phase 1 COMPLETE (2026-03-15)
 
 All Phase 1 features are built, tested, and working. The full new-article flow (intake → generation → editing → share → print) is functional end-to-end.
 
