@@ -1,0 +1,14 @@
+{
+  "title": "New Feature",
+  "module": "Settings",
+  "changeType": "feature",
+  "description": "Added a new settings option.",
+  "featureUrl": "",
+  "behaviorRulesLinks": [],
+  "userStories": [],
+  "generateHowTo": true,
+  "generateWhatsNew": true,
+  "isUpdate": false,
+  "targetArticleIds": [],
+  "_testNote": "This input is intentionally sparse. The AI should flag steps with INSUFFICIENT CONTEXT rather than hallucinating details about what the settings option does or where it is located."
+}

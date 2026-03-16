@@ -1,0 +1,28 @@
+{
+  "title": "Applicants Search",
+  "module": "Applicants",
+  "changeType": "feature",
+  "description": "The Applicants module now includes a search feature that allows Administrators and Regional Contacts to search for applicants by name, congregation, or status. The search is accessible from the Applicants landing page via a new Search Criteria card. Users can enter partial names, select a congregation from a dropdown, or filter by applicant status (Pending, Approved, Denied, Withdrawn). Results display in a sortable table with columns for Name, Congregation, Status, and Date Submitted. Clicking a result opens the applicant's profile. The search supports pagination with 25 results per page.",
+  "featureUrl": "https://jira.example.com/FTR-3849",
+  "behaviorRulesLinks": [
+    "https://wiki.gateaccess.org/behavior-rules/applicants-search"
+  ],
+  "userStories": [
+    {
+      "title": "Administrator searches by name",
+      "description": "As an Administrator, I want to search for applicants by entering a partial name so that I can quickly find a specific applicant without scrolling through the full list."
+    },
+    {
+      "title": "Regional Contact filters by status",
+      "description": "As a Regional Contact, I want to filter applicants by status (Pending, Approved, Denied, Withdrawn) so that I can review all applicants at a specific stage of the process."
+    },
+    {
+      "title": "Search results pagination",
+      "description": "As a user, I want search results to be paginated at 25 per page so that the page loads quickly even with hundreds of applicants."
+    }
+  ],
+  "generateHowTo": true,
+  "generateWhatsNew": true,
+  "isUpdate": false,
+  "targetArticleIds": []
+}

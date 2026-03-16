@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GateDoc — Writer</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--bg:#FAFAF8;--bg-card:#FFFFFF;--bg-surface:#F3F2EE;--bg-hover:#EEEDEA;
+--text:#1A1A18;--text-secondary:#6B6A66;--text-tertiary:#9C9B97;
+--border:#E4E3DF;--border-hover:#C8C7C3;
+--purple:#615789;--purple-light:#dfdde8;--purple-bg:#EEEDFE;--purple-dark:#3C3489;
+--accent:#534AB7;--accent-hover:#4339A0;
+--blue:#378ADD;--blue-light:#E6F1FB;--blue-dark:#0C447C;
+--amber:#BA7517;--amber-light:#FAEEDA;--amber-dark:#633806;
+--green:#1D9E75;--green-light:#E1F5EE;--green-dark:#085041;
+--red:#E24B4A;--red-light:#FCEBEB;
+--pink:#D4537E;--pink-light:#FBEAF0;--pink-dark:#72243E;
+--teal:#0F6E56;--teal-light:#E1F5EE;--teal-dark:#04342C;
+--radius:8px;--radius-lg:12px;
+--font:'DM Sans',system-ui,sans-serif;
+--focus-ring:0 0 0 3px rgba(83,74,183,0.25);
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh}
+:focus-visible{outline:none;box-shadow:var(--focus-ring);border-radius:4px}
+.skip-link{position:absolute;top:-40px;left:0;background:var(--accent);color:white;padding:8px 16px;z-index:999;font-size:14px;font-weight:600;transition:top 0.2s;border-radius:0 0 var(--radius) 0;text-decoration:none}
+.skip-link:focus{top:0}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:52px;border-bottom:1px solid var(--border);background:var(--bg-card);position:sticky;top:0;z-index:100}
+.nav-brand{display:flex;align-items:center;gap:10px}
+.nav-logo{width:30px;height:30px;background:var(--accent);border-radius:var(--radius);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:13px}
+.nav-title{font-size:15px;font-weight:700;letter-spacing:-0.3px}
+.nav-sub{font-size:11px;color:var(--text-tertiary)}
+.nav-user{display:flex;align-items:center;gap:8px}
+.nav-avatar{width:30px;height:30px;border-radius:50%;background:var(--blue-light);color:var(--blue-dark);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700}
+.nav-name{font-size:13px;font-weight:500}
+.nav-back{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--accent);cursor:pointer;border:none;background:none;font-family:var(--font);padding:6px 12px;border-radius:var(--radius);transition:background 0.15s}
+.nav-back:hover{background:var(--purple-bg)}
+.btn{padding:8px 16px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;border:1px solid var(--border);background:var(--bg-card);color:var(--text);transition:all 0.15s;font-family:var(--font);display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--border-hover);background:var(--bg-surface)}
+.btn-primary{background:var(--accent);color:white;border-color:var(--accent)}
+.btn-primary:hover{background:var(--accent-hover)}
+.btn-sm{padding:5px 10px;font-size:12px}
+.btn-ghost{border:none;background:transparent;color:var(--text-secondary)}
+.btn-ghost:hover{color:var(--text);background:var(--bg-surface)}
+.btn[disabled]{opacity:0.45;pointer-events:none}
+.landing{max-width:820px;margin:0 auto;padding:32px 24px}
+.landing-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:12px}
+.landing-header h1{font-size:22px;font-weight:700;letter-spacing:-0.5px}
+.landing-btns{display:flex;gap:8px}
+.landing-intro{font-size:14px;color:var(--text-secondary);margin-bottom:28px}
+.landing-section{margin-bottom:32px}
+.ls-hdr{display:flex;align-items:center;gap:10px;margin-bottom:6px;padding-bottom:8px;border-bottom:2px solid var(--border)}
+.ls-hdr h2{font-size:14px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:var(--text-secondary)}
+.ls-cnt{font-size:11px;background:var(--accent);color:white;padding:1px 7px;border-radius:20px;font-weight:700}
+.article-list{display:flex;flex-direction:column;gap:8px}
+.article-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 18px;cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;gap:6px}
+.article-card:hover{border-color:var(--border-hover);box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+.article-card.is-update{border-left:3px solid var(--teal)}
+.ac-row1{display:flex;justify-content:space-between;align-items:flex-start}
+.ac-title{font-size:14px;font-weight:600}
+.ac-origin{font-size:11px;font-weight:700;padding:1px 6px;border-radius:4px;margin-right:6px;vertical-align:1px}
+.ac-origin-new{background:var(--blue-light);color:var(--blue-dark)}
+.ac-origin-update{background:var(--teal-light);color:var(--teal-dark)}
+.ac-next{font-size:11px;color:var(--accent);font-weight:600;white-space:nowrap;flex-shrink:0;margin-left:12px}
+.ac-badges{display:flex;gap:6px;flex-wrap:wrap}
+.ac-ai-line{font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px}
+.ac-ai-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ac-bottom{display:flex;justify-content:space-between;align-items:center;padding-top:4px;border-top:1px solid var(--border);margin-top:2px}
+.ac-writer{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-secondary)}
+.ac-writer-av{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;background:var(--blue-light);color:var(--blue-dark)}
+.badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+.badge-howto{background:var(--purple-bg);color:var(--purple-dark)}
+.badge-wn{background:var(--green-light);color:var(--green-dark)}
+.badge-module{background:var(--bg-surface);color:var(--text-secondary)}
+.badge-editing{background:var(--amber-light);color:var(--amber-dark)}
+.badge-generated{background:var(--blue-light);color:var(--blue-dark)}
+.badge-shared{background:var(--pink-light);color:var(--pink-dark)}
+.badge-update{background:var(--teal-light);color:var(--teal-dark)}
+.bi{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.bi-editing{background:var(--amber)}.bi-generated{background:var(--blue)}.bi-shared{background:var(--pink)}
+.tooltip-wrap{position:relative;display:inline-flex}
+.tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--text);color:white;font-size:12px;padding:6px 10px;border-radius:var(--radius);pointer-events:none;opacity:0;transition:opacity 0.15s;z-index:50;font-weight:400;line-height:1.4;max-width:240px;white-space:normal;text-align:center}
+.tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--text)}
+.tooltip-wrap:hover .tooltip{opacity:1}
+.info-banner{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-radius:var(--radius);font-size:13px;line-height:1.6;margin-bottom:20px}
+.info-banner-blue{background:var(--blue-light);color:var(--blue-dark)}
+.info-banner-amber{background:var(--amber-light);color:var(--amber-dark)}
+.info-banner-green{background:var(--green-light);color:var(--green-dark)}
+.info-banner-pink{background:var(--pink-light);color:var(--pink-dark)}
+.info-banner-teal{background:var(--teal-light);color:var(--teal-dark)}
+
+/* Intake */
+.intake-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.intake-modal{background:var(--bg-card);border-radius:var(--radius-lg);width:100%;max-width:620px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.15)}
+.intake-header{padding:20px 24px 12px;display:flex;justify-content:space-between;align-items:flex-start}
+.intake-header-text h2{font-size:18px;font-weight:700;margin-bottom:4px}
+.intake-header-text p{font-size:13px;color:var(--text-secondary)}
+.intake-close{width:28px;height:28px;border-radius:50%;border:none;background:var(--bg-surface);cursor:pointer;font-size:16px;color:var(--text-secondary);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.intake-body{padding:16px 24px}
+.mode-toggle{display:flex;gap:0;margin-bottom:12px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.mode-btn{flex:1;padding:10px 16px;font-size:13px;font-weight:600;border:none;cursor:pointer;font-family:var(--font);background:var(--bg-card);color:var(--text-secondary);transition:all 0.15s;text-align:center}
+.mode-btn:first-child{border-right:1px solid var(--border)}
+.mode-btn.active{background:var(--accent);color:white}
+.mode-btn:hover:not(.active){background:var(--bg-surface)}
+.mode-desc{font-size:12px;color:var(--text-tertiary);margin-bottom:16px;line-height:1.5;padding:8px 12px;background:var(--bg-surface);border-radius:var(--radius)}
+.form-group{margin-bottom:14px}
+.form-label{font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px;display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:0.5px}
+.form-label .opt{font-weight:400;text-transform:none;letter-spacing:0;color:var(--text-tertiary)}
+.form-label .req{color:var(--red);font-weight:400;margin-left:1px}
+.form-input,.form-select,.form-textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;font-family:var(--font);color:var(--text);background:var(--bg-card)}
+.form-input:focus,.form-select:focus,.form-textarea:focus{outline:none;border-color:var(--accent);box-shadow:var(--focus-ring)}
+.form-textarea{min-height:80px;resize:vertical;line-height:1.5}
+.form-helper{font-size:11px;color:var(--text-tertiary);margin-top:3px;line-height:1.4}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.intake-footer{padding:14px 24px 18px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border)}
+.check-label{font-size:13px;display:flex;align-items:center;gap:6px;cursor:pointer;color:var(--text-secondary)}
+.check-label input{accent-color:var(--accent);width:16px;height:16px}
+
+/* AI article scan results */
+.scan-divider{border-top:2px solid var(--border);margin-top:16px;padding-top:14px}
+.scan-btn{width:100%;justify-content:center;padding:12px;font-size:14px}
+.scan-context{font-size:12px;color:var(--text-secondary);margin-bottom:10px;padding:8px 10px;background:var(--bg-surface);border-radius:var(--radius);line-height:1.5}
+.scan-context b{color:var(--text)}
+.stale-warning{font-size:12px;color:var(--amber-dark);background:var(--amber-light);padding:8px 12px;border-radius:var(--radius);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.as-list{border:1px solid var(--border);border-radius:var(--radius);max-height:260px;overflow-y:auto;margin-bottom:8px}
+.as-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.1s}
+.as-item:last-child{border-bottom:none}
+.as-item:hover{background:var(--bg-surface)}
+.as-item.selected{background:var(--purple-bg)}
+.as-check{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;transition:all 0.15s;margin-top:2px}
+.as-item.selected .as-check{background:var(--accent);border-color:var(--accent);color:white}
+.conf-badge{font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;flex-shrink:0;display:inline-flex;align-items:center;gap:3px}
+.conf-high{background:var(--green-light);color:var(--green-dark)}
+.conf-medium{background:var(--amber-light);color:var(--amber-dark)}
+.conf-low{background:var(--bg-surface);color:var(--text-tertiary)}
+.conf-icon{font-size:9px}
+
+/* Loading */
+.loading-screen{text-align:center;padding:80px 20px}
+.loader{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 20px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-steps{max-width:320px;margin:24px auto 0;text-align:left}
+.loading-step{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:13px;color:var(--text-tertiary)}
+.loading-step.done{color:var(--green-dark)}.loading-step.active{color:var(--text);font-weight:500}
+.ls-dot{width:18px;height:18px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.loading-step.done .ls-dot{background:var(--green);border-color:var(--green);color:white}
+.loading-step.active .ls-dot{border-color:var(--accent);background:var(--accent);color:white}
+
+/* Editor */
+.editor-layout{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 52px)}
+.editor-sidebar{background:var(--bg-card);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.sb-context{padding:16px;border-bottom:2px solid var(--border)}
+.sb-context-title{font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px}
+.sb-article-tab{padding:8px 10px;border-radius:var(--radius);margin-bottom:4px;cursor:pointer;transition:all 0.15s;border:1px solid transparent;display:flex;align-items:center;justify-content:space-between}
+.sb-article-tab:hover{background:var(--bg-surface)}
+.sb-article-tab.active{background:var(--purple-light);border-color:rgba(97,87,137,0.15)}
+.sb-tab-left{display:flex;flex-direction:column}
+.sb-tab-title{font-size:12px;font-weight:600}
+.sb-tab-sub{font-size:11px;color:var(--text-tertiary)}
+.sb-tab-badge{font-size:10px;padding:1px 6px;border-radius:10px;font-weight:600;flex-shrink:0}
+.sb-tab-badge-active{background:var(--accent);color:white}
+.sb-tab-badge-inactive{background:var(--bg-surface);color:var(--text-tertiary)}
+.sb-meta{margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.sb-meta-row{font-size:11px;color:var(--text-tertiary);margin-bottom:3px;display:flex;align-items:center;gap:4px}
+.sb-meta-link{color:var(--accent);text-decoration:none;font-size:11px}
+.sb-meta-link:hover{text-decoration:underline}
+.sb-progress{padding:16px;flex:1;background:var(--bg-surface)}
+.sb-progress-title{font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px}
+.sb-checklist{list-style:none;padding:0;margin:0}
+.sb-cl-item{display:flex;align-items:flex-start;gap:8px;padding:10px;margin-bottom:6px;border-radius:var(--radius);background:var(--bg-card);border:1px solid var(--border);cursor:pointer;transition:all 0.15s}
+.sb-cl-item:hover{border-color:var(--border-hover)}
+.sb-cl-item.done{opacity:0.55;border-color:transparent;background:transparent}
+.sb-cl-item.current{border-color:var(--accent);box-shadow:0 0 0 1px rgba(83,74,183,0.15)}
+.sb-cl-dot{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;color:transparent;margin-top:1px}
+.sb-cl-dot.done{background:var(--green);border-color:var(--green);color:white}
+.sb-cl-dot.current{border-color:var(--accent)}
+.sb-cl-content{flex:1}
+.sb-cl-label{font-size:12px;font-weight:600;margin-bottom:2px}
+.sb-cl-item.done .sb-cl-label{text-decoration:line-through;color:var(--text-tertiary)}
+.sb-cl-detail{font-size:11px;color:var(--text-tertiary);line-height:1.4}
+.sb-cl-bar{height:3px;background:var(--bg-surface);border-radius:2px;overflow:hidden;margin-top:4px}
+.sb-cl-bar-fill{height:100%;background:var(--accent);border-radius:2px}
+.editor-main{display:flex;flex-direction:column;background:var(--bg)}
+.editor-toolbar{display:flex;align-items:center;justify-content:space-between;padding:8px 24px;border-bottom:1px solid var(--border);background:var(--bg-card);min-height:48px}
+.et-left{display:flex;align-items:center;gap:12px}
+.et-left h2{font-size:16px;font-weight:700;letter-spacing:-0.3px}
+.et-right{display:flex;gap:8px;align-items:center}
+.fmt-bar{display:flex;gap:3px;padding:6px 24px;border-bottom:1px solid var(--border);background:var(--bg-surface);align-items:center}
+.fmt-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);cursor:pointer;border:1px solid transparent;background:transparent;color:var(--text-secondary);font-family:var(--font);transition:all 0.1s}
+.fmt-btn:hover{background:var(--bg-card);border-color:var(--border);color:var(--text)}
+.fmt-btn:active{transform:scale(0.95)}
+.fmt-btn svg{width:16px;height:16px}
+.fmt-sep{width:1px;height:22px;background:var(--border);margin:0 6px}
+.editor-scroll{flex:1;overflow-y:auto;background:var(--bg-surface);padding:24px}
+.article-canvas{max-width:860px;margin:0 auto;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);padding:28px 32px;box-shadow:0 1px 3px rgba(0,0,0,0.04);min-height:400px}
+.art-overview{background:var(--purple-light);color:var(--purple);padding:12px 16px;border-radius:var(--radius);margin-bottom:24px;font-style:italic;font-size:14px;line-height:1.6}
+.art-overview-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--purple-dark);margin-bottom:4px;font-style:normal;display:block}
+.art-step{margin-bottom:20px;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:white}
+.art-step.updated{border-color:var(--teal);border-width:2px}
+.art-step-hdr{background:var(--purple-light);padding:8px 16px;display:flex;align-items:center;justify-content:space-between}
+.art-step-hdr p{font-size:17px;font-weight:700}
+.art-step-body{display:grid;grid-template-columns:1fr 1fr;gap:16px;padding:16px}
+.art-step-text{font-size:14px;line-height:1.7}
+.art-step-text p{margin-bottom:8px}
+.editable{outline:none;border-radius:4px;padding:4px;transition:background 0.15s;min-height:40px}
+.editable:focus{background:rgba(55,138,221,0.08)}
+
+/* Change indicator + comparison */
+.change-ind{display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--teal-light);border-bottom:1px solid rgba(15,110,86,0.15);font-size:12px;color:var(--teal-dark);font-weight:500}
+.change-ind button{margin-left:auto;font-size:11px;color:var(--teal);border:none;background:none;cursor:pointer;font-family:var(--font);text-decoration:underline;font-weight:600}
+.compare-panel{border-top:1px solid rgba(15,110,86,0.15);background:#f8fdfb}
+.compare-cols{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.compare-col{padding:12px 14px;font-size:13px;line-height:1.6}
+.compare-col:first-child{border-right:1px solid rgba(15,110,86,0.15)}
+.compare-col-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.compare-col-label-old{color:var(--red)}
+.compare-col-label-new{color:var(--teal-dark)}
+.compare-col-old{color:var(--text-secondary)}
+.compare-col-old .cw{background:var(--red-light);padding:0 2px;border-radius:2px;text-decoration:line-through;color:var(--red)}
+.compare-col-new .cw{background:var(--teal-light);padding:0 2px;border-radius:2px;font-weight:600}
+.compare-close{text-align:right;padding:6px 12px;border-top:1px solid rgba(15,110,86,0.15)}
+.compare-close button{font-size:11px;color:var(--text-tertiary);border:none;background:none;cursor:pointer;font-family:var(--font)}
+
+/* Confidence flags */
+.cf{margin-top:12px;border:1px solid #E8C97A;border-radius:var(--radius);overflow:hidden}
+.cf-header{padding:8px 12px;background:var(--amber-light);font-size:12px;font-weight:600;color:var(--amber-dark)}
+.cf-body{padding:10px 12px}
+.cf-row{display:flex;gap:8px;margin-bottom:6px}.cf-row:last-child{margin-bottom:0}
+.cf-label{font-size:10px;font-weight:700;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.3px;min-width:50px;flex-shrink:0;padding-top:2px}
+.cf-value{font-size:12px;color:var(--text);line-height:1.5}
+.cf-actions{display:flex;justify-content:flex-end;padding:8px 12px;border-top:1px solid var(--border);background:var(--bg-surface)}
+.cf-dismiss-btn{font-size:12px;color:var(--green-dark);cursor:pointer;border:none;background:var(--green-light);font-family:var(--font);padding:4px 12px;border-radius:20px;font-weight:600}
+.cf-badge{font-size:11px;color:var(--amber-dark);font-weight:500;display:flex;align-items:center;gap:4px}
+.cf-badge-dot{width:8px;height:8px;border-radius:50%;background:var(--amber)}
+
+/* Screenshots */
+.img-placeholder{border:2px dashed var(--blue);border-radius:var(--radius);background:var(--blue-light);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 12px;min-height:180px;cursor:pointer;transition:all 0.2s}
+.img-placeholder:hover{border-color:var(--accent);background:#EEEDFE}
+.img-placeholder svg{margin-bottom:8px;opacity:0.5}
+.img-ph-label{font-size:12px;font-weight:600;color:var(--blue-dark);margin-bottom:2px}
+.img-ph-sublabel{font-size:11px;color:var(--blue);margin-bottom:6px}
+.img-ph-desc{font-size:11px;color:var(--text-secondary);text-align:center;line-height:1.5;max-width:200px}
+.img-filled{border-radius:var(--radius);overflow:hidden;min-height:180px;position:relative;border:1px solid var(--border)}
+.img-filled-inner{width:100%;height:180px;background:repeating-linear-gradient(45deg,var(--purple-light),var(--purple-light) 10px,#d5d2e5 10px,#d5d2e5 20px);display:flex;align-items:center;justify-content:center}
+.img-filled-badge{font-size:12px;background:var(--green-light);color:var(--green-dark);padding:4px 12px;border-radius:20px;font-weight:600}
+.img-remove{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:white;border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--text-secondary)}
+.img-remove:hover{background:var(--red-light);color:var(--red)}
+
+/* What's New */
+.art-wn-section{margin-bottom:20px;border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;background:white}
+.art-wn-section-hdr{background:var(--purple-light);padding:8px 16px;display:flex;align-items:center;justify-content:space-between}
+.art-wn-section-hdr p{font-size:17px;font-weight:700}
+.section-hint{font-size:11px;color:var(--purple);font-weight:400}
+.art-wn-section-body{padding:16px;font-size:14px;line-height:1.7}
+.art-wn-section-body p{margin-bottom:8px}
+.art-closing{text-align:center;padding:24px 16px;font-size:16px;font-weight:600;border:1px solid var(--border);border-radius:var(--radius-lg);background:white;margin-bottom:20px}
+.art-closing-label{font-size:11px;color:var(--text-tertiary);font-weight:400;margin-bottom:8px;display:block}
+
+.share-modal{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:250;display:flex;align-items:center;justify-content:center;padding:20px}
+.share-box{background:var(--bg-card);border-radius:var(--radius-lg);width:100%;max-width:440px;padding:20px 24px;box-shadow:0 20px 60px rgba(0,0,0,0.2)}
+.share-box h3{font-size:16px;font-weight:700;margin-bottom:4px}
+.share-desc{font-size:13px;color:var(--text-secondary);margin-bottom:16px}
+.share-url-row{display:flex;gap:8px;margin-bottom:12px}
+.share-url{flex:1;padding:8px 10px;font-size:12px;background:var(--bg-surface);border:1px solid var(--border);border-radius:var(--radius);color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.share-note{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;font-family:var(--font);resize:none;height:64px;margin-bottom:12px}
+.share-note:focus{border-color:var(--accent);box-shadow:var(--focus-ring);outline:none}
+.share-footer{display:flex;justify-content:flex-end;gap:8px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(10px);background:var(--text);color:white;padding:10px 20px;border-radius:var(--radius);font-size:13px;font-weight:500;z-index:300;opacity:0;transition:all 0.3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.print-tip{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:white;padding:12px 20px;border-radius:var(--radius);font-size:13px;z-index:300;display:flex;align-items:center;gap:10px}
+.print-tip button{background:rgba(255,255,255,0.2);color:white;border:none;padding:4px 10px;border-radius:var(--radius);cursor:pointer;font-size:12px;font-family:var(--font);font-weight:600}
+@media print{
+*{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+.nav,.editor-sidebar,.editor-toolbar,.fmt-bar,.info-banner,.cf,.change-ind,.compare-panel,.img-remove,.toast,.skip-link,.print-tip,.share-modal{display:none!important}
+.editor-layout{grid-template-columns:1fr!important}
+.editor-scroll{background:white!important;padding:0!important}
+.article-canvas{box-shadow:none!important;border:none!important;padding:0!important}
+.art-step{break-inside:avoid;page-break-inside:avoid}
+.art-step.updated{border-color:var(--border)!important;border-width:1px!important}
+body{background:white}
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn 0.25s ease-out}
+</style>
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<div id="app"></div>
+<script>
+const S={v:'landing',si:false,ss:false,mode:'new',ca:null,df:{},spt:false,sel:new Set(),so:{},aiR:null,scanning:false,scanDesc:'',scanMod:'',
+  existing:[
+    {id:101,title:'Search for an applicant',module:'Applicants',types:['howto','wn']},
+    {id:102,title:'Locate a Resident Profile',module:'Residents',types:['howto']},
+    {id:103,title:'Log in and out of Gate Access',module:'Settings',types:['howto']},
+    {id:104,title:'Reset your password',module:'Settings',types:['howto']},
+    {id:105,title:'Support Chatbot',module:'My Ministry',types:['wn']},
+    {id:106,title:'View Facility Contact information',module:'Facilities',types:['howto']},
+    {id:107,title:'Switch language',module:'Settings',types:['howto']},
+    {id:108,title:'Resident Creation Wizard',module:'Residents',types:['howto','wn']},
+  ],
+  articles:[
+    {id:1,title:'Search for an applicant',module:'Applicants',changeType:'enhancement',status:'editing',types:['howto','wn'],at:'howto',writer:'User One',fid:'ftr #3849',furl:'https://product.gateaccess.org/plugins/tracker/?aid=3849',isUpdate:false,updatedSteps:[],originals:{},
+      shots:{howto:[1,0,0,1,0,1],wn:[]},
+      conf:{howto:[null,{w:'Button label may differ.',y:'Spec says Cancel but similar screens use Reset.',a:'Check the actual button label.'},null,{w:'Filter names may differ.',y:'Names from dev spec.',a:'Open More Options and confirm.'},null,null]},
+      content:{howto:{ov:'A Zone Contact, Regional Contact, or Administrator can search for and locate an applicant using the Applicants module within Gate Access.',steps:[
+        {h:'Step 1 of 6',t:'<p>After logging in to Gate Access, in the Navigation Panel, select <b>Applicants</b>.</p><p>The Applicants landing page opens with <b>Search Criteria</b> and <b>Applicants</b> cards.</p>',img:'Applicants landing page'},
+        {h:'Step 2 of 6',t:'<p>In the <b>Search Criteria</b> card, enter the applicant\u2019s name and click <b>Search</b>.</p><p class="note" style="font-size:13px;color:var(--text-secondary)"><u><b>Note:</b></u> If no results match, a message displays.</p>',img:'Search with results'},
+        {h:'Step 3 of 6',t:'<p>Click <b>More Options</b> to expand filtering.</p>',img:'More Options'},
+        {h:'Step 4 of 6',t:'<p>Select filters: <b>Gender</b>, <b>Theocratic Privileges</b>, or <b>Language Proficiency</b>. Click <b>Done</b>, then <b>Search</b>.</p>',img:'Filters selected'},
+        {h:'Step 5 of 6',t:'<p>Click the applicant\u2019s name to open their profile.</p>',img:'Clickable name'},
+        {h:'Step 6 of 6',t:'<p>To start over, click <b>Cancel</b> to clear filters, then return to Step 2.</p>',img:'Cancel button'}
+      ]},wn:{ov:'Zone and Regional Contacts, as well as Administrators, can now search for applicants using a standardized interface.',intro:'<p>The Applicants module now includes enhanced search aligned with the Volunteers module.</p>',wtf:'<p>In the Navigation Panel, select <b>Applicants</b>. Use the <b>Search Criteria</b> card.</p>',close:'Now it\u2019s easier than ever to find applicants in Gate Access\u2014quickly, accurately, and with complete confidence.'}}},
+    {id:2,title:'Locate a Resident Profile',module:'Residents',changeType:'bugfix',status:'editing',types:['howto'],at:'howto',writer:'J. Kim',fid:'BUG-2841',furl:null,isUpdate:true,
+      updatedSteps:[2,4],
+      updateReason:'The Reset button was renamed to Clear. Search results now show the facility name.',
+      originals:{2:'<p>Enter the Resident\u2019s name or ID in the <b>Name or ID</b> field and click <b>Search</b>.</p><p>The <b>Residents</b> card displays the results of your search.</p>',4:'<p>If not found, click <b>Reset</b> to clear all fields and return to Step 3.</p>'},
+      shots:{howto:[1,1,0,1,0,1,1]},
+      conf:{howto:[null,null,{w:'Reset renamed to Clear.',y:'Bug fix changed the label.',a:'Confirm button says Clear.'},null,{w:'Results may show new columns.',y:'Facility name column added.',a:'Verify results layout.'},null,null]},
+      content:{howto:{ov:'A Volunteer can use the Lookup feature to locate a Resident Profile within Gate Access.',steps:[
+        {h:'Step 1 of 7',t:'<p>In the Global Header, click <b>Lookup</b>.</p>',img:'Global Header'},
+        {h:'Step 2 of 7',t:'<p>The <b>Lookup</b> page opens with <b>Search Criteria</b> and <b>Residents</b> cards.</p>',img:'Lookup page'},
+        {h:'Step 3 of 7',t:'<p>Enter the Resident\u2019s name or ID in the <b>Name or ID</b> field and click <b>Search</b>.</p><p>The <b>Residents</b> card displays results including the resident name and <span class="cw">facility name</span>.</p>',img:'Search results'},
+        {h:'Step 4 of 7',t:'<p>Click the resident\u2019s name or chevron to open their profile.</p>',img:'Results'},
+        {h:'Step 5 of 7',t:'<p>If not found, click <b>Clear</b> to reset all fields and return to Step 3.</p>',img:'Clear button'},
+        {h:'Step 6 of 7',t:'<p>The profile shows <b>Personal Info, Status, Facility Contacts</b>, and <b>Resident Contacts</b>.</p>',img:'Profile'},
+        {h:'Step 7 of 7',t:'<p>To search again, click <b>Lookup</b> in the top left, then <b>Clear</b>.</p>',img:'Breadcrumb'}
+      ]}}},
+    {id:3,title:'Support Chatbot',module:'My Ministry',changeType:'feature',status:'shared',types:['wn'],at:'wn',writer:'User One',fid:null,furl:null,isUpdate:false,updatedSteps:[],originals:{},
+      shots:{wn:[]},conf:{wn:[]},
+      content:{wn:{ov:'Volunteers can now use the integrated Support Chatbot within Gate Access.',intro:'<p>The new Support Chatbot offers interactive, multilingual help with links to Knowledge Center articles.</p>',wtf:'<p>Click the <b>Chat</b> icon in the bottom-right corner.</p>',close:'Now it\u2019s easier than ever to receive on-demand assistance using the Support Chatbot.'}}},
+    {id:4,title:'Applicant profile overview',module:'Applicants',changeType:'enhancement',status:'generated',types:['howto'],at:'howto',writer:'User One',fid:null,furl:null,isUpdate:false,updatedSteps:[],originals:{},
+      shots:{howto:[0,0,0,0]},conf:{howto:[{w:'Navigation assumed.',y:'No behavior rules.',a:'Confirm path.'},null,{w:'Card names may differ.',y:'Inferred.',a:'Check live app.'},null]},
+      content:{howto:{ov:'A Zone Contact, Regional Contact, or Administrator can view an applicant\u2019s profile details.',steps:[
+        {h:'Step 1 of 4',t:'<p>In the Navigation Panel, select <b>Applicants</b>.</p>',img:'Nav'},
+        {h:'Step 2 of 4',t:'<p>Search and click the applicant\u2019s name.</p>',img:'Results'},
+        {h:'Step 3 of 4',t:'<p>The profile opens with detail cards.</p>',img:'Profile'},
+        {h:'Step 4 of 4',t:'<p>Click <b>Applicants</b> in breadcrumb to return.</p>',img:'Breadcrumb'}
+      ]}}}
+  ]
+};
+
+const T={toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)},
+ini(n){return n?n.split(' ').map(w=>w[0]).join(''):'?'},
+tL(t){return{howto:'How to',wn:"What's new"}[t]||t},
+sL(s){return{generated:'Draft ready',editing:'Editing',shared:'Shared',approved:'Approved'}[s]||s},
+sB(s){return'badge-'+(s||'editing')},
+fc(a){return(a.conf[a.at]||[]).filter((c,i)=>c&&!S.df[a.id+'-'+a.at+'-'+i]).length},
+aiLine(a){if(a.isUpdate){const u=a.updatedSteps?.length||0;return{c:'var(--teal)',t:`${a.changeType==='bugfix'?'Bug fix':'Update'} \u2014 ${u} step${u!==1?'s':''} revised`}}
+  const sh=a.shots[a.at]||[];const d=sh.filter(Boolean).length;const t=sh.length;
+  if(a.status==='generated')return{c:'var(--blue)',t:'AI draft \u2014 not yet reviewed'};
+  if(a.status==='editing')return{c:'var(--amber)',t:`AI-generated \u2014 ${t>0?d+'/'+t+' screenshots, ':''}editing`};
+  if(a.status==='shared')return{c:'var(--pink)',t:'Reviewed and shared'};return null},
+nA(a){const sh=a.shots[a.at]||[];const ts=sh.length;const ds=sh.filter(Boolean).length;const f=T.fc(a);if(a.status==='generated')return'Start editing';if(ts>0&&ds<ts)return`${ts-ds} screenshot${ts-ds>1?'s':''}`;if(f>0)return`${f} flag${f>1?'s':''}`;if(a.status==='editing')return'Ready to share';if(a.status==='shared')return'Awaiting review';return''},
+cs(a){const sh=a.shots[a.at]||[];const ts=sh.length;const ds=sh.filter(Boolean).length;const f=T.fc(a);const td=a.status!=='generated';if(!td)return'text';if(ts>0&&ds<ts)return'shots';if(f>0)return'flags';if(a.status==='editing')return'share';return'done'}
+};
+
+function render(){const app=document.getElementById('app');let h=rNav();if(S.v==='landing'){h+=rLanding();if(S.si)h+=rIntake()}else h+=rEditor(S.v==='preview');if(S.ss)h+=rShare();app.innerHTML=h}
+
+function rNav(){const ed=S.v==='editor'||S.v==='preview';
+  return`<nav class="nav"><div class="nav-brand"><div class="nav-logo">G</div><div><div class="nav-title">GateDoc</div><div class="nav-sub">Knowledge Center</div></div></div>${ed?`<button class="nav-back" onclick="goBack()"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" width="16" height="16"><path d="M10 12L6 8l4-4"/></svg>My articles</button>`:''}<div class="nav-user"><div class="nav-avatar">${T.ini('User One')}</div><span class="nav-name">User One</span></div></nav>`}
+
+function rLanding(){const act=S.articles.filter(a=>['editing','shared','generated'].includes(a.status));
+  return`<main class="landing fade-in" id="main-content"><div class="landing-header"><h1>My articles</h1><div class="landing-btns"><button class="btn" onclick="openIntake('update')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 5L6 11M6 11l-2.5.5.5-2.5L10 3l2 2z"/></svg>Update existing</button><button class="btn btn-primary" onclick="openIntake('new')">+ New article</button></div></div>
+  <p class="landing-intro">Click any article to continue working.</p>
+  ${act.length?`<div class="landing-section"><div class="ls-hdr"><h2>In progress</h2><span class="ls-cnt">${act.length}</span></div>
+  <div class="article-list">${act.map(a=>{const n=T.nA(a);const ai=T.aiLine(a);
+    return`<div class="article-card ${a.isUpdate?'is-update':''}" tabindex="0" onclick="openArt(${a.id})">
+      <div class="ac-row1"><div class="ac-title"><span class="ac-origin ${a.isUpdate?'ac-origin-update':'ac-origin-new'}">${a.isUpdate?'UPDATING':'NEW'}</span>${a.title}</div>${n?`<span class="ac-next">${n} \u2192</span>`:''}</div>
+      <div class="ac-badges">${a.types.map(t=>`<span class="badge badge-${t==='howto'?'howto':'wn'}">${T.tL(t)}</span>`).join('')}<span class="badge badge-module">${a.module}</span><span class="badge ${T.sB(a.status)}">${T.sL(a.status)}</span>
+      ${a.isUpdate?`<span class="badge badge-update">${a.changeType==='bugfix'?'Bug fix':'Enhancement'}</span>`:''}</div>
+      ${ai?`<div class="ac-ai-line"><span class="ac-ai-dot" style="background:${ai.c}"></span>${ai.t}</div>`:''}
+      <div class="ac-bottom">${a.writer?`<span class="ac-writer"><span class="ac-writer-av">${T.ini(a.writer)}</span>${a.writer}</span>`:''}<span></span></div>
+    </div>`}).join('')}</div></div>`:''}</main>`}
+
+function rIntake(){
+  const isU=S.mode==='update';const sugg=S.aiR;const sc=S.scanning;const stale=sugg&&(S.scanDesc!==(document.getElementById('i-d')?.value||'')||S.scanMod!==(document.getElementById('i-m')?.value||''));
+  return`<div class="intake-overlay" onclick="if(event.target===this){S.si=false;render()}" role="dialog" aria-modal="true"><div class="intake-modal fade-in" onclick="event.stopPropagation()">
+    <div class="intake-header"><div class="intake-header-text"><h2>${isU?'Update existing articles':'New article'}</h2><p>${isU?'Describe the change. The AI finds which articles need updating.':'Enter feature details. The AI generates article drafts.'}</p></div><button class="intake-close" onclick="S.si=false;render()">\u00D7</button></div>
+    <div class="intake-body">
+      <div class="mode-toggle" role="tablist"><button class="mode-btn ${!isU?'active':''}" role="tab" aria-selected="${!isU}" onclick="setMode('new')">New article</button><button class="mode-btn ${isU?'active':''}" role="tab" aria-selected="${isU}" onclick="setMode('update')">Update existing</button></div>
+      <div class="mode-desc">${isU
+        ?'Enter the feature, story, or bug details below \u2014 the same inputs as a new article. Then click <b>Find affected articles</b> and the AI scans existing content to find what needs revising.'
+        :'A new feature or enhancement needs documentation. The AI generates both a How To and What\u2019s New article.'}</div>
+
+      <div class="form-group"><label class="form-label">${isU?'Change title':'Feature title'} <span class="req">*</span></label><input class="form-input" id="i-t" placeholder="${isU?'e.g., Reset button renamed to Clear, or ftr #3849 title':'e.g., Search for an Applicant'}"/><div class="form-helper">${isU?'Name this change \u2014 the feature, story, or bug that triggered it.':'Task-oriented name \u2014 what the user does, not the internal feature name.'}</div></div>
+
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Module <span class="req">*</span></label>
+          <select class="form-select" id="i-m" onchange="togO('i-m','i-mo');markStale()"><option value="">Select...</option><option>Residents</option><option>Facilities</option><option>Applicants</option><option>Volunteers</option><option>My Ministry</option><option>Statistics</option><option>Settings</option><option>Experiences</option><option value="__other">Other</option></select>
+          <input class="form-input" id="i-mo" placeholder="Module name..." style="display:none;margin-top:6px"/>
+        </div>
+        <div class="form-group"><label class="form-label">Type of change <span class="req">*</span></label>
+          <select class="form-select" id="i-tp" onchange="togO('i-tp','i-tpo');condWN()">
+            ${isU?'<option value="bugfix">Bug fix</option><option value="enhancement">Enhancement</option><option value="feature">Feature change</option>':'<option value="enhancement">Enhancement</option><option value="feature">New feature</option><option value="bugfix">Bug fix</option>'}
+            <option value="__other">Other</option>
+          </select>
+          <input class="form-input" id="i-tpo" placeholder="Describe..." style="display:none;margin-top:6px"/>
+        </div>
+      </div>
+
+      <div class="form-group"><label class="form-label">${isU?'What changed and why?':'What does this feature do and why?'} <span class="req">*</span></label>
+        <textarea class="form-textarea" id="i-d" placeholder="${isU?'Paste from the Tuleap feature, story, or bug ticket \u2014 or describe the change. Be specific so the AI can identify which steps to revise...':'Paste the Purpose and Scope of Work from Tuleap, or describe in your own words...'}" oninput="markStale()"></textarea>
+        <div class="form-helper">${isU?'The more specific you are, the better the AI identifies affected articles and revises them accurately.':'More detail = better articles. Include what, who, and where.'}</div>
+      </div>
+
+      <div class="form-group"><label class="form-label">Feature or ticket link <span class="opt">(optional)</span></label>
+        <input class="form-input" id="i-fu" placeholder="https://product.gateaccess.org/plugins/tracker/?aid=..."/>
+        <div class="form-helper">Link to the Tuleap feature, story, or bug ticket.</div>
+      </div>
+
+      <div class="form-group"><label class="form-label">UX behavior rules <span class="opt">(optional)</span></label>
+        <div class="form-helper" style="margin-top:0;margin-bottom:8px">Wiki links for affected screens.</div>
+        <div id="br-l"><div style="display:flex;gap:8px;margin-bottom:6px"><input class="form-input" placeholder="https://wiki.gateaccess.org/..."/><span style="width:30px"></span></div></div>
+        <button class="btn btn-ghost btn-sm" onclick="addBR()">+ Another screen</button>
+      </div>
+
+      <div id="us-l"></div>
+      <button class="btn btn-ghost btn-sm" onclick="addUS()" style="margin-bottom:4px">+ User story for context</button>
+
+      ${isU?`<div class="scan-divider" id="scan-area">
+        ${!sugg&&!sc?`<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--amber-light);border-radius:var(--radius);margin-bottom:12px;font-size:12px;color:var(--amber-dark);line-height:1.4"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" style="flex-shrink:0"><circle cx="8" cy="8" r="6.5"/><path d="M8 5v3.5M8 10.5v.5"/></svg><span>Complete the required fields above (<span class="req">*</span>), then click <b>Find affected articles</b> so the AI can identify which articles need updating.</span></div>
+          <button class="btn scan-btn" onclick="findAffected()"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7" cy="7" r="4.5"/><path d="M10.5 10.5L14 14"/></svg>Find affected articles</button>
+          <div class="form-helper" style="text-align:center;margin-top:6px">Scans all ${S.existing.length} Knowledge Center articles for matches.</div>`:''}
+        ${sc?`<div style="text-align:center;padding:20px"><div class="loader" style="width:28px;height:28px;margin:0 auto 12px"></div><div style="font-size:13px;font-weight:500">Scanning ${S.existing.length} articles\u2026</div><div style="font-size:12px;color:var(--text-tertiary)">Matching your change description against existing content</div></div>`:''}
+        ${sugg?`
+          <div class="scan-context">Searched for articles affected by changes to <b>${S.scanMod}</b>: \u201C${S.scanDesc.substring(0,80)}${S.scanDesc.length>80?'\u2026':''}\u201D</div>
+          ${stale?`<div class="stale-warning">\u26A0 You\u2019ve edited the description or module since scanning. <button class="btn btn-ghost btn-sm" onclick="findAffected()" style="margin-left:auto">Scan again</button></div>`:''}
+          <div style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-bottom:6px">${sugg.length} article${sugg.length!==1?'s':''} found</div>
+          <div class="as-list">${sugg.map(s=>`<div class="as-item ${S.sel.has(s.id)?'selected':''}" onclick="togSel(${s.id})" role="checkbox" aria-checked="${S.sel.has(s.id)}" tabindex="0" onkeydown="if(event.key===' '){event.preventDefault();togSel(${s.id})}">
+            <div class="as-check">${S.sel.has(s.id)?'\u2713':''}</div>
+            <div style="flex:1">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:2px">
+                <span style="font-size:13px;font-weight:600">${s.title}</span>
+                <span class="conf-badge conf-${s.confidence}"><span class="conf-icon">${s.confidence==='high'?'\u2713':s.confidence==='medium'?'?':'\u2014'}</span>${s.confidence.toUpperCase()}</span>
+              </div>
+              <div style="font-size:11px;color:var(--text-tertiary);margin-bottom:3px">${s.module} \u2022 ${s.types.map(t=>T.tL(t)).join(', ')}</div>
+              <div style="font-size:12px;color:var(--text-secondary);line-height:1.4">${s.reason}</div>
+            </div>
+          </div>`).join('')}</div>
+          ${S.sel.size>0?`<div style="font-size:12px;color:var(--accent);font-weight:600;margin-top:4px">${S.sel.size} selected for update</div>`:'<div style="font-size:12px;color:var(--text-tertiary);margin-top:4px">Select at least one article to continue</div>'}
+          <button class="btn btn-ghost btn-sm" onclick="T.toast('In production, opens full article search')" style="margin-top:6px">+ Add an article the AI missed</button>
+        `:''}
+      </div>`:''}
+    </div>
+    <div class="intake-footer">
+      ${isU
+        ?`${sugg
+          ?`<div style="display:flex;gap:16px">${(document.getElementById('i-tp')?.value||'bugfix')!=='bugfix'?`<label class="check-label"><input type="checkbox" id="g-also-wn"> Also generate a What\u2019s New</label>`:'<span style="font-size:12px;color:var(--text-tertiary)">AI revises only affected steps</span>'}</div>
+             <button class="btn btn-primary" ${S.sel.size===0?'disabled':''} onclick="genUpdate()">Update ${S.sel.size} article${S.sel.size!==1?'s':''}</button>`
+          :`<span style="font-size:12px;color:var(--text-tertiary)">Find affected articles to continue</span>
+             <button class="btn btn-primary" disabled>Update articles</button>`}`
+        :`<div style="display:flex;gap:16px"><label class="check-label"><input type="checkbox" checked id="g-ht"> How to</label><label class="check-label"><input type="checkbox" checked id="g-wn"> What\u2019s new</label></div>
+           <button class="btn btn-primary" onclick="genNew()">Generate articles</button>`}
+    </div>
+  </div></div>`}
+
+function rShare(){const a=S.articles.find(x=>x.id===S.ca);const u=`gatedoc.vercel.app/preview/${a?a.id:''}`;
+  return`<div class="share-modal" onclick="S.ss=false;render()"><div class="share-box fade-in" onclick="event.stopPropagation()"><h3>Share with your Steward</h3><p class="share-desc">They\u2019ll see a read-only preview with your latest edits.</p>
+  <div class="share-url-row"><div class="share-url">${u}</div><button class="btn btn-sm btn-primary" onclick="navigator.clipboard?.writeText('https://${u}');T.toast('Link copied')">Copy</button></div>
+  <label style="font-size:12px;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:4px">Note to Steward <span style="font-weight:400;color:var(--text-tertiary)">(optional)</span></label>
+  <textarea class="share-note" placeholder="e.g., Please check step 5\u2014the button was renamed\u2026"></textarea>
+  <div class="share-footer"><button class="btn" onclick="S.ss=false;render()">Cancel</button><button class="btn btn-primary" onclick="doShare()">Share</button></div></div></div>`}
+
+function rEditor(ro){
+  const a=S.articles.find(x=>x.id===S.ca);if(!a)return'';
+  const tp=a.at;const isHT=tp==='howto';const sh=a.shots[tp]||[];const ds=sh.filter(Boolean).length;const ts=sh.length;
+  const flags=T.fc(a);const allS=ts===0||ds===ts;const noF=flags===0;const td=a.status!=='generated';const us=a.updatedSteps||[];const step=T.cs(a);
+
+  let bn='';
+  if(ro)bn='<div style="background:var(--blue-light);color:var(--blue-dark);padding:10px 24px;font-size:13px;text-align:center;font-weight:500">Shared preview \u2014 read-only</div>';
+  else if(a.isUpdate&&a.status==='editing')bn=`<div class="info-banner info-banner-teal"><div>\u2194</div><div><b>Article updated.</b> The AI revised ${us.length} step${us.length!==1?'s':''} based on: \u201C${a.updateReason||''}\u201D Steps with a teal border were changed. Unchanged steps were preserved.</div></div>`;
+  else if(a.status==='generated')bn=`<div class="info-banner info-banner-blue"><div>\u2139</div><div><b>New AI draft.</b> Review text, add screenshots, check amber flags.</div></div>`;
+  else if(!allS&&isHT)bn=`<div class="info-banner info-banner-amber"><div>\u26A0</div><div><b>${ts-ds} screenshot${ts-ds>1?'s':''}.</b> Click any blue dashed area.</div></div>`;
+  else if(!noF)bn=`<div class="info-banner info-banner-amber"><div>\u26A0</div><div><b>${flags} flag${flags>1?'s':''}.</b> Review and dismiss after verifying.</div></div>`;
+  else if(allS&&noF&&a.status==='editing')bn=`<div class="info-banner info-banner-green"><div>\u2713</div><div><b>Looks complete.</b> Click <b>Share link</b>.</div></div>`;
+  else if(a.status==='shared')bn=`<div class="info-banner info-banner-pink"><div>\u2709</div><div><b>Shared.</b> Print when approved.</div></div>`;
+
+  return`${bn}<div class="editor-layout" id="main-content">
+    <aside class="editor-sidebar">
+      <div class="sb-context">
+        <div class="sb-context-title">${a.isUpdate?'Updating article':'Article'}</div>
+        ${a.types.map(t=>{const tSh=a.shots[t]||[];return`<div class="sb-article-tab ${t===tp?'active':''}" tabindex="0" onclick="swT(${a.id},'${t}')">
+          <div class="sb-tab-left"><span class="sb-tab-title">${T.tL(t)}</span><span class="sb-tab-sub">${t==='howto'&&tSh.length?tSh.filter(Boolean).length+'/'+tSh.length+' screenshots':'No screenshots'}</span></div>
+          <span class="sb-tab-badge ${t===tp?'sb-tab-badge-active':'sb-tab-badge-inactive'}">${t===tp?'Editing':'View'}</span>
+        </div>`}).join('')}
+        ${a.isUpdate?`<div style="margin-top:8px;padding:8px;background:var(--teal-light);border-radius:var(--radius);font-size:11px;color:var(--teal-dark);line-height:1.4"><b>${us.length} step${us.length!==1?'s':''} revised</b> \u2014 teal borders mark changes</div>`:''}
+        <div class="sb-meta">
+          ${a.writer?`<div class="sb-meta-row">Writer: ${a.writer}</div>`:''}
+          ${a.fid?`<div class="sb-meta-row">${a.furl?`<a href="${a.furl}" class="sb-meta-link" target="_blank">${a.fid} \u2197</a>`:`<span>${a.fid}</span>`}</div>`:''}
+          <div class="sb-meta-row"><span class="badge ${T.sB(a.status)}" style="font-size:11px">${T.sL(a.status)}</span></div>
+        </div>
+      </div>
+      <div class="sb-progress">
+        <div class="sb-progress-title">What\u2019s left</div>
+        <ul class="sb-checklist">
+          <li class="sb-cl-item ${td?'done':''} ${step==='text'?'current':''}" onclick="document.querySelector('.art-overview')?.scrollIntoView({behavior:'smooth',block:'center'})">
+            <span class="sb-cl-dot ${td?'done':''} ${step==='text'?'current':''}">${td?'\u2713':''}</span>
+            <div class="sb-cl-content"><div class="sb-cl-label">${a.isUpdate?'Review revised steps':'Review and edit text'}</div></div></li>
+          ${isHT&&ts>0?`<li class="sb-cl-item ${ds===ts?'done':''} ${step==='shots'?'current':''}" onclick="scrollToShot()">
+            <span class="sb-cl-dot ${ds===ts?'done':''} ${step==='shots'?'current':''}">${ds===ts?'\u2713':''}</span>
+            <div class="sb-cl-content"><div class="sb-cl-label">Add screenshots</div>
+            ${ds<ts?`<div class="sb-cl-detail">${ds}/${ts} \u2014 click to jump</div><div class="sb-cl-bar"><div class="sb-cl-bar-fill" style="width:${ds/ts*100}%"></div></div>`:`<div class="sb-cl-detail">All added</div>`}</div></li>`:''}
+          <li class="sb-cl-item ${noF?'done':''} ${step==='flags'?'current':''}" onclick="scrollToFlag()">
+            <span class="sb-cl-dot ${noF?'done':''} ${step==='flags'?'current':''}">${noF?'\u2713':''}</span>
+            <div class="sb-cl-content"><div class="sb-cl-label">Review flags</div><div class="sb-cl-detail">${noF?'All verified':flags+' remaining'}</div></div></li>
+          <li class="sb-cl-item ${a.status==='shared'?'done':''} ${step==='share'?'current':''}">
+            <span class="sb-cl-dot ${a.status==='shared'?'done':''} ${step==='share'?'current':''}">${a.status==='shared'?'\u2713':''}</span>
+            <div class="sb-cl-content"><div class="sb-cl-label">Share with Steward</div></div></li>
+        </ul>
+      </div>
+    </aside>
+    <main class="editor-main">
+      <div class="editor-toolbar"><div class="et-left"><h2>${a.title}</h2><span class="badge badge-${tp==='howto'?'howto':'wn'}">${T.tL(tp)}</span>${a.isUpdate?`<span class="badge badge-update">${a.changeType==='bugfix'?'Bug fix':'Update'}</span>`:''}</div>
+        <div class="et-right">${!ro?`<div class="tooltip-wrap"><button class="btn btn-sm btn-ghost" onclick="S.ca=${a.id};S.ss=true;render()">Share link</button><span class="tooltip">Read-only preview for your Steward</span></div>
+          ${allS||!isHT?`<div class="tooltip-wrap"><button class="btn btn-sm" onclick="doPrint()">Print</button><span class="tooltip">Select Save as PDF</span></div>`:''}`:''}
+        </div></div>
+      ${!ro?`<div class="fmt-bar" role="toolbar">
+        <div class="tooltip-wrap"><button class="fmt-btn" onclick="document.execCommand('bold')"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2h4.5a3.5 3.5 0 0 1 2.3 6.1A3.5 3.5 0 0 1 9 14H4V2zm2 5h2.5a1.5 1.5 0 0 0 0-3H6v3zm0 2v3h3a1.5 1.5 0 0 0 0-3H6z"/></svg></button><span class="tooltip">Bold (Ctrl+B) \u2014 use only for UI element names</span></div>
+        <div class="tooltip-wrap"><button class="fmt-btn" onclick="document.execCommand('underline')"><svg viewBox="0 0 16 16" fill="currentColor"><path d="M4 2v5a4 4 0 0 0 8 0V2h-1.5v5a2.5 2.5 0 0 1-5 0V2H4zM3 13h10v1.5H3V13z"/></svg></button><span class="tooltip">Underline (Ctrl+U)</span></div>
+        <span class="fmt-sep"></span>
+        <button class="fmt-btn" title="Undo" onclick="document.execCommand('undo')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 7h7a3 3 0 0 1 0 6H8"/><path d="M6 4L3 7l3 3"/></svg></button>
+        <button class="fmt-btn" title="Redo" onclick="document.execCommand('redo')"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 7H6a3 3 0 0 0 0 6h2"/><path d="M10 4l3 3-3 3"/></svg></button>
+      </div>`:``}
+      <div class="editor-scroll"><div class="article-canvas">${isHT?rHT(a,ro):rWN(a,ro)}</div></div>
+    </main></div>`}
+
+function rHT(a,ro){const c=a.content.howto;const sh=a.shots.howto||[];const cf=a.conf.howto||[];const us=a.updatedSteps||[];const orig=a.originals||{};
+  return`<div class="art-overview" ${!ro?'contenteditable="true"':''}><span class="art-overview-label">Overview</span>${c.ov}</div>
+    ${c.steps.map((s,i)=>{const fk=a.id+'-howto-'+i;const fd=S.df[fk];const fl=cf[i];const isU=us.includes(i);const ot=orig[i];const showO=S.so[a.id+'-'+i];
+      return`<div class="art-step ${isU?'updated':''} fade-in" id="step-${i}" style="animation-delay:${i*0.03}s">
+        ${isU?`<div class="change-ind"><span style="width:8px;height:8px;border-radius:50%;background:var(--teal);flex-shrink:0"></span>This step was revised by the AI<button onclick="event.stopPropagation();togO2(${a.id},${i})">${showO?'Hide original':'View original'}</button></div>`:''}
+        ${isU&&showO&&ot?`<div class="compare-panel"><div class="compare-cols">
+          <div class="compare-col compare-col-old"><div class="compare-col-label compare-col-label-old">\u2212 Previous</div>${ot}</div>
+          <div class="compare-col compare-col-new"><div class="compare-col-label compare-col-label-new">+ Revised</div>${s.t}</div>
+        </div><div class="compare-close"><button onclick="event.stopPropagation();togO2(${a.id},${i})">Close</button></div></div>`:''}
+        <div class="art-step-hdr"><p>${s.h}</p>${fl&&!fd?`<span class="cf-badge"><span class="cf-badge-dot"></span>Check</span>`:''}</div>
+        <div class="art-step-body"><div>
+          <div class="art-step-text editable" ${!ro?'contenteditable="true"':''}>${s.t}</div>
+          ${fl&&!fd?`<div class="cf"><div class="cf-header">\u26A0 AI flagged this step</div><div class="cf-body"><div class="cf-row"><div class="cf-label">What</div><div class="cf-value">${fl.w}</div></div><div class="cf-row"><div class="cf-label">Why</div><div class="cf-value">${fl.y}</div></div><div class="cf-row"><div class="cf-label">Action</div><div class="cf-value">${fl.a}</div></div></div>${!ro?`<div class="cf-actions"><button class="cf-dismiss-btn" onclick="S.df['${fk}']=true;render();T.toast('Dismissed')">I\u2019ve verified \u2014 dismiss</button></div>`:''}</div>`:''}</div>
+          ${sh[i]?`<div class="img-filled"><div class="img-filled-inner"><span class="img-filled-badge">\u2713 Screenshot</span></div>${!ro?`<button class="img-remove" onclick="const a=S.articles.find(x=>x.id===${a.id});a.shots.howto[${i}]=0;render()">\u00D7</button>`:''}</div>`
+            :`<div class="img-placeholder" id="img-${i}" tabindex="0" onclick="const a=S.articles.find(x=>x.id===${a.id});a.shots.howto[${i}]=1;render();T.toast('Screenshot added')"><svg width="36" height="36" viewBox="0 0 40 40" fill="none"><rect x="4" y="8" width="32" height="24" rx="3" stroke="currentColor" stroke-width="1.5" fill="none"/><circle cx="14" cy="18" r="3" stroke="currentColor" stroke-width="1.5" fill="none"/><polyline points="4,28 12,22 18,26 26,18 36,24" stroke="currentColor" stroke-width="1.5" fill="none"/></svg><div class="img-ph-label">Click to add</div><div class="img-ph-desc">${s.img}</div></div>`}
+        </div></div>`}).join('')}`}
+
+function rWN(a,ro){const c=a.content.wn;
+  return`<div class="art-overview" ${!ro?'contenteditable="true"':''}><span class="art-overview-label">Overview</span>${c.ov}</div>
+    <div class="art-wn-section fade-in"><div class="art-wn-section-hdr"><p>Introduction</p><span class="section-hint">No bold</span></div><div class="art-wn-section-body editable" ${!ro?'contenteditable="true"':''}>${c.intro}</div></div>
+    <div class="art-wn-section fade-in"><div class="art-wn-section-hdr"><p>Where to find it</p><span class="section-hint">Bold UI elements</span></div><div class="art-wn-section-body editable" ${!ro?'contenteditable="true"':''}>${c.wtf}</div></div>
+    <div class="art-closing fade-in"><span class="art-closing-label">Closing line</span><div ${!ro?'contenteditable="true"':''} class="editable" style="padding:4px">${c.close}</div></div>`}
+
+// Actions
+function goBack(){S.v='landing';S.ca=null;render()}
+function openIntake(mode){S.mode=mode||'new';S.si=true;S.sel.clear();S.aiR=null;S.scanning=false;render();setTimeout(()=>document.getElementById('i-t')?.focus(),100)}
+function setMode(m){S.mode=m;S.sel.clear();S.aiR=null;S.scanning=false;render()}
+function togSel(id){if(S.sel.has(id))S.sel.delete(id);else S.sel.add(id);render()}
+function openArt(id){S.v='editor';S.ca=id;const a=S.articles.find(x=>x.id===id);if(a?.status==='generated')a.status='editing';render()}
+function swT(id,t){const a=S.articles.find(x=>x.id===id);if(a){a.at=t;render()}}
+function togO2(aid,i){const k=aid+'-'+i;S.so[k]=!S.so[k];render()}
+function togO(s,o){const el=document.getElementById(s);const ot=document.getElementById(o);if(ot){ot.style.display=el.value==='__other'?'block':'none';if(el.value==='__other')ot.focus();else ot.value=''}}
+function condWN(){const v=document.getElementById('i-tp')?.value;const wn=document.getElementById('g-wn');if(wn)wn.checked=v!=='bugfix'}
+function markStale(){/* triggers re-render which detects stale via comparing scanDesc/scanMod to current values */}
+function scrollToShot(){const a=S.articles.find(x=>x.id===S.ca);if(!a)return;const sh=a.shots[a.at]||[];const idx=sh.findIndex(s=>!s);if(idx>=0)document.getElementById('img-'+idx)?.scrollIntoView({behavior:'smooth',block:'center'})}
+function scrollToFlag(){const a=S.articles.find(x=>x.id===S.ca);if(!a)return;const cf=a.conf[a.at]||[];const idx=cf.findIndex((c,i)=>c&&!S.df[a.id+'-'+a.at+'-'+i]);if(idx>=0)document.getElementById('step-'+idx)?.scrollIntoView({behavior:'smooth',block:'center'})}
+function doShare(){const a=S.articles.find(x=>x.id===S.ca);if(a)a.status='shared';S.ss=false;render();T.toast('Shared with Steward')}
+function doPrint(){if(!S.spt){S.spt=true;const t=document.createElement('div');t.className='print-tip fade-in';t.innerHTML='<span>Select <b>\u201CSave as PDF\u201D</b></span><button onclick="this.parentElement.remove();window.print()">Got it</button>';document.body.appendChild(t);setTimeout(()=>{if(t.parentElement)t.remove()},8000)}else window.print()}
+
+function findAffected(){const desc=document.getElementById('i-d')?.value;const mod=document.getElementById('i-m')?.value;
+  if(!desc){T.toast('Describe what changed first');document.getElementById('i-d')?.focus();return}
+  if(!mod||mod==='__other'){T.toast('Select the module');document.getElementById('i-m')?.focus();return}
+  S.scanning=true;S.scanDesc=desc;S.scanMod=mod;S.sel.clear();S.aiR=null;render();
+  setTimeout(()=>{const r=[];
+    S.existing.forEach(a=>{
+      if(a.module===mod)r.push({...a,confidence:'high',reason:`Directly in the ${mod} module. UI elements referenced in this article are likely affected.`});
+      else if(mod==='Residents'&&a.module==='Facilities')r.push({...a,confidence:'medium',reason:'References Resident data through the Facilities view. Search changes may affect how results display here.'});
+      else if(mod==='Settings'&&a.title.toLowerCase().includes('log in'))r.push({...a,confidence:'low',reason:'Same module but covers login. Unlikely to need revision unless the change affects the login flow.'});
+    });
+    r.forEach(x=>{if(x.confidence==='high')S.sel.add(x.id)});
+    S.aiR=r.length?r:[{id:999,title:'No matches found',module:'N/A',types:[],confidence:'low',reason:'No existing articles reference UI elements from this change. Add manually if you know one is affected.'}];
+    S.scanning=false;render();
+    const hc=r.filter(x=>x.confidence==='high').length;
+    T.toast(`${r.length} match${r.length!==1?'es':''} \u2014 ${hc} high confidence`);
+    document.getElementById('scan-area')?.scrollIntoView({behavior:'smooth',block:'start'});
+  },1800)}
+
+function genNew(){const t=document.getElementById('i-t')?.value;if(!t){T.toast('Enter a title');return}
+  S.si=false;const app=document.getElementById('app');
+  app.innerHTML=rNav()+`<div class="loading-screen fade-in"><div class="loader"></div><h2 style="font-size:16px;font-weight:600;margin-bottom:6px">Generating</h2><p style="font-size:13px;color:var(--text-secondary)">${t}</p><div class="loading-steps"><div class="loading-step done"><div class="ls-dot">\u2713</div>Reading details</div><div class="loading-step active" id="l2"><div class="ls-dot">\u2022</div>Writing standards</div><div class="loading-step" id="l3"><div class="ls-dot"></div>How to</div><div class="loading-step" id="l4"><div class="ls-dot"></div>What\u2019s new</div><div class="loading-step" id="l5"><div class="ls-dot"></div>Quality checks</div></div></div>`;
+  const st=['l2','l3','l4','l5'];let i=0;const iv=setInterval(()=>{if(i>0)document.getElementById(st[i-1])?.classList.replace('active','done');if(i<st.length)document.getElementById(st[i])?.classList.add('active');else{clearInterval(iv);const nid=Date.now();
+    S.articles.unshift({id:nid,title:t,module:'Applicants',changeType:'enhancement',status:'editing',types:['howto','wn'],at:'howto',writer:'User One',fid:null,furl:document.getElementById('i-fu')?.value||null,isUpdate:false,updatedSteps:[],originals:{},
+      shots:{howto:[0,0,0],wn:[]},conf:{howto:[{w:'Navigation assumed.',y:'No behavior rules.',a:'Confirm path.'},null,{w:'Labels inferred.',y:'From description.',a:'Check live app.'}]},
+      content:{howto:{ov:`A Volunteer can use the ${t} feature within Gate Access.`,steps:[{h:'Step 1 of 3',t:'<p>After logging in, select the module.</p>',img:'Navigation'},{h:'Step 2 of 3',t:'<p>[Review and edit.]</p>',img:'Feature screen'},{h:'Step 3 of 3',t:'<p>[Review and edit.]</p>',img:'Confirmation'}]},wn:{ov:`Volunteers can now use ${t} within Gate Access.`,intro:'<p>[Edit.]</p>',wtf:'<p>Navigate to the module.</p>',close:`Now it\u2019s easier than ever to use ${t} in Gate Access.`}}});
+    S.v='editor';S.ca=nid;render();T.toast('Draft ready')};i++},700)}
+
+function genUpdate(){if(S.sel.size===0)return;
+  S.si=false;const titles=[...S.sel].map(id=>S.existing.find(a=>a.id===id)?.title).filter(Boolean);const app=document.getElementById('app');
+  app.innerHTML=rNav()+`<div class="loading-screen fade-in"><div class="loader"></div><h2 style="font-size:16px;font-weight:600;margin-bottom:6px">Updating</h2><p style="font-size:13px;color:var(--text-secondary)">${titles.join(', ')}</p><div class="loading-steps"><div class="loading-step done"><div class="ls-dot">\u2713</div>Reading change</div><div class="loading-step active" id="l2"><div class="ls-dot">\u2022</div>Loading articles</div><div class="loading-step" id="l3"><div class="ls-dot"></div>Finding affected steps</div><div class="loading-step" id="l4"><div class="ls-dot"></div>Revising</div><div class="loading-step" id="l5"><div class="ls-dot"></div>Quality checks</div></div></div>`;
+  const st=['l2','l3','l4','l5'];let i=0;const iv=setInterval(()=>{if(i>0)document.getElementById(st[i-1])?.classList.replace('active','done');if(i<st.length)document.getElementById(st[i])?.classList.add('active');else{clearInterval(iv);const nid=Date.now();const desc=S.scanDesc;
+    S.articles.unshift({id:nid,title:titles[0]||'Updated',module:S.scanMod||'Residents',changeType:document.getElementById('i-tp')?.value||'bugfix',status:'editing',types:['howto'],at:'howto',writer:'User One',fid:document.getElementById('i-t')?.value||'Change',furl:document.getElementById('i-fu')?.value||null,isUpdate:true,updatedSteps:[1,3],updateReason:desc,
+      originals:{1:'<p>[Original step 2 text before the change.]</p>',3:'<p>[Original step 4 text before the change.]</p>'},
+      shots:{howto:[1,0,1,0,1]},conf:{howto:[null,{w:'Step revised.',y:'AI rewrote based on change.',a:'Verify against live app.'},null,{w:'Step revised.',y:'AI rewrote.',a:'Verify.'},null]},
+      content:{howto:{ov:'A Volunteer can use this feature within Gate Access.',steps:[{h:'Step 1 of 5',t:'<p>After logging in, navigate to the feature.</p>',img:'Navigation'},{h:'Step 2 of 5',t:'<p>[Revised by AI based on your change description.]</p>',img:'Updated screen'},{h:'Step 3 of 5',t:'<p>Continue with the next action.</p>',img:'Next screen'},{h:'Step 4 of 5',t:'<p>[Revised by AI.]</p>',img:'Changed screen'},{h:'Step 5 of 5',t:'<p>Complete the task.</p>',img:'Confirmation'}]}}});
+    S.v='editor';S.ca=nid;render();T.toast('Article updated \u2014 review revised steps')};i++},700)}
+
+let brC=1;function addBR(){brC++;const c=document.getElementById('br-l');const d=document.createElement('div');d.id='br-'+brC;d.style.cssText='display:flex;gap:8px;margin-bottom:6px';d.innerHTML=`<input class="form-input" placeholder="https://wiki.gateaccess.org/..."/><button class="btn btn-ghost btn-sm" onclick="document.getElementById('br-${brC}').remove()" style="color:var(--red)">\u00D7</button>`;c.appendChild(d)}
+let usC=0;function addUS(){usC++;const c=document.getElementById('us-l');const d=document.createElement('div');d.style.cssText='border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px';d.id='us-'+usC;d.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;font-weight:600;color:var(--text-secondary)">User story ${usC}</span><button style="font-size:11px;color:var(--red);cursor:pointer;border:none;background:none;font-family:var(--font)" onclick="document.getElementById('us-${usC}').remove()">Remove</button></div><input class="form-input" placeholder="Title" style="margin-bottom:6px"/><textarea class="form-textarea" placeholder="Description..." style="min-height:50px"></textarea>`;c.appendChild(d)}
+
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='b'&&document.activeElement?.contentEditable==='true'){e.preventDefault();document.execCommand('bold')}if((e.ctrlKey||e.metaKey)&&e.key==='u'&&document.activeElement?.contentEditable==='true'){e.preventDefault();document.execCommand('underline')}if(e.key==='Escape'){if(S.ss){S.ss=false;render()}else if(S.si){S.si=false;render()}}});
+render();
+</script>
+</body>
+</html>

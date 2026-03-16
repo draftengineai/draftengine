@@ -1,0 +1,61 @@
+[
+  {
+    "name": "User names in description",
+    "input": {
+      "title": "Volunteer Profile Update",
+      "module": "Volunteers",
+      "changeType": "enhancement",
+      "description": "John Smith reported that the volunteer profile page does not show the congregation field. Jane Doe from Bethel confirmed this is a bug. The fix adds the congregation field to the profile card visible to Elder Williams and other administrators.",
+      "featureUrl": "",
+      "behaviorRulesLinks": [],
+      "userStories": [],
+      "generateHowTo": true,
+      "generateWhatsNew": false,
+      "isUpdate": false,
+      "targetArticleIds": []
+    },
+    "piiTerms": ["John Smith", "Jane Doe", "Elder Williams"],
+    "expectation": "None of the PII terms should appear in the generated article output"
+  },
+  {
+    "name": "Facility names and IDs in description",
+    "input": {
+      "title": "Facility Contact Assignment",
+      "module": "Facilities",
+      "changeType": "feature",
+      "description": "When assigning a Facility Contact at Oakdale Federal Correctional Complex (facility ID: FC-2847), the administrator selects from a list of approved volunteers. Testing was done at USP Leavenworth (FC-1102) and FCI Butner (FC-3391). Resident James Wilson (ID: R-99281) was used as a test case.",
+      "featureUrl": "",
+      "behaviorRulesLinks": [],
+      "userStories": [],
+      "generateHowTo": true,
+      "generateWhatsNew": false,
+      "isUpdate": false,
+      "targetArticleIds": []
+    },
+    "piiTerms": ["Oakdale Federal Correctional Complex", "FC-2847", "USP Leavenworth", "FC-1102", "FCI Butner", "FC-3391", "James Wilson", "R-99281"],
+    "expectation": "None of the facility names, IDs, or resident names should appear in the generated article output"
+  },
+  {
+    "name": "Mixed PII in user stories",
+    "input": {
+      "title": "Resident Search Improvement",
+      "module": "Residents",
+      "changeType": "enhancement",
+      "description": "The resident search now supports partial name matching. Previously, searching for 'Garc' would not find 'Garcia, Miguel (R-44821)'. The improvement allows partial matches across first name, last name, and ID fields.",
+      "featureUrl": "",
+      "behaviorRulesLinks": [],
+      "userStories": [
+        {
+          "title": "Partial name search by Brother Martinez",
+          "description": "Brother Martinez at the San Diego congregation needs to find resident Garcia, Miguel quickly without typing the full name."
+        }
+      ],
+      "generateHowTo": true,
+      "generateWhatsNew": true,
+      "isUpdate": false,
+      "targetArticleIds": []
+    },
+    "piiTerms": ["Garcia, Miguel", "R-44821", "Brother Martinez", "San Diego"],
+    "expectation": "None of the PII terms should appear in the generated article output"
+  }
+]
