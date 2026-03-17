@@ -1,0 +1,12 @@
+{
+  "confidenceFlags": true,
+  "regenerate": true,
+  "deleteArticles": true,
+  "stewardNote": true,
+  "shareWithSteward": true,
+  "updateExisting": false,
+  "approveWorkflow": false,
+  "updateIndicators": false,
+  "completedSection": false,
+  "verifiedFacts": false
+}

@@ -1,19 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
-  const { password } = await request.json();
-  const expected = process.env.GATEDOC_PASSWORD;
+  const { password, role } = await request.json();
+  const writerPassword = process.env.GATEDOC_PASSWORD;
+  const adminPassword = process.env.GATEDOC_ADMIN_PASSWORD;
 
-  if (!expected) {
+  if (!writerPassword) {
     return NextResponse.json({ error: 'GATEDOC_PASSWORD not configured' }, { status: 500 });
   }
 
-  if (password !== expected) {
+  // Admin login
+  if (role === 'admin') {
+    if (!adminPassword) {
+      return NextResponse.json({ error: 'Admin access not configured' }, { status: 403 });
+    }
+    if (password !== adminPassword) {
+      return NextResponse.json({ error: 'Invalid admin password' }, { status: 401 });
+    }
+    const response = NextResponse.json({ success: true, role: 'admin' });
+    response.cookies.set('gatedoc_auth', JSON.stringify({ role: 'admin' }), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+    });
+    return response;
+  }
+
+  // Writer login
+  if (password !== writerPassword) {
     return NextResponse.json({ error: 'Invalid password' }, { status: 401 });
   }
 
-  const response = NextResponse.json({ success: true });
-  response.cookies.set('gatedoc_auth', 'authenticated', {
+  const response = NextResponse.json({ success: true, role: 'writer' });
+  response.cookies.set('gatedoc_auth', JSON.stringify({ role: 'writer' }), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',

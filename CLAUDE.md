@@ -22,11 +22,16 @@ src/
     layout.tsx                      # Root layout with auth provider
     editor/[id]/page.tsx            # Editor workbench
     preview/[id]/page.tsx           # Read-only preview
-    login/page.tsx                  # Password gate login page
+    login/page.tsx                  # Password gate login page (writer + admin)
+    admin/
+      dashboard/page.tsx            # Admin dashboard — feature flags + stats
     api/
-      auth/route.ts                 # POST — simple password auth
+      auth/route.ts                 # POST — password auth (writer + admin roles)
       auth/[...nextauth]/route.ts   # Auth.js (user identity)
       generate/route.ts             # POST — new article generation (injects verified facts)
+      admin/
+        features/route.ts           # GET/POST — feature flags CRUD
+        stats/route.ts              # GET — article counts and verified facts summary
       articles/route.ts             # GET all, POST new
       articles/[id]/route.ts        # GET one, PATCH update
       scan/route.ts                 # POST — AI scan for affected articles
@@ -59,6 +64,9 @@ src/
     config/
       terminology-seed.json
       modules.json
+      features.ts                   # Feature flags system (KV + local JSON fallback)
+    hooks/
+      useFeatures.ts                # React hook for client-side feature flag access
     verified-facts/
       extractor.ts                  # Extract verified facts from approved article content
       store.ts                      # Module-scoped fact storage (Vercel KV / local JSON)
@@ -80,6 +88,8 @@ tests/
   e2e/
     writer-journey.spec.ts
     feedback-loop.spec.ts          # Full feedback loop integration (4 tests)
+    admin.spec.ts                  # Admin dashboard: auth, flag toggles, integration (6 tests)
+    landing-contextual.spec.ts     # Contextual landing: empty/articles/action cards (7 tests)
   unit/
     pii-filter.test.ts
     article-structure.test.ts
@@ -107,6 +117,7 @@ ANTHROPIC_API_KEY=sk-ant-...
 NEXTAUTH_SECRET=<openssl rand -base64 32>
 NEXTAUTH_URL=http://localhost:3000
 GATEDOC_PASSWORD=<shared demo password>
+GATEDOC_ADMIN_PASSWORD=<admin dashboard password>
 
 # Optional — Vercel KV (auto-set by Vercel when KV store is linked):
 # KV_REST_API_URL=https://...
@@ -154,7 +165,7 @@ Tests use mocked API responses — no real Anthropic API calls are made. Set `GA
 - Project name: `gatedoc`
 - Environment variables must be set in Vercel dashboard
 
-## Current Status — Phase 2 COMPLETE (2026-03-16)
+## Current Status — Phase 2 COMPLETE + Accessibility Audit (2026-03-16)
 
 ### Phase 2 Sprint 1: Regression Test Infrastructure — COMPLETE
 
@@ -189,7 +200,7 @@ Tests use mocked API responses — no real Anthropic API calls are made. Set `GA
 - **Cross-module isolation** — Facts are scoped per module, no leakage between modules
 - **Tests:** `approve.spec.ts` (6), `approve-ui.spec.ts` (8), `verified-facts.spec.ts` (7), `feedback-loop.spec.ts` (4) — **25 tests**
 
-### Phase 2 Total Test Count — 132 tests
+### Phase 2 Total Test Count — 152 tests
 
 | Spec file | Tests | Sprint | Coverage |
 |---|---|---|---|
@@ -212,8 +223,9 @@ Tests use mocked API responses — no real Anthropic API calls are made. Set `GA
 | `approve-ui.spec.ts` | 8 | S3 | Preview Steward actions, landing badges, editor revision banner |
 | `verified-facts.spec.ts` | 7 | S3 | Extractor, API, feedback loop integration, empty module |
 | `feedback-loop.spec.ts` | 4 | S3 | Full cycle, approve→revision, re-approve, cross-module isolation |
+| `accessibility.spec.ts` | 20 | A11y | Axe-core audit (9 screens), keyboard navigation (11 tests) |
 | **Unit tests** | **7** | S1 | PII filter, article structure |
-| **Total** | **132** | | |
+| **Total** | **152** | | |
 
 ## Phase 1 COMPLETE (2026-03-15)
 
@@ -249,7 +261,6 @@ All Phase 1 features are built, tested, and working. The full new-article flow (
 - Writer assignment not implemented
 - Terminology doc not yet uploaded
 - Sidebar checklist scroll-to behavior not verified
-- Accessibility keyboard navigation audit needed
 - Thin-spec flag regression test needed
 
 ## Phase 2 Features Shipped
@@ -289,7 +300,33 @@ Intake → generation → editing → share → print
 - Stale results detection not implemented (deferred to Phase 3)
 - Writer assignment not implemented
 - Terminology doc not yet uploaded
-- Accessibility keyboard navigation audit needed
+
+### Accessibility Audit — COMPLETE (2026-03-16)
+
+**Testing:** `@axe-core/playwright` installed. `accessibility.spec.ts` runs axe-core against 9 major screens and includes 11 keyboard navigation tests (20 tests total). Zero critical/serious violations. Moderate warnings (landmark-one-main, region, page-has-heading-one) are logged but do not fail tests.
+
+**Axe violations found and fixed:**
+
+| Category | Count | Fix |
+|---|---|---|
+| `select-name` (critical) | 6 | Added `htmlFor`/`id` to all select elements in intake, regenerate modals |
+| `color-contrast` (serious) | 15+ | Darkened `--text-tertiary` (#9C9B97 → #5E5D5B), `--blue` (#378ADD → #1A5FA6), `--amber` (#BA7517 → #92610F); darkened preview banner, approve button |
+| `nested-interactive` (serious) | 15 | Removed `role="button"` from article cards (kept tabIndex + keyboard handler) |
+| Missing `aria-label` | 12 | Added to icon buttons, toolbar buttons, screenshot slots, dismiss button, nav back |
+| Missing `role="dialog"` | 3 | Added `role="dialog"`, `aria-modal="true"`, `aria-labelledby` to all 3 modals |
+| Missing focus management | 3 | Modals capture/restore focus on open/close via `previousFocusRef` |
+| Missing Escape key | 3 | All modals close on Escape keypress |
+| Missing `role="tablist"` | 2 | Added to mode toggle and sidebar type tabs with `role="tab"` + `aria-selected` |
+| Missing `role="toolbar"` | 1 | Added to format toolbar with `aria-label="Text formatting"` |
+| Missing `role="textbox"` | 7 | Added to all contentEditable sections with `aria-label` and `aria-multiline` |
+| Missing `role="alert"` | 1 | Added to toast component with `aria-live="polite"` |
+| Missing form labels | 3 | Added visually hidden labels for login password, revision reason textarea |
+| Sidebar `opacity` | 1 | Increased completed item opacity from 0.55 to 0.7 for contrast compliance |
+
+**Remaining warnings (moderate, non-failing):**
+- `landmark-one-main` — Login, editor, preview pages lack `<main>` landmark (cosmetic)
+- `region` — Some content outside landmark regions
+- `page-has-heading-one` — Editor page has no h1 (uses toolbar title instead)
 
 ## Spec Compliance (vs implementation-kickoff-v2.md)
 

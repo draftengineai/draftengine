@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 interface ShareModalProps {
   isOpen: boolean;
   articleId: string;
   onClose: () => void;
   onShare: (note: string) => void;
+  showStewardNote?: boolean;
 }
 
 export default function ShareModal({
@@ -14,10 +15,36 @@ export default function ShareModal({
   articleId,
   onClose,
   onShare,
+  showStewardNote = true,
 }: ShareModalProps) {
   const [note, setNote] = useState("");
   const [copied, setCopied] = useState(false);
   const [sharing, setSharing] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  // Focus management
+  useEffect(() => {
+    if (isOpen) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
+      requestAnimationFrame(() => {
+        modalRef.current?.focus();
+      });
+    } else if (previousFocusRef.current) {
+      previousFocusRef.current.focus();
+      previousFocusRef.current = null;
+    }
+  }, [isOpen]);
+
+  // Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -52,6 +79,7 @@ export default function ShareModal({
   return (
     <div
       className="share-modal"
+      role="presentation"
       style={{
         position: "fixed",
         inset: 0,
@@ -66,7 +94,12 @@ export default function ShareModal({
       }}
     >
       <div
+        ref={modalRef}
         className="share-box"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="share-modal-title"
+        tabIndex={-1}
         style={{
           backgroundColor: "var(--bg-card)",
           borderRadius: 12,
@@ -79,6 +112,7 @@ export default function ShareModal({
       >
         {/* Header */}
         <h3
+          id="share-modal-title"
           style={{
             fontSize: 16,
             fontWeight: 700,
@@ -120,39 +154,45 @@ export default function ShareModal({
         </div>
 
         {/* Note textarea */}
-        <label
-          style={{
-            display: "block",
-            fontSize: 13,
-            fontWeight: 500,
-            color: "var(--text)",
-            marginBottom: 6,
-          }}
-        >
-          Note to Steward{" "}
-          <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>
-            (optional)
-          </span>
-        </label>
-        <textarea
-          className="share-note"
-          value={note}
-          onChange={(e) => setNote(e.target.value)}
-          placeholder="e.g., Please check step 3 — I wasn't sure about the filter names..."
-          style={{
-            width: "100%",
-            padding: "8px 10px",
-            border: "1px solid var(--border)",
-            borderRadius: "var(--radius)",
-            fontSize: 13,
-            height: 64,
-            resize: "none",
-            fontFamily: "inherit",
-            color: "var(--text)",
-            backgroundColor: "var(--bg-card)",
-            lineHeight: 1.5,
-          }}
-        />
+        {showStewardNote && (
+          <>
+            <label
+              htmlFor="share-note"
+              style={{
+                display: "block",
+                fontSize: 13,
+                fontWeight: 500,
+                color: "var(--text)",
+                marginBottom: 6,
+              }}
+            >
+              Note to Steward{" "}
+              <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>
+                (optional)
+              </span>
+            </label>
+            <textarea
+              id="share-note"
+              className="share-note"
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="e.g., Please check step 3 — I wasn't sure about the filter names..."
+              style={{
+                width: "100%",
+                padding: "8px 10px",
+                border: "1px solid var(--border)",
+                borderRadius: "var(--radius)",
+                fontSize: 13,
+                height: 64,
+                resize: "none",
+                fontFamily: "inherit",
+                color: "var(--text)",
+                backgroundColor: "var(--bg-card)",
+                lineHeight: 1.5,
+              }}
+            />
+          </>
+        )}
 
         {/* Footer */}
         <div

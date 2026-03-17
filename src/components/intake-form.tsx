@@ -56,11 +56,26 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
   const [scanError, setScanError] = useState<string | null>(null);
 
   const modalRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
 
   // Sync mode when initialMode prop changes (e.g., reopened with different mode)
   useEffect(() => {
     if (initialMode) setMode(initialMode);
   }, [initialMode]);
+
+  // Focus management: capture previous focus and focus modal on open
+  useEffect(() => {
+    if (isOpen) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
+      // Focus the modal container after render
+      requestAnimationFrame(() => {
+        modalRef.current?.focus();
+      });
+    } else if (previousFocusRef.current) {
+      previousFocusRef.current.focus();
+      previousFocusRef.current = null;
+    }
+  }, [isOpen]);
 
   // Auto-uncheck What's New for bug fixes
   useEffect(() => {
@@ -96,6 +111,16 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
     resetForm();
     onClose();
   }, [onClose, resetForm]);
+
+  // Escape key closes modal
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') handleClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, handleClose]);
 
   const handleOverlayClick = useCallback(
     (e: React.MouseEvent) => {
@@ -272,12 +297,12 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
     description.trim() !== '';
 
   return (
-    <div style={styles.overlay} onClick={handleOverlayClick}>
-      <div ref={modalRef} style={styles.modal}>
+    <div style={styles.overlay} onClick={handleOverlayClick} role="presentation">
+      <div ref={modalRef} style={styles.modal} role="dialog" aria-modal="true" aria-labelledby="intake-modal-title" tabIndex={-1}>
         {/* Header */}
         <div style={styles.header}>
           <div>
-            <h2 style={styles.headerTitle}>New article</h2>
+            <h2 id="intake-modal-title" style={styles.headerTitle}>New article</h2>
             <p style={styles.headerSubtitle}>
               Describe the feature and GateDoc will draft the articles.
             </p>
@@ -305,10 +330,12 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
 
         {/* Mode toggle */}
         <div style={styles.body}>
-          <div style={styles.modeToggle} data-testid="mode-toggle">
+          <div style={styles.modeToggle} data-testid="mode-toggle" role="tablist" aria-label="Article mode">
             <button
               type="button"
               data-testid="mode-new"
+              role="tab"
+              aria-selected={mode === 'new'}
               style={{
                 ...styles.modeBtn,
                 ...(mode === 'new' ? styles.modeBtnActive : {}),
@@ -320,6 +347,8 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
             <button
               type="button"
               data-testid="mode-update"
+              role="tab"
+              aria-selected={mode === 'update'}
               style={{
                 ...styles.modeBtn,
                 ...(mode === 'update' ? styles.modeBtnActive : {}),
@@ -344,10 +373,11 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
                 {/* Module + Type of change row */}
                 <div style={styles.formRow}>
                   <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>
+                    <label htmlFor="update-module" style={styles.formLabel}>
                       Module <span style={styles.req}>*</span>
                     </label>
                     <select
+                      id="update-module"
                       value={module}
                       onChange={(e) => setModule(e.target.value)}
                       style={styles.formSelect}
@@ -369,6 +399,7 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
                         value={customModule}
                         onChange={(e) => setCustomModule(e.target.value)}
                         placeholder="Enter module name"
+                        aria-label="Custom module name"
                         style={{ ...styles.formInput, marginTop: 8 }}
                         required
                       />
@@ -376,10 +407,11 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
                   </div>
 
                   <div style={styles.formGroup}>
-                    <label style={styles.formLabel}>
+                    <label htmlFor="update-change-type" style={styles.formLabel}>
                       Type of change <span style={styles.req}>*</span>
                     </label>
                     <select
+                      id="update-change-type"
                       value={changeType}
                       onChange={(e) => setChangeType(e.target.value as ChangeType)}
                       style={styles.formSelect}
@@ -396,10 +428,11 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
 
                 {/* What changed */}
                 <div style={styles.formGroup}>
-                  <label style={styles.formLabel}>
+                  <label htmlFor="update-description" style={styles.formLabel}>
                     What changed <span style={styles.req}>*</span>
                   </label>
                   <textarea
+                    id="update-description"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Describe what changed about this feature. Be specific about which UI elements, buttons, or steps were affected..."
@@ -499,10 +532,11 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
             <form onSubmit={handleSubmit} id="intake-form">
               {/* Feature title */}
               <div style={styles.formGroup}>
-                <label style={styles.formLabel}>
+                <label htmlFor="intake-title" style={styles.formLabel}>
                   Feature title <span style={styles.req}>*</span>
                 </label>
                 <input
+                  id="intake-title"
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
@@ -515,10 +549,11 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
               {/* Module + Type of change row */}
               <div style={styles.formRow}>
                 <div style={styles.formGroup}>
-                  <label style={styles.formLabel}>
+                  <label htmlFor="intake-module" style={styles.formLabel}>
                     Module <span style={styles.req}>*</span>
                   </label>
                   <select
+                    id="intake-module"
                     value={module}
                     onChange={(e) => setModule(e.target.value)}
                     style={styles.formSelect}
@@ -540,6 +575,7 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
                       value={customModule}
                       onChange={(e) => setCustomModule(e.target.value)}
                       placeholder="Enter module name"
+                      aria-label="Custom module name"
                       style={{ ...styles.formInput, marginTop: 8 }}
                       required
                     />
@@ -547,10 +583,11 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
                 </div>
 
                 <div style={styles.formGroup}>
-                  <label style={styles.formLabel}>
+                  <label htmlFor="intake-change-type" style={styles.formLabel}>
                     Type of change <span style={styles.req}>*</span>
                   </label>
                   <select
+                    id="intake-change-type"
                     value={changeType}
                     onChange={(e) => setChangeType(e.target.value as ChangeType)}
                     style={styles.formSelect}
@@ -567,10 +604,11 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
 
               {/* Description */}
               <div style={styles.formGroup}>
-                <label style={styles.formLabel}>
+                <label htmlFor="intake-description" style={styles.formLabel}>
                   Description <span style={styles.req}>*</span>
                 </label>
                 <textarea
+                  id="intake-description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Explain what the feature does, who it's for, and how it works..."
@@ -604,10 +642,11 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
 
               {/* Feature/ticket link */}
               <div style={styles.formGroup}>
-                <label style={styles.formLabel}>
+                <label htmlFor="intake-feature-url" style={styles.formLabel}>
                   Feature or ticket link <span style={styles.opt}>(optional)</span>
                 </label>
                 <input
+                  id="intake-feature-url"
                   type="url"
                   value={featureUrl}
                   onChange={(e) => setFeatureUrl(e.target.value)}

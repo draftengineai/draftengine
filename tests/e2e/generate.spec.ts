@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers';
+import { login, openNewArticleIntake } from './helpers';
 import { ftr3849Intake } from '../fixtures/sample-intake';
 import { mockGenerateApi } from '../fixtures/mock-anthropic';
 import { mockGeneratedArticle } from '../fixtures/mock-article';
@@ -14,7 +14,7 @@ test.describe('Generate flow', () => {
   // -----------------------------------------------------------------------
 
   test('intake form opens with all required and optional fields', async ({ page }) => {
-    await page.click('button:has-text("+ New article")');
+    await openNewArticleIntake(page);
 
     // Required fields
     await expect(page.locator('label', { hasText: 'Feature title' })).toBeVisible();
@@ -33,7 +33,7 @@ test.describe('Generate flow', () => {
   // -----------------------------------------------------------------------
 
   test('submit with empty required fields keeps button disabled', async ({ page }) => {
-    await page.click('button:has-text("+ New article")');
+    await openNewArticleIntake(page);
 
     // The Generate button should be disabled when required fields are empty
     const generateBtn = page.locator('button[type="submit"]', { hasText: 'Generate articles' });
@@ -49,7 +49,7 @@ test.describe('Generate flow', () => {
   // -----------------------------------------------------------------------
 
   test('short description shows warning but generate button stays enabled', async ({ page }) => {
-    await page.click('button:has-text("+ New article")');
+    await openNewArticleIntake(page);
 
     // Fill all required fields
     await page.fill('input[placeholder="e.g. Bulk volunteer import"]', 'Test Feature');
@@ -78,7 +78,7 @@ test.describe('Generate flow', () => {
     // Install mock that returns the same article
     await mockGenerateApi(page);
 
-    await page.click('button:has-text("+ New article")');
+    await openNewArticleIntake(page);
 
     // Fill form with sample-intake fixture data
     await page.fill('input[placeholder="e.g. Bulk volunteer import"]', ftr3849Intake.title);
@@ -107,7 +107,7 @@ test.describe('Generate flow', () => {
   // -----------------------------------------------------------------------
 
   test('How To and What\'s New checkboxes are checked by default', async ({ page }) => {
-    await page.click('button:has-text("+ New article")');
+    await openNewArticleIntake(page);
 
     const howToCheckbox = page.locator('label', { hasText: 'How to' }).locator('input[type="checkbox"]');
     const whatsNewCheckbox = page.locator('label', { hasText: "What's new" }).locator('input[type="checkbox"]');
@@ -144,7 +144,7 @@ test.describe('Generate flow', () => {
       });
     });
 
-    await page.click('button:has-text("+ New article")');
+    await openNewArticleIntake(page);
 
     // Uncheck What's New
     const whatsNewCheckbox = page.locator('label', { hasText: "What's new" }).locator('input[type="checkbox"]');

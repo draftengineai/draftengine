@@ -61,6 +61,7 @@ export default function ConfidenceFlag({ flag, onDismiss }: ConfidenceFlagProps)
       <div style={{ padding: "8px 12px", display: "flex" }}>
         <button
           onClick={onDismiss}
+          aria-label="Dismiss confidence flag"
           style={{
             fontSize: 12,
             backgroundColor: "var(--green-light)",

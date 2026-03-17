@@ -1,5 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
-import { login } from './helpers';
+import { login, mockFeatures } from './helpers';
 import {
   mockSharedArticle,
   mockApprovedArticle,
@@ -37,6 +37,7 @@ test.describe('Preview Page — Steward Actions', () => {
   test('1 — shows Approve and Request revision buttons for shared article', async ({ page }) => {
     const article = cloneArticle(mockSharedArticle);
     await seedPreview(page, article);
+    await mockFeatures(page, { approveWorkflow: true });
 
     await page.goto(`/preview/${article.id}`);
 
@@ -47,6 +48,7 @@ test.describe('Preview Page — Steward Actions', () => {
   test('2 — clicking Approve calls API and shows success banner', async ({ page }) => {
     const article = cloneArticle(mockSharedArticle);
     await seedPreview(page, article);
+    await mockFeatures(page, { approveWorkflow: true });
 
     // Mock the approve API
     await page.route('**/api/approve', async (route) => {
@@ -82,6 +84,7 @@ test.describe('Preview Page — Steward Actions', () => {
   }) => {
     const article = cloneArticle(mockSharedArticle);
     await seedPreview(page, article);
+    await mockFeatures(page, { approveWorkflow: true });
 
     // Mock the request-revision API
     await page.route('**/api/request-revision', async (route) => {
@@ -171,6 +174,7 @@ test.describe('Preview Page — Steward Actions', () => {
 
 test.describe('Landing Page — Status Badges', () => {
   test.beforeEach(async ({ page }) => {
+    await mockFeatures(page, { completedSection: true });
     await login(page);
   });
 

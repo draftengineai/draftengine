@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers';
+import { login, mockFeatures } from './helpers';
 import { mockGeneratedArticle } from '../fixtures/mock-article';
 
 test.describe('Landing page', () => {
@@ -23,8 +23,10 @@ test.describe('Landing page', () => {
     });
 
     await page.reload();
-    await expect(page.getByText('No articles yet')).toBeVisible({ timeout: 10000 });
-    await expect(page.locator('strong', { hasText: '+ New article' })).toBeVisible();
+    // New contextual landing page: empty state shows welcome card
+    await expect(page.locator('[data-testid="welcome-card"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('h1', { hasText: 'Generate your first article' })).toBeVisible();
+    await expect(page.locator('[data-testid="get-started-btn"]')).toBeVisible();
   });
 
   // -----------------------------------------------------------------------
@@ -97,16 +99,19 @@ test.describe('Landing page', () => {
       await expect(countBadge).toHaveText(String(cardCount));
     });
 
-    test('+ New article button opens intake modal', async ({ page }) => {
-      await page.click('button:has-text("+ New article")');
+    test('Generate a new article action card opens intake modal', async ({ page }) => {
+      await page.click('[data-testid="action-card-new"]');
 
       // Modal should appear with the intake form
       await expect(page.locator('h2', { hasText: 'New article' })).toBeVisible();
       await expect(page.locator('form#intake-form')).toBeVisible();
     });
 
-    test('Update existing button opens modal in update mode with WHAT CHANGED label', async ({ page }) => {
-      await page.click('button:has-text("Update existing")');
+    test('Update existing action card opens modal in update mode with WHAT CHANGED label', async ({ page }) => {
+      await mockFeatures(page, { updateExisting: true });
+      await page.reload();
+      await page.locator('[data-testid="action-card-update"]').waitFor({ timeout: 10000 });
+      await page.click('[data-testid="action-card-update"]');
 
       // Modal opens in update mode with the update form
       await expect(page.locator('label', { hasText: 'What changed' })).toBeVisible();

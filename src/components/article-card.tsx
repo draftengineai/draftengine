@@ -124,7 +124,6 @@ export default function ArticleCard({ article, onClick, onDelete }: ArticleCardP
     <div
       className={`article-card${article.isUpdate ? ' is-update' : ''}`}
       onClick={onClick}
-      role="button"
       tabIndex={0}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {

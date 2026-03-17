@@ -115,6 +115,9 @@ export default function StepEditor({
             ref={textRef}
             contentEditable={!readOnly}
             suppressContentEditableWarning
+            role="textbox"
+            aria-label={`Step ${index + 1} text`}
+            aria-multiline="true"
             style={{
               outline: "none",
               borderRadius: 4,

@@ -25,6 +25,8 @@ export interface Article {
   originals: Record<number, string>;
   parentArticleIds: string[];
 
+  priority: number;
+
   createdAt: string;
   updatedAt: string;
   sharedAt: string | null;

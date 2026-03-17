@@ -28,6 +28,7 @@ function ToolbarButton({
   return (
     <button
       title={title}
+      aria-label={title}
       onClick={onClick}
       style={btnStyle}
       onMouseEnter={(e) => {
@@ -51,6 +52,8 @@ export default function FormatToolbar() {
 
   return (
     <div
+      role="toolbar"
+      aria-label="Text formatting"
       style={{
         display: "flex",
         alignItems: "center",

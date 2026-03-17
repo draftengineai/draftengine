@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Nav from "@/components/nav";
+import { useFeatures } from "@/lib/hooks/useFeatures";
 import type { Article } from "@/lib/types/article";
 
 export default function PreviewPage() {
@@ -10,6 +11,8 @@ export default function PreviewPage() {
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { features } = useFeatures();
 
   // Steward action state
   const [approving, setApproving] = useState(false);
@@ -143,7 +146,7 @@ export default function PreviewPage() {
       <div
         className="preview-banner"
         style={{
-          backgroundColor: "var(--blue)",
+          backgroundColor: "var(--blue-dark)",
           color: "#FFFFFF",
           textAlign: "center",
           padding: "10px 16px",
@@ -239,7 +242,7 @@ export default function PreviewPage() {
           </div>
         )}
 
-        {!isApproved && !isRevision && !approved && !revisionSubmitted && (
+        {features.approveWorkflow && !isApproved && !isRevision && !approved && !revisionSubmitted && (
           <div
             data-testid="steward-action-buttons"
             style={{ display: "flex", flexDirection: "column", gap: 12 }}
@@ -253,7 +256,7 @@ export default function PreviewPage() {
                   padding: "9px 20px",
                   fontSize: 13,
                   fontWeight: 600,
-                  backgroundColor: "#16a34a",
+                  backgroundColor: "#15803d",
                   color: "#FFFFFF",
                   border: "none",
                   borderRadius: "var(--radius, 8px)",
@@ -283,8 +286,13 @@ export default function PreviewPage() {
 
             {showRevisionForm && (
               <div data-testid="revision-form" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                <label htmlFor="revision-reason" className="sr-only" style={{ position: 'absolute', width: 1, height: 1, padding: 0, margin: -1, overflow: 'hidden', clip: 'rect(0,0,0,0)', whiteSpace: 'nowrap', border: 0 }}>
+                  Revision reason
+                </label>
                 <textarea
+                  id="revision-reason"
                   data-testid="revision-reason-input"
+                  aria-label="Revision reason"
                   placeholder="What needs to change?"
                   value={revisionReason}
                   onChange={(e) => setRevisionReason(e.target.value)}
@@ -486,7 +494,7 @@ export default function PreviewPage() {
                         borderRadius: "var(--radius)",
                         border: "1px dashed var(--border)",
                         fontSize: 12,
-                        color: "var(--text-tertiary)",
+                        color: "var(--text-secondary)",
                         textAlign: "center",
                       }}
                     >

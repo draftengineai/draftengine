@@ -8,6 +8,7 @@ import { buildWhatsNewPrompt } from '@/lib/prompts/whats-new';
 import { saveArticle } from '@/lib/db/storage';
 import { getFacts } from '@/lib/verified-facts/store';
 import { buildVerifiedFactsBlock } from '@/lib/verified-facts/block-builder';
+import { getFeatures } from '@/lib/config/features';
 import terminologySeed from '@/lib/config/terminology-seed.json';
 
 function getAnthropicClient(): Anthropic {
@@ -475,7 +476,9 @@ export async function POST(request: NextRequest) {
     const piiPayload = buildPIIFreePayload(intake);
 
     // Look up verified facts from previously approved articles for this module
-    const moduleFacts = await getFacts(intake.module);
+    // Skip if verifiedFacts feature flag is disabled
+    const featureFlags = await getFeatures();
+    const moduleFacts = featureFlags.verifiedFacts ? await getFacts(intake.module) : [];
     const verifiedFactsBlock = buildVerifiedFactsBlock(moduleFacts);
 
     const now = new Date().toISOString();
@@ -499,6 +502,7 @@ export async function POST(request: NextRequest) {
       updateReason: null,
       originals: {},
       parentArticleIds: [],
+      priority: 0,
       createdAt: now,
       updatedAt: now,
       sharedAt: null,

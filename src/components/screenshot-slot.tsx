@@ -52,6 +52,7 @@ export default function ScreenshotSlot({
           <button
             onClick={onToggle}
             title="Remove screenshot"
+            aria-label="Remove screenshot"
             style={{
               position: "absolute",
               top: 8,
@@ -80,7 +81,16 @@ export default function ScreenshotSlot({
   return (
     <div
       data-screenshot-slot={index}
+      role={readOnly ? undefined : "button"}
+      tabIndex={readOnly ? undefined : 0}
+      aria-label={`Add screenshot: ${description}`}
       onClick={readOnly ? undefined : onToggle}
+      onKeyDown={readOnly ? undefined : (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onToggle();
+        }
+      }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{

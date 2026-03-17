@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers';
+import { login, openNewArticleIntake, openUpdateIntake, mockFeatures } from './helpers';
 import { mockScanMatches } from '../fixtures/mock-scan-results';
 import { mockGeneratedArticle } from '../fixtures/mock-article';
 import { buildMockUpdatedArticle } from '../fixtures/mock-update-results';
 
 test.describe('Update Intake', () => {
   test.beforeEach(async ({ page }) => {
+    await mockFeatures(page, { updateExisting: true });
     await login(page);
   });
 
@@ -14,7 +15,7 @@ test.describe('Update Intake', () => {
   // -------------------------------------------------------------------------
 
   test('mode toggle switches between New article and Update existing', async ({ page }) => {
-    await page.click('button:has-text("+ New article")');
+    await openNewArticleIntake(page);
 
     // Starts in New article mode — form has "Feature title" and "Generate articles"
     await expect(page.locator('label', { hasText: 'Feature title' })).toBeVisible();
@@ -41,7 +42,7 @@ test.describe('Update Intake', () => {
 
   test('update mode shows WHAT CHANGED label and Find affected articles button', async ({ page }) => {
     // Open directly in update mode via the landing page button
-    await page.click('button:has-text("Update existing")');
+    await openUpdateIntake(page);
 
     // "What changed" label visible (uppercase rendered by CSS)
     const whatChangedLabel = page.locator('label', { hasText: 'What changed' });
@@ -85,7 +86,7 @@ test.describe('Update Intake', () => {
       return route.continue();
     });
 
-    await page.click('button:has-text("Update existing")');
+    await openUpdateIntake(page);
 
     // Fill required fields
     await page.locator('form#update-form select').first().selectOption({ label: 'Volunteers' });
@@ -148,7 +149,7 @@ test.describe('Update Intake', () => {
       return route.continue();
     });
 
-    await page.click('button:has-text("Update existing")');
+    await openUpdateIntake(page);
 
     await page.locator('form#update-form select').first().selectOption({ label: 'Volunteers' });
     await page.locator('form#update-form textarea').fill('Date range picker added to Search Criteria panel.');
@@ -215,7 +216,7 @@ test.describe('Update Intake', () => {
       return route.continue();
     });
 
-    await page.click('button:has-text("Update existing")');
+    await openUpdateIntake(page);
     await page.locator('form#update-form select').first().selectOption({ label: 'Volunteers' });
     await page.locator('form#update-form textarea').fill('Reset button renamed to Clear.');
     await page.click('button:has-text("Find affected articles")');
@@ -253,7 +254,7 @@ test.describe('Update Intake', () => {
       return route.continue();
     });
 
-    await page.click('button:has-text("Update existing")');
+    await openUpdateIntake(page);
     await page.locator('form#update-form select').first().selectOption({ label: 'Volunteers' });
     await page.locator('form#update-form textarea').fill('Some change that matches nothing.');
     await page.click('button:has-text("Find affected articles")');

@@ -67,7 +67,12 @@ export async function getArticle(id: string): Promise<Article | undefined> {
 export async function saveArticle(article: Article): Promise<Article> {
   requireKVInProduction();
   const articles = await getArticles();
-  articles.unshift(article);
+  const existingIndex = articles.findIndex(a => a.id === article.id);
+  if (existingIndex !== -1) {
+    articles[existingIndex] = article;
+  } else {
+    articles.unshift(article);
+  }
   if (useKV()) {
     await kvSet(articles);
   } else {

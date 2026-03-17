@@ -23,10 +23,12 @@ test.describe('Authentication', () => {
 
   test('correct password redirects to landing page', async ({ page }) => {
     await page.goto('/login');
-    await page.fill('input[type="password"]', TEST_PASSWORD);
+    await page.fill('input[type="password"]#login-password', TEST_PASSWORD);
     await page.click('button[type="submit"]');
 
-    await expect(page.locator('h1')).toHaveText('My articles', { timeout: 15000 });
+    // Landing page shows either "My articles" (has articles) or "Generate your first article" (empty)
+    await page.waitForSelector('h1:has-text("My articles"), [data-testid="welcome-card"]', { timeout: 15000 });
+    expect(page.url()).not.toContain('/login');
   });
 
   test('protected routes redirect to /login without auth cookie', async ({ page }) => {
@@ -46,11 +48,12 @@ test.describe('Authentication', () => {
 
   test('after login, refreshing the page stays authenticated', async ({ page }) => {
     await login(page);
-    await expect(page.locator('h1')).toHaveText('My articles');
+    // Landing page shows either "My articles" or welcome card
+    await page.waitForSelector('h1:has-text("My articles"), [data-testid="welcome-card"]');
 
     // Reload — cookie should persist
     await page.reload();
-    await expect(page.locator('h1')).toHaveText('My articles');
+    await page.waitForSelector('h1:has-text("My articles"), [data-testid="welcome-card"]');
     expect(page.url()).not.toContain('/login');
   });
 });

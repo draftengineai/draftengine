@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers';
+import { login, openNewArticleIntake } from './helpers';
 import { mockGenerateApiThinData } from '../fixtures/mock-anthropic';
 
 /** The thin article object returned by mockGenerateApiThinData. */
@@ -64,7 +64,7 @@ test.describe('Thin data handling', () => {
 
     await mockGenerateApiThinData(page);
 
-    await page.click('button:has-text("+ New article")');
+    await openNewArticleIntake(page);
     await page.fill('input[placeholder="e.g. Bulk volunteer import"]', 'New Feature');
     await page.locator('form#intake-form select').first().selectOption({ label: 'Settings' });
     await page.fill('textarea', 'A search feature');

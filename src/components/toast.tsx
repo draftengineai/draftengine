@@ -69,6 +69,8 @@ export function Toast({ message, visible, exiting }: ToastProps) {
 
   return createPortal(
     <div
+      role="alert"
+      aria-live="polite"
       style={{
         position: "fixed",
         bottom: 32,

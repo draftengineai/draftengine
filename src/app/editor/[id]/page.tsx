@@ -10,6 +10,7 @@ import FormatToolbar from "@/components/format-toolbar";
 import RegenerateModal from "@/components/regenerate-modal";
 import GenerationLoading from "@/components/generation-loading";
 import ShareModal from "@/components/share-modal";
+import { useFeatures } from "@/lib/hooks/useFeatures";
 
 function getTypeLabel(t: ArticleType): string {
   return t === "howto" ? "How to" : "What's new";
@@ -84,6 +85,7 @@ export default function EditorPage() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showRegenModal, setShowRegenModal] = useState(false);
   const [regenerating, setRegenerating] = useState(false);
+  const { features } = useFeatures();
 
   useEffect(() => {
     async function fetchArticle() {
@@ -442,9 +444,10 @@ export default function EditorPage() {
 
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               {/* Regenerate button */}
-              <button
+              {features.regenerate && <button
                 data-testid="regenerate-btn"
                 title="Regenerate article with updated details"
+                aria-label="Regenerate article"
                 onClick={() => setShowRegenModal(true)}
                 style={{
                   display: "flex",
@@ -496,11 +499,12 @@ export default function EditorPage() {
                   />
                 </svg>
                 Regenerate
-              </button>
+              </button>}
 
               {/* Share link button */}
-              <button
+              {features.shareWithSteward && <button
                 title="Share link with Steward"
+                aria-label="Share link with Steward"
                 onClick={() => setShowShareModal(true)}
                 style={{
                   display: "flex",
@@ -544,11 +548,12 @@ export default function EditorPage() {
                   />
                 </svg>
                 Share link
-              </button>
+              </button>}
 
               {/* Print button */}
               <button
                 title="Print article"
+                aria-label="Print article"
                 onClick={() => window.print()}
                 style={{
                   display: "flex",
@@ -624,6 +629,8 @@ export default function EditorPage() {
               dismissedFlags={dismissedFlags}
               onWriteManually={handleWriteManually}
               onFlagDismiss={handleFlagDismiss}
+              showConfidenceFlags={features.confidenceFlags}
+              showUpdateIndicators={features.updateIndicators}
             />
           </div>
         </div>
@@ -655,6 +662,7 @@ export default function EditorPage() {
           setShowShareModal(false);
           setArticle((prev) => prev ? { ...prev, status: "shared" } : prev);
         }}
+        showStewardNote={features.stewardNote}
       />
     </div>
   );

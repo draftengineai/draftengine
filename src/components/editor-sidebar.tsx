@@ -55,6 +55,15 @@ function CheckItem({ label, done, isCurrent, detail, onClick }: CheckItemProps) 
   return (
     <div
       onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      aria-label={`${label}${done ? ' (completed)' : ''}`}
+      onKeyDown={onClick ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      } : undefined}
       style={{
         display: "flex",
         alignItems: "flex-start",
@@ -63,7 +72,7 @@ function CheckItem({ label, done, isCurrent, detail, onClick }: CheckItemProps) 
         backgroundColor: done ? "transparent" : "var(--bg-card)",
         border: `1px solid ${isCurrent ? "var(--accent)" : done ? "transparent" : "var(--border)"}`,
         borderRadius: 8,
-        opacity: done ? 0.55 : 1,
+        opacity: done ? 0.7 : 1,
         boxShadow: isCurrent ? "0 0 0 1px rgba(83,74,183,0.15)" : "none",
         cursor: onClick ? "pointer" : "default",
         marginBottom: 6,
@@ -186,7 +195,7 @@ export default function EditorSidebar({
         </div>
 
         {/* Type tabs */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 4, marginBottom: 12 }} role="tablist" aria-label="Article type">
           {article.types.map((t) => {
             const isActive = t === article.activeType;
             const tShots = article.screenshots[t] ?? [];
@@ -199,6 +208,8 @@ export default function EditorSidebar({
             return (
               <button
                 key={t}
+                role="tab"
+                aria-selected={isActive}
                 onClick={() => onTypeSwitch(t)}
                 style={{
                   padding: "8px 10px",

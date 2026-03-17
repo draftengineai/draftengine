@@ -46,6 +46,30 @@ export default function RegenerateModal({
   const [guidance, setGuidance] = useState('');
 
   const modalRef = useRef<HTMLDivElement>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
+  // Focus management
+  useEffect(() => {
+    if (isOpen) {
+      previousFocusRef.current = document.activeElement as HTMLElement;
+      requestAnimationFrame(() => {
+        modalRef.current?.focus();
+      });
+    } else if (previousFocusRef.current) {
+      previousFocusRef.current.focus();
+      previousFocusRef.current = null;
+    }
+  }, [isOpen]);
+
+  // Escape key
+  useEffect(() => {
+    if (!isOpen || regenerating) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose, regenerating]);
 
   // Sync initial values when modal opens
   useEffect(() => {
@@ -96,12 +120,12 @@ export default function RegenerateModal({
   const isValid = title.trim() !== '' && resolvedModule.trim() !== '' && description.trim() !== '';
 
   return (
-    <div style={styles.overlay} onClick={handleOverlayClick}>
-      <div ref={modalRef} style={styles.modal}>
+    <div style={styles.overlay} onClick={handleOverlayClick} role="presentation">
+      <div ref={modalRef} style={styles.modal} role="dialog" aria-modal="true" aria-labelledby="regenerate-modal-title" tabIndex={-1}>
         {/* Header */}
         <div style={styles.header}>
           <div>
-            <h2 style={styles.headerTitle}>Regenerate article</h2>
+            <h2 id="regenerate-modal-title" style={styles.headerTitle}>Regenerate article</h2>
             <p style={styles.headerSubtitle}>
               Update the details below and the AI will generate fresh content.
             </p>
@@ -133,11 +157,12 @@ export default function RegenerateModal({
           <form onSubmit={handleSubmit} id="regenerate-form">
             {/* Guidance */}
             <div style={styles.formGroup}>
-              <label style={styles.formLabel}>
+              <label htmlFor="regen-guidance" style={styles.formLabel}>
                 What should the AI do differently this time?{' '}
                 <span style={styles.opt}>(optional)</span>
               </label>
               <textarea
+                id="regen-guidance"
                 value={guidance}
                 onChange={(e) => setGuidance(e.target.value)}
                 placeholder='e.g. "Add more detail about the search filters" or "Focus on the mobile experience"'
@@ -149,10 +174,11 @@ export default function RegenerateModal({
 
             {/* Title */}
             <div style={styles.formGroup}>
-              <label style={styles.formLabel}>
+              <label htmlFor="regen-title" style={styles.formLabel}>
                 Feature title <span style={styles.req}>*</span>
               </label>
               <input
+                id="regen-title"
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -165,10 +191,11 @@ export default function RegenerateModal({
             {/* Module + Type row */}
             <div style={styles.formRow}>
               <div style={styles.formGroup}>
-                <label style={styles.formLabel}>
+                <label htmlFor="regen-module" style={styles.formLabel}>
                   Module <span style={styles.req}>*</span>
                 </label>
                 <select
+                  id="regen-module"
                   value={module}
                   onChange={(e) => setModule(e.target.value)}
                   style={styles.formSelect}
@@ -191,6 +218,7 @@ export default function RegenerateModal({
                     value={customModule}
                     onChange={(e) => setCustomModule(e.target.value)}
                     placeholder="Enter module name"
+                    aria-label="Custom module name"
                     style={{ ...styles.formInput, marginTop: 8 }}
                     required
                     disabled={regenerating}
@@ -199,10 +227,11 @@ export default function RegenerateModal({
               </div>
 
               <div style={styles.formGroup}>
-                <label style={styles.formLabel}>
+                <label htmlFor="regen-change-type" style={styles.formLabel}>
                   Type of change <span style={styles.req}>*</span>
                 </label>
                 <select
+                  id="regen-change-type"
                   value={changeType}
                   onChange={(e) => setChangeType(e.target.value as ChangeType)}
                   style={styles.formSelect}
@@ -220,10 +249,11 @@ export default function RegenerateModal({
 
             {/* Description */}
             <div style={styles.formGroup}>
-              <label style={styles.formLabel}>
+              <label htmlFor="regen-description" style={styles.formLabel}>
                 Description <span style={styles.req}>*</span>
               </label>
               <textarea
+                id="regen-description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Describe the feature with enough detail for accurate steps. Mention UI labels, button names, and navigation paths..."

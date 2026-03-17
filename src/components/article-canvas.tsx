@@ -11,6 +11,8 @@ interface ArticleCanvasProps {
   dismissedFlags?: Set<string>;
   onWriteManually?: () => void;
   onFlagDismiss?: (stepIndex: number) => void;
+  showConfidenceFlags?: boolean;
+  showUpdateIndicators?: boolean;
 }
 
 function EditableSection({
@@ -75,6 +77,9 @@ function EditableSection({
         ref={ref}
         contentEditable={!readOnly}
         suppressContentEditableWarning
+        role="textbox"
+        aria-label={label}
+        aria-multiline="true"
         style={{
           padding: 16,
           fontSize: 14,
@@ -103,6 +108,8 @@ export default function ArticleCanvas({
   dismissedFlags,
   onWriteManually,
   onFlagDismiss,
+  showConfidenceFlags = true,
+  showUpdateIndicators = true,
 }: ArticleCanvasProps) {
   const activeType = article.activeType;
 
@@ -218,7 +225,7 @@ export default function ArticleCanvas({
       )}
 
       {/* Update banner */}
-      {article.isUpdate && article.updateReason && (
+      {showUpdateIndicators && article.isUpdate && article.updateReason && (
         <div
           data-testid="update-banner"
           style={{
@@ -264,6 +271,9 @@ export default function ArticleCanvas({
           ref={overviewRef}
           contentEditable={!readOnly}
           suppressContentEditableWarning
+          role="textbox"
+          aria-label="Article overview"
+          aria-multiline="true"
           onBlur={() => {
             if (overviewRef.current) {
               handleOverviewChange(overviewRef.current.innerHTML);
@@ -354,14 +364,14 @@ export default function ArticleCanvas({
               step={step}
               index={i}
               totalSteps={article.content.howto!.steps.length}
-              flag={getFlag(i)}
+              flag={showConfidenceFlags ? getFlag(i) : null}
               screenshotFilled={article.screenshots[activeType]?.[i] ?? false}
               onStepChange={handleStepChange}
               onScreenshotToggle={handleScreenshotToggle}
               onFlagDismiss={handleFlagDismiss}
               readOnly={readOnly}
-              isChanged={article.isUpdate && article.updatedSteps.includes(i)}
-              originalText={article.originals[i]}
+              isChanged={showUpdateIndicators && article.isUpdate && article.updatedSteps.includes(i)}
+              originalText={showUpdateIndicators ? article.originals[i] : undefined}
             />
           ))}
         </>

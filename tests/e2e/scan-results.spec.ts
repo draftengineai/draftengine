@@ -1,10 +1,11 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers';
+import { login, openUpdateIntake, mockFeatures } from './helpers';
 import { mockScanApi, mockScanApiEmpty, mockUpdateApi } from '../fixtures/mock-anthropic';
 import { mockGeneratedArticle } from '../fixtures/mock-article';
 
 test.describe('Scan results', () => {
   test.beforeEach(async ({ page }) => {
+    await mockFeatures(page, { updateExisting: true });
     await login(page);
   });
 
@@ -13,7 +14,7 @@ test.describe('Scan results', () => {
   // -----------------------------------------------------------------------
 
   async function openUpdateModeAndScan(page: import('@playwright/test').Page) {
-    await page.click('button:has-text("Update existing")');
+    await openUpdateIntake(page);
     await page.waitForSelector('[data-testid="mode-toggle"]');
 
     // Fill required fields

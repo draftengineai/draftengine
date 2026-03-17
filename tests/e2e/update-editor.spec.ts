@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers';
+import { login, mockFeatures } from './helpers';
 import { mockUpdatedArticle } from '../fixtures/mock-article';
 
 test.describe('Editor — Update Indicators', () => {
   test.beforeEach(async ({ page }) => {
+    await mockFeatures(page, { updateIndicators: true });
     await login(page);
     // Seed updated article via API
     await page.request.post('/api/articles', { data: mockUpdatedArticle });

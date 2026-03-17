@@ -90,6 +90,7 @@ export default function Nav({ userName, showBack, onBack }: NavProps) {
             />
             <button
               onClick={onBack}
+              aria-label="Back to My articles"
               style={{
                 display: "flex",
                 alignItems: "center",
