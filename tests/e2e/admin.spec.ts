@@ -76,10 +76,11 @@ test.describe('Admin dashboard', () => {
     // Mock features with shareWithSteward disabled
     await mockFeatures(page, { shareWithSteward: false });
 
-    // Seed article
+    await login(page);
+
+    // Seed article (after login so request has auth cookie)
     await page.request.post('/api/articles', { data: mockGeneratedArticle });
 
-    await login(page);
     await page.goto(`/editor/${mockGeneratedArticle.id}`);
     await page.locator('[data-toolbar]').waitFor({ timeout: 10000 });
 
