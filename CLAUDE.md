@@ -165,7 +165,9 @@ Tests use mocked API responses — no real Anthropic API calls are made. Set `GA
 - Project name: `gatedoc`
 - Environment variables must be set in Vercel dashboard
 
-## Current Status — Phase 2 COMPLETE + Accessibility Audit (2026-03-16)
+## Current Status — Phase 2 MERGED TO MAIN (2026-03-17)
+
+Phase 2 merged to main and deployed to Vercel on 2026-03-17. All features shipped, 165 tests (158 E2E + 7 unit).
 
 ### Phase 2 Sprint 1: Regression Test Infrastructure — COMPLETE
 
@@ -200,7 +202,7 @@ Tests use mocked API responses — no real Anthropic API calls are made. Set `GA
 - **Cross-module isolation** — Facts are scoped per module, no leakage between modules
 - **Tests:** `approve.spec.ts` (6), `approve-ui.spec.ts` (8), `verified-facts.spec.ts` (7), `feedback-loop.spec.ts` (4) — **25 tests**
 
-### Phase 2 Total Test Count — 152 tests
+### Total Test Count — 165 tests (158 E2E + 7 unit)
 
 | Spec file | Tests | Sprint | Coverage |
 |---|---|---|---|
@@ -224,8 +226,11 @@ Tests use mocked API responses — no real Anthropic API calls are made. Set `GA
 | `verified-facts.spec.ts` | 7 | S3 | Extractor, API, feedback loop integration, empty module |
 | `feedback-loop.spec.ts` | 4 | S3 | Full cycle, approve→revision, re-approve, cross-module isolation |
 | `accessibility.spec.ts` | 20 | A11y | Axe-core audit (9 screens), keyboard navigation (11 tests) |
+| `kanban.spec.ts` | 6 | Kanban | View toggle, columns, card placement, drag reorder, revision border, persistence |
+| `landing-contextual.spec.ts` | 7 | Context | Empty/articles states, action cards, attention card, flag gating |
+| `admin.spec.ts` | 6 | Admin | Admin login, flag toggle, flag gating, reset defaults |
 | **Unit tests** | **7** | S1 | PII filter, article structure |
-| **Total** | **152** | | |
+| **Total** | **165** | | |
 
 ## Phase 1 COMPLETE (2026-03-15)
 
@@ -273,28 +278,26 @@ All Phase 1 features are built, tested, and working. The full new-article flow (
 6. **Verified facts extraction** — Parses bold UI elements, navigation paths, buttons, filters, cards from approved articles
 7. **Confidence feedback loop** — Approved article facts injected into subsequent generation prompts as VERIFIED FACTS block
 8. **Cross-module fact isolation** — Facts scoped per module, no cross-contamination
-9. **Landing page enhancements** — Approved/Revision/Updated status badges, revision articles sort to top
+9. **Landing page enhancements** — Contextual landing (empty state, action cards, attention card), status badges, revision sort
 10. **Preview page Steward actions** — Approve + Request revision buttons, success banners, status displays
+11. **Kanban board** — Drag-and-drop board view with @dnd-kit, three columns (To Do / In Progress / Complete), view toggle with localStorage persistence
+12. **Admin dashboard** — Feature flag management with grouped toggles (Core Tools / Review Workflow), convenience buttons, stats
+13. **Accessibility audit** — axe-core across 9 screens, keyboard navigation, zero critical violations
+
+## Feature Flag Defaults
+
+Feature flags are grouped into two categories:
+
+**Core Tools** (default: ON): `confidenceFlags`, `regenerate`, `deleteArticles`, `stewardNote`, `shareWithSteward`
+
+**Review Workflow** (default: OFF): `updateExisting`, `approveWorkflow`, `updateIndicators`, `completedSection`, `verifiedFacts`
+
+Admin dashboard (`/admin/dashboard`) provides toggle management, "Enable Review Workflow" / "Disable Review Workflow" / "Enable all" convenience buttons, and "Reset to defaults".
 
 ## Branching Strategy
 
-- **main** = stable demo (Phase 1 complete, deployed to Vercel)
-- **phase-2** = active development
-- All Phase 2 work happens on the `phase-2` branch
-- Merge to `main` only when Phase 2 is demo-ready
-
-## Phase 1 vs Phase 2 Boundary
-
-### Phase 1 — New article flow:
-Intake → generation → editing → share → print
-
-### Phase 2 — Article updates + confidence feedback loop:
-- Update existing article mode in intake modal — SHIPPED
-- AI article scanning (`api/scan/route.ts`) — SHIPPED
-- Article update generation (`api/update/route.ts`) — SHIPPED
-- Comparison view in editor (teal borders, View original) — SHIPPED
-- Approve/revision flow with verified facts — SHIPPED
-- Confidence feedback loop (facts injected into generation prompts) — SHIPPED
+- **main** = production (Phase 2 complete, deployed to Vercel)
+- **phase-2** = Phase 2 development branch (merged to main 2026-03-17)
 
 ### Known Issues / Post-Phase 2 Polish
 - Stale results detection not implemented (deferred to Phase 3)
