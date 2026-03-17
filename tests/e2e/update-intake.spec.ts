@@ -8,6 +8,14 @@ test.describe('Update Intake', () => {
   test.beforeEach(async ({ page }) => {
     await mockFeatures(page, { updateExisting: true });
     await login(page);
+    // Seed an article so landing page shows STATE B with action cards
+    await page.request.post('/api/articles', { data: mockGeneratedArticle });
+    await page.reload();
+    await page.locator('[data-testid="action-card-update"]').waitFor({ timeout: 10000 });
+  });
+
+  test.afterEach(async ({ page }) => {
+    await page.request.delete(`/api/articles/${mockGeneratedArticle.id}`).catch(() => {});
   });
 
   // -------------------------------------------------------------------------
