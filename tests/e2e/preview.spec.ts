@@ -43,18 +43,18 @@ test.describe('Preview Page', () => {
     await expect(banner).toContainText('Shared preview — read-only');
   });
 
-  test('2 — "Steward" avatar/label shows in top-right', async ({ page }) => {
+  test('2 — "Reviewer" avatar/label shows in top-right', async ({ page }) => {
     const article = cloneArticle();
     await seedPreview(page, article);
 
     await page.goto(`/preview/${article.id}`);
 
-    // Nav renders with userName="Steward" — shows avatar initial "S" and label
-    const stewardLabel = page.locator('nav >> text=Steward');
-    await expect(stewardLabel).toBeVisible();
+    // Nav renders with userName="Reviewer" — shows avatar initial "R" and label
+    const reviewerLabel = page.locator('nav >> text=Reviewer');
+    await expect(reviewerLabel).toBeVisible();
 
-    // Avatar circle with initial "S"
-    const avatar = page.locator('nav >> text=S').first();
+    // Avatar circle with initial "R"
+    const avatar = page.locator('nav >> text=R').first();
     await expect(avatar).toBeVisible();
   });
 
@@ -65,10 +65,10 @@ test.describe('Preview Page', () => {
     await page.goto(`/preview/${article.id}`);
 
     // Title
-    await expect(page.locator('h1')).toContainText('Search Criteria for Volunteers');
+    await expect(page.locator('h1')).toContainText('Search Criteria for Users');
 
     // Module
-    await expect(page.locator('text=Module: Volunteers')).toBeVisible();
+    await expect(page.locator('text=Module: Users')).toBeVisible();
 
     // Type
     await expect(page.locator('text=Type: How To')).toBeVisible();
@@ -84,7 +84,7 @@ test.describe('Preview Page', () => {
     await expect(page.locator('h2:has-text("Overview")')).toBeVisible();
 
     // Overview text content
-    const overviewText = page.locator('text=Search Criteria feature in the Volunteers module');
+    const overviewText = page.locator('text=new Search feature in the Users module');
     await expect(overviewText).toBeVisible();
   });
 
@@ -106,8 +106,8 @@ test.describe('Preview Page', () => {
 
     await page.goto(`/preview/${article.id}`);
 
-    // The step text contains <b>Volunteers</b> — should render as bold, not raw tags
-    const boldElement = page.locator('b:has-text("Volunteers")').first();
+    // The step text contains <b>Users</b> — should render as bold, not raw tags
+    const boldElement = page.locator('b:has-text("Users")').first();
     await expect(boldElement).toBeVisible();
 
     // Verify it's actually bold (font-weight >= 700)
@@ -129,7 +129,7 @@ test.describe('Preview Page', () => {
 
     // Verify a specific description is shown
     await expect(
-      page.locator('text=Screenshot showing the main menu with Volunteers highlighted'),
+      page.locator('text=Screenshot showing the main menu with Users highlighted'),
     ).toBeVisible();
   });
 
@@ -155,7 +155,7 @@ test.describe('Preview Page', () => {
     expect(bodyText).not.toMatch(/<br\s*\/?>/);
   });
 
-  test('9 — if article has a Steward note, it displays as a banner above article content', async ({
+  test('9 — if article has a Reviewer note, it displays as a banner above article content', async ({
     page,
   }) => {
     // Use the mockSharedArticle which has a reviewNote
@@ -164,8 +164,8 @@ test.describe('Preview Page', () => {
 
     await page.goto(`/preview/${article.id}`);
 
-    // The steward note banner
-    const noteBanner = page.locator('.steward-note-banner');
+    // The reviewer note banner
+    const noteBanner = page.locator('.reviewer-note-banner');
     await expect(noteBanner).toBeVisible();
 
     // Contains the "Writer's note:" label
@@ -190,6 +190,6 @@ test.describe('Preview Page', () => {
     expect(page.url()).not.toContain('/login');
 
     await expect(page.locator('.preview-banner')).toBeVisible();
-    await expect(page.locator('h1')).toContainText('Search Criteria for Volunteers');
+    await expect(page.locator('h1')).toContainText('Search Criteria for Users');
   });
 });

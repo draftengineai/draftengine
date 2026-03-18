@@ -100,11 +100,11 @@ test.describe('Regenerate', () => {
 
     // Title pre-filled
     const titleInput = page.locator('input[type="text"]').first();
-    await expect(titleInput).toHaveValue('Search Criteria for Volunteers');
+    await expect(titleInput).toHaveValue('Search Criteria for Users');
 
     // Module pre-filled — select element should have the right value
     const moduleSelect = page.locator('select').first();
-    await expect(moduleSelect).toHaveValue('Volunteers');
+    await expect(moduleSelect).toHaveValue('Users');
 
     // Change type pre-filled
     const typeSelect = page.locator('select').nth(1);
@@ -121,7 +121,7 @@ test.describe('Regenerate', () => {
     const descriptionTextarea = page.locator('textarea').last();
     const value = await descriptionTextarea.inputValue();
     expect(value.length).toBeGreaterThan(0);
-    expect(value).toContain('Search Criteria');
+    expect(value).toContain('Search feature');
   });
 
   test('4 — "What should the AI do differently?" optional field is present', async ({ page }) => {

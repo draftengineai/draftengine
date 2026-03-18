@@ -10,6 +10,7 @@ import FormatToolbar from "@/components/format-toolbar";
 import RegenerateModal from "@/components/regenerate-modal";
 import GenerationLoading from "@/components/generation-loading";
 import ShareModal from "@/components/share-modal";
+import ExportMenu from "@/components/export-menu";
 import { useFeatures } from "@/lib/hooks/useFeatures";
 
 function getTypeLabel(t: ArticleType): string {
@@ -354,7 +355,7 @@ export default function EditorPage() {
             textAlign: "center",
           }}
         >
-          Revision requested by Steward: {article.revisionReason}
+          Revision requested by Reviewer: {article.revisionReason}
         </div>
       )}
 
@@ -502,9 +503,9 @@ export default function EditorPage() {
               </button>}
 
               {/* Share link button */}
-              {features.shareWithSteward && <button
-                title="Share link with Steward"
-                aria-label="Share link with Steward"
+              {features.shareWithReviewer && <button
+                title="Share link with Reviewer"
+                aria-label="Share link with Reviewer"
                 onClick={() => setShowShareModal(true)}
                 style={{
                   display: "flex",
@@ -549,6 +550,9 @@ export default function EditorPage() {
                 </svg>
                 Share link
               </button>}
+
+              {/* Export dropdown */}
+              <ExportMenu article={article} />
 
               {/* Print button */}
               <button
@@ -662,7 +666,7 @@ export default function EditorPage() {
           setShowShareModal(false);
           setArticle((prev) => prev ? { ...prev, status: "shared" } : prev);
         }}
-        showStewardNote={features.stewardNote}
+        showReviewerNote={features.reviewerNote}
       />
     </div>
   );

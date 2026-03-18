@@ -15,37 +15,37 @@ import type {
 
 const howToContent: HowToContent = {
   overview:
-    'This article explains how to use the new Search Criteria feature in the Volunteers module to filter volunteer lists by availability and assignment status.',
+    'This article explains how to use the new Search feature in the Users module to filter user listings by category and availability status.',
   steps: [
     {
       heading: 'Step 1 of 5:',
-      text: '<p>Navigate to the <b>Volunteers</b> module from the main menu.</p>',
-      imgDesc: 'Screenshot showing the main menu with Volunteers highlighted',
+      text: '<p>Navigate to the <b>Users</b> module from the main menu.</p>',
+      imgDesc: 'Screenshot showing the main menu with Users highlighted',
       imgPath: null,
     },
     {
       heading: 'Step 2 of 5:',
-      text: '<p>Click the <b>Search Criteria</b> button in the toolbar above the volunteer list.</p>',
-      imgDesc: 'Screenshot showing the Search Criteria button in the toolbar',
+      text: '<p>Click the <b>Search</b> button in the toolbar above the user list.</p>',
+      imgDesc: 'Screenshot showing the Search button in the toolbar',
       imgPath: null,
     },
     {
       heading: 'Step 3 of 5:',
-      text: '<p>In the Search Criteria panel, select the desired <b>Availability</b> filter from the dropdown and choose an <b>Assignment Status</b>.</p>',
+      text: '<p>In the Search panel, select the desired <b>Category</b> filter from the dropdown and choose an <b>Availability Status</b>.</p>',
       imgDesc:
-        'Screenshot showing the Search Criteria panel with Availability and Assignment Status filters',
+        'Screenshot showing the Search panel with Category and Availability Status filters',
       imgPath: null,
     },
     {
       heading: 'Step 4 of 5:',
-      text: '<p>Click <b>Apply</b> to filter the volunteer list based on your selected criteria.</p>',
+      text: '<p>Click <b>Apply</b> to filter the user list based on your selected criteria.</p>',
       imgDesc: 'Screenshot showing the Apply button and filtered results',
       imgPath: null,
     },
     {
       heading: 'Step 5 of 5:',
-      text: '<p>To clear all filters, click <b>Reset</b> in the Search Criteria panel.</p>',
-      imgDesc: 'Screenshot showing the Reset button in the Search Criteria panel',
+      text: '<p>To clear all filters, click <b>Reset</b> in the Search panel.</p>',
+      imgDesc: 'Screenshot showing the Reset button in the Search panel',
       imgPath: null,
     },
   ],
@@ -57,13 +57,13 @@ const howToContent: HowToContent = {
 
 const whatsNewContent: WhatsNewContent = {
   overview:
-    'The Volunteers module now includes a Search Criteria feature that lets you filter volunteer lists by availability and assignment status.',
+    'The Users module now includes a Search feature that lets you filter user listings by category and availability status.',
   introduction:
-    '<p>A new <b>Search Criteria</b> feature has been added to the Volunteers module. This enhancement makes it easier to find volunteers based on their current availability and assignment status, reducing the time needed to coordinate visits.</p>',
+    '<p>A new <b>Search</b> feature has been added to the Users module. This enhancement makes it easier to find users based on their current category and availability status, reducing the time needed to locate items.</p>',
   whereToFind:
-    '<p>To access this feature, navigate to <b>Volunteers</b> from the main menu. Click the <b>Search Criteria</b> button in the toolbar above the volunteer list. Use the <b>Availability</b> dropdown and <b>Assignment Status</b> filter to narrow your results, then click <b>Apply</b>.</p>',
+    '<p>To access this feature, navigate to <b>Users</b> from the main menu. Click the <b>Search</b> button in the toolbar above the user list. Use the <b>Category</b> dropdown and <b>Availability Status</b> filter to narrow your results, then click <b>Apply</b>.</p>',
   closing:
-    "Now it's easier than ever to find the right volunteers for your facility visits using the new Search Criteria filters.",
+    "Now it's easier than ever to find the right users using the new Search filters.",
 };
 
 // ---------------------------------------------------------------------------
@@ -74,10 +74,10 @@ const howToConfidence: (ConfidenceFlag | null)[] = [
   null,
   null,
   {
-    what: 'Assignment Status filter location',
-    why: 'The feature description mentions filtering by assignment status but does not specify whether this is a dropdown, checkbox group, or toggle. The panel layout was inferred.',
+    what: 'Availability Status filter location',
+    why: 'The feature description mentions filtering by availability status but does not specify whether this is a dropdown, checkbox group, or toggle. The panel layout was inferred.',
     action:
-      'Open the Search Criteria panel in Gate Access and verify the Assignment Status control type and position.',
+      'Open the Search panel in YourApp and verify the Availability Status control type and position.',
   },
   null,
   null,
@@ -89,8 +89,8 @@ const howToConfidence: (ConfidenceFlag | null)[] = [
 
 export const mockGeneratedArticle: Article = {
   id: 'mock-article-001',
-  title: 'Search Criteria for Volunteers',
-  module: 'Volunteers',
+  title: 'Search Criteria for Users',
+  module: 'Users',
   source: 'feature',
   changeType: 'feature',
   status: 'generated',
@@ -102,7 +102,7 @@ export const mockGeneratedArticle: Article = {
   terminologyValidated: false,
   reviewNote: null,
   description:
-    'Add Search Criteria feature to Volunteers module allowing filtering by availability and assignment status.',
+    'Add Search feature to Users module allowing filtering by category and availability status.',
   isUpdate: false,
   updatedSteps: [],
   updateReason: null,
@@ -162,45 +162,45 @@ export const mockUpdatedArticle: Article = {
   source: 'update',
   isUpdate: true,
   updatedSteps: [1, 4],
-  updateReason: 'Search Criteria button moved to the sidebar in v8.3',
+  updateReason: 'Search button moved to the sidebar in v8.3',
   originals: {
-    1: '<p>Click the <b>Search Criteria</b> link in the left sidebar navigation.</p>',
-    4: '<p>To clear all filters, click <b>Clear</b> at the bottom of the Search Criteria panel.</p>',
+    1: '<p>Click the <b>Search</b> link in the left sidebar navigation.</p>',
+    4: '<p>To clear all filters, click <b>Clear</b> at the bottom of the Search panel.</p>',
   },
   content: {
     howto: {
       overview:
-        'This article explains how to use the new Search Criteria feature in the Volunteers module to filter volunteer lists by availability and assignment status.',
+        'This article explains how to use the new Search feature in the Users module to filter user listings by category and availability status.',
       steps: [
         {
           heading: 'Step 1 of 5:',
-          text: '<p>Navigate to the <b>Volunteers</b> module from the main menu.</p>',
-          imgDesc: 'Screenshot showing the main menu with Volunteers highlighted',
+          text: '<p>Navigate to the <b>Users</b> module from the main menu.</p>',
+          imgDesc: 'Screenshot showing the main menu with Users highlighted',
           imgPath: null,
         },
         {
           heading: 'Step 2 of 5:',
-          text: '<p>Click the <b>Search Criteria</b> button in the toolbar above the volunteer list.</p>',
-          imgDesc: 'Screenshot showing the Search Criteria button in the toolbar',
+          text: '<p>Click the <b>Search</b> button in the toolbar above the user list.</p>',
+          imgDesc: 'Screenshot showing the Search button in the toolbar',
           imgPath: null,
         },
         {
           heading: 'Step 3 of 5:',
-          text: '<p>In the Search Criteria panel, select the desired <b>Availability</b> filter from the dropdown and choose an <b>Assignment Status</b>.</p>',
+          text: '<p>In the Search panel, select the desired <b>Category</b> filter from the dropdown and choose an <b>Availability Status</b>.</p>',
           imgDesc:
-            'Screenshot showing the Search Criteria panel with Availability and Assignment Status filters',
+            'Screenshot showing the Search panel with Category and Availability Status filters',
           imgPath: null,
         },
         {
           heading: 'Step 4 of 5:',
-          text: '<p>Click <b>Apply</b> to filter the volunteer list based on your selected criteria.</p>',
+          text: '<p>Click <b>Apply</b> to filter the user list based on your selected criteria.</p>',
           imgDesc: 'Screenshot showing the Apply button and filtered results',
           imgPath: null,
         },
         {
           heading: 'Step 5 of 5:',
-          text: '<p>To clear all filters, click <b>Reset</b> in the Search Criteria panel.</p>',
-          imgDesc: 'Screenshot showing the Reset button in the Search Criteria panel',
+          text: '<p>To clear all filters, click <b>Reset</b> in the Search panel.</p>',
+          imgDesc: 'Screenshot showing the Reset button in the Search panel',
           imgPath: null,
         },
       ],
@@ -222,7 +222,7 @@ export const mockSharedArticle: Article = {
   id: 'mock-article-003',
   status: 'shared',
   sharedAt: '2026-03-16T12:00:00.000Z',
-  reviewNote: 'Please verify step 3 — the Search Criteria panel layout may differ from the mockup.',
+  reviewNote: 'Please verify step 3 — the Search panel layout may differ from the mockup.',
 };
 
 // ---------------------------------------------------------------------------

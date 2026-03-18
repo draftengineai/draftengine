@@ -1,10 +1,10 @@
 {
-  "verified-facts:Applicants": [
+  "verified-facts:Contacts": [
     {
       "articleId": "fl-test-1",
       "facts": {
-        "module": "Applicants",
-        "navPath": "Applicants",
+        "module": "Contacts",
+        "navPath": "Contacts",
         "cards": [],
         "buttons": [
           "Search",
@@ -16,20 +16,20 @@
           "Status Filter"
         ],
         "uiElements": [
-          "Applicants",
+          "Contacts",
           "Search",
           "Search Criteria",
           "Status Filter",
           "Apply"
         ]
       },
-      "storedAt": "2026-03-17T22:38:59.896Z"
+      "storedAt": "2026-03-18T05:42:14.170Z"
     },
     {
       "articleId": "fl-test-3",
       "facts": {
-        "module": "Applicants",
-        "navPath": "Applicants",
+        "module": "Contacts",
+        "navPath": "Contacts",
         "cards": [],
         "buttons": [
           "Search",
@@ -41,20 +41,20 @@
           "Status Filter"
         ],
         "uiElements": [
-          "Applicants",
+          "Contacts",
           "Search",
           "Search Criteria",
           "Status Filter",
           "Apply"
         ]
       },
-      "storedAt": "2026-03-17T22:39:00.916Z"
+      "storedAt": "2026-03-18T05:42:15.333Z"
     },
     {
       "articleId": "fl-test-4a",
       "facts": {
-        "module": "Applicants",
-        "navPath": "Applicants",
+        "module": "Contacts",
+        "navPath": "Contacts",
         "cards": [],
         "buttons": [
           "Search",
@@ -66,20 +66,20 @@
           "Status Filter"
         ],
         "uiElements": [
-          "Applicants",
+          "Contacts",
           "Search",
           "Search Criteria",
           "Status Filter",
           "Apply"
         ]
       },
-      "storedAt": "2026-03-17T22:39:01.435Z"
+      "storedAt": "2026-03-18T05:42:15.885Z"
     },
     {
       "articleId": "vf-test-4",
       "facts": {
-        "module": "Applicants",
-        "navPath": "Applicants",
+        "module": "Contacts",
+        "navPath": "Contacts",
         "cards": [],
         "buttons": [
           "Search",
@@ -91,20 +91,20 @@
           "Status Filter"
         ],
         "uiElements": [
-          "Applicants",
+          "Contacts",
           "Search",
           "Search Criteria",
           "Status Filter",
           "Apply"
         ]
       },
-      "storedAt": "2026-03-17T22:39:32.806Z"
+      "storedAt": "2026-03-18T05:42:45.017Z"
     },
     {
       "articleId": "vf-test-6",
       "facts": {
-        "module": "Applicants",
-        "navPath": "Applicants",
+        "module": "Contacts",
+        "navPath": "Contacts",
         "cards": [],
         "buttons": [
           "Search",
@@ -116,49 +116,22 @@
           "Status Filter"
         ],
         "uiElements": [
-          "Applicants",
+          "Contacts",
           "Search",
           "Search Criteria",
           "Status Filter",
           "Apply"
         ]
       },
-      "storedAt": "2026-03-17T22:39:33.695Z"
+      "storedAt": "2026-03-18T05:42:45.867Z"
     }
   ],
-  "verified-facts:Volunteers": [
-    {
-      "articleId": "approve-t1",
-      "facts": {
-        "module": "Volunteers",
-        "navPath": "Volunteers",
-        "cards": [],
-        "buttons": [
-          "Search Criteria",
-          "Apply",
-          "Reset"
-        ],
-        "filters": [
-          "Search Criteria",
-          "Availability",
-          "Assignment Status"
-        ],
-        "uiElements": [
-          "Volunteers",
-          "Search Criteria",
-          "Availability",
-          "Assignment Status",
-          "Apply",
-          "Reset"
-        ]
-      },
-      "storedAt": "2026-03-17T22:38:52.779Z"
-    },
+  "verified-facts:Products": [
     {
       "articleId": "approve-t3a",
       "facts": {
-        "module": "Volunteers",
-        "navPath": "Volunteers",
+        "module": "Products",
+        "navPath": "Products",
         "cards": [],
         "buttons": [
           "Search Criteria",
@@ -171,7 +144,7 @@
           "Assignment Status"
         ],
         "uiElements": [
-          "Volunteers",
+          "Products",
           "Search Criteria",
           "Availability",
           "Assignment Status",
@@ -184,8 +157,8 @@
     {
       "articleId": "approve-t3b",
       "facts": {
-        "module": "Volunteers",
-        "navPath": "Volunteers",
+        "module": "Products",
+        "navPath": "Products",
         "cards": [
           "Assignment Dialog"
         ],
@@ -195,7 +168,7 @@
         ],
         "filters": [],
         "uiElements": [
-          "Volunteers",
+          "Products",
           "Bulk Assign",
           "Assignment Dialog",
           "Confirm"
@@ -206,8 +179,8 @@
     {
       "articleId": "approve-t5b",
       "facts": {
-        "module": "Volunteers",
-        "navPath": "Volunteers",
+        "module": "Products",
+        "navPath": "Products",
         "cards": [
           "Assignment Dialog"
         ],
@@ -217,13 +190,137 @@
         ],
         "filters": [],
         "uiElements": [
-          "Volunteers",
+          "Products",
           "Bulk Assign",
           "Assignment Dialog",
           "Confirm"
         ]
       },
       "storedAt": "2026-03-17T22:38:55.611Z"
+    },
+    {
+      "articleId": "approve-t1",
+      "facts": {
+        "module": "Products",
+        "navPath": "Products",
+        "cards": [],
+        "buttons": [
+          "Search",
+          "Apply",
+          "Reset"
+        ],
+        "filters": [
+          "Search",
+          "Availability Status"
+        ],
+        "uiElements": [
+          "Products",
+          "Search",
+          "Category",
+          "Availability Status",
+          "Apply",
+          "Reset"
+        ]
+      },
+      "storedAt": "2026-03-18T05:22:58.928Z"
+    }
+  ],
+  "verified-facts:Users": [
+    {
+      "articleId": "approve-t1",
+      "facts": {
+        "module": "Users",
+        "navPath": "Users",
+        "cards": [],
+        "buttons": [
+          "Search",
+          "Apply",
+          "Reset"
+        ],
+        "filters": [
+          "Search",
+          "Availability Status"
+        ],
+        "uiElements": [
+          "Users",
+          "Search",
+          "Category",
+          "Availability Status",
+          "Apply",
+          "Reset"
+        ]
+      },
+      "storedAt": "2026-03-18T05:42:08.235Z"
+    },
+    {
+      "articleId": "approve-t3a",
+      "facts": {
+        "module": "Users",
+        "navPath": "Users",
+        "cards": [],
+        "buttons": [
+          "Search",
+          "Apply",
+          "Reset"
+        ],
+        "filters": [
+          "Search",
+          "Availability Status"
+        ],
+        "uiElements": [
+          "Users",
+          "Search",
+          "Category",
+          "Availability Status",
+          "Apply",
+          "Reset"
+        ]
+      },
+      "storedAt": "2026-03-18T05:42:10.084Z"
+    },
+    {
+      "articleId": "approve-t3b",
+      "facts": {
+        "module": "Users",
+        "navPath": "Users",
+        "cards": [
+          "Assignment Dialog"
+        ],
+        "buttons": [
+          "Bulk Assign",
+          "Confirm"
+        ],
+        "filters": [],
+        "uiElements": [
+          "Users",
+          "Bulk Assign",
+          "Assignment Dialog",
+          "Confirm"
+        ]
+      },
+      "storedAt": "2026-03-18T05:42:10.117Z"
+    },
+    {
+      "articleId": "approve-t5b",
+      "facts": {
+        "module": "Users",
+        "navPath": "Users",
+        "cards": [
+          "Assignment Dialog"
+        ],
+        "buttons": [
+          "Bulk Assign",
+          "Confirm"
+        ],
+        "filters": [],
+        "uiElements": [
+          "Users",
+          "Bulk Assign",
+          "Assignment Dialog",
+          "Confirm"
+        ]
+      },
+      "storedAt": "2026-03-18T05:42:11.822Z"
     }
   ]
 }

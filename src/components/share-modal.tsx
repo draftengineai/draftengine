@@ -7,7 +7,7 @@ interface ShareModalProps {
   articleId: string;
   onClose: () => void;
   onShare: (note: string) => void;
-  showStewardNote?: boolean;
+  showReviewerNote?: boolean;
 }
 
 export default function ShareModal({
@@ -15,7 +15,7 @@ export default function ShareModal({
   articleId,
   onClose,
   onShare,
-  showStewardNote = true,
+  showReviewerNote = true,
 }: ShareModalProps) {
   const [note, setNote] = useState("");
   const [copied, setCopied] = useState(false);
@@ -120,7 +120,7 @@ export default function ShareModal({
             marginBottom: 4,
           }}
         >
-          Share with your Steward
+          Share with your Reviewer
         </h3>
         <p
           className="share-desc"
@@ -154,7 +154,7 @@ export default function ShareModal({
         </div>
 
         {/* Note textarea */}
-        {showStewardNote && (
+        {showReviewerNote && (
           <>
             <label
               htmlFor="share-note"
@@ -166,7 +166,7 @@ export default function ShareModal({
                 marginBottom: 6,
               }}
             >
-              Note to Steward{" "}
+              Note to Reviewer{" "}
               <span style={{ fontWeight: 400, color: "var(--text-tertiary)" }}>
                 (optional)
               </span>

@@ -39,11 +39,11 @@ ${s.text}
 [Screenshot description: ${s.imgDesc}]`
   ).join('\n\n');
 
-  return `You are a Knowledge Center article revision engine for Gate Access, the web application of the Jehovah's Witnesses prison ministry (Prison Witnessing Program).
+  return `You are a Knowledge Center article revision engine for YourApp.
 
 ## YOUR TASK
 
-An existing How To article needs revision because something changed in Gate Access. You must:
+An existing How To article needs revision because something changed in the application. You must:
 
 1. Read the change description carefully
 2. Identify which steps in the existing article are affected
@@ -94,7 +94,7 @@ ${behaviorRules ? `## UX BEHAVIOR RULES\n\n${behaviorRules}` : ''}
 These apply ONLY to the steps you revise. Do not apply them to unchanged steps.
 
 - Begin each step with a clear action verb (Click, Select, Enter, Find, Scroll)
-- Bold ONLY the exact wording that appears in the Gate Access interface
+- Bold ONLY the exact wording that appears in the application interface
 - Keep each step short and direct (1–2 sentences)
 - Notes, Tips, Warnings: indented beneath the step, formatted as <u><b>Note:</b></u>
 - Use present tense and imperative mood

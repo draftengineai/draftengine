@@ -34,7 +34,7 @@ export function buildVerifiedFactsBlock(
     '',
   ];
 
-  if (navPath) lines.push(`Navigation: In the Navigation Panel, select ${navPath}`);
+  if (navPath) lines.push(`Navigation: In the sidebar, select ${navPath}`);
   if (cards.size > 0) lines.push(`Cards: ${[...cards].join(', ')}`);
   if (buttons.size > 0) lines.push(`Buttons: ${[...buttons].join(', ')}`);
   if (filters.size > 0) lines.push(`Filters: ${[...filters].join(', ')}`);

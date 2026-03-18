@@ -5,7 +5,7 @@ describe('Article type structure', () => {
     const article: Article = {
       id: 'test-1',
       title: 'Test Article',
-      module: 'Applicants',
+      module: 'Contacts',
       source: 'feature',
       changeType: 'enhancement',
       status: 'new',
@@ -44,7 +44,7 @@ describe('Article type structure', () => {
   test('FeatureIntake includes Phase 2 fields', () => {
     const intake: FeatureIntake = {
       title: 'Test',
-      module: 'Applicants',
+      module: 'Contacts',
       changeType: 'feature',
       description: 'Test description',
       behaviorRulesLinks: [],
@@ -63,7 +63,7 @@ describe('Article type structure', () => {
     const article: Article = {
       id: 'test-2',
       title: 'Test',
-      module: 'Applicants',
+      module: 'Contacts',
       source: 'feature',
       changeType: 'feature',
       status: 'generated',

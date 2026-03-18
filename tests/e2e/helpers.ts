@@ -58,12 +58,12 @@ export async function openUpdateIntake(page: Page) {
 export async function mockFeatures(page: Page, flags: Record<string, boolean>) {
   const defaults = {
     updateExisting: true,
-    shareWithSteward: true,
+    shareWithReviewer: true,
     approveWorkflow: true,
     confidenceFlags: true,
     completedSection: true,
     verifiedFacts: true,
-    stewardNote: true,
+    reviewerNote: true,
     regenerate: true,
     deleteArticles: true,
     updateIndicators: true,

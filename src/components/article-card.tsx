@@ -61,7 +61,7 @@ function getAIProgressLine(article: Article): { color: string; text: string } {
     case 'approved':
       return { color: '#16a34a', text: 'Approved — verified facts extracted' };
     case 'revision':
-      return { color: '#d97706', text: 'Revision requested by Steward' };
+      return { color: '#d97706', text: 'Revision requested by Reviewer' };
     default:
       return { color: 'var(--blue)', text: 'AI draft — not yet reviewed' };
   }

@@ -30,9 +30,9 @@ export function extractFacts(article: Article): VerifiedFacts {
   // Extract navigation path from Step 1
   if (howto.steps.length > 0) {
     const step1Text = howto.steps[0].text;
-    // Match "navigate to <b>X</b>" or "Navigation Panel, select <b>X</b>"
+    // Match "navigate to <b>X</b>" or "sidebar, select <b>X</b>"
     const navMatch = step1Text.match(/navigate to (?:the )?<b>(.+?)<\/b>/i)
-      || step1Text.match(/Navigation Panel,?\s+select\s+<b>(.+?)<\/b>/i);
+      || step1Text.match(/sidebar,?\s+select\s+<b>(.+?)<\/b>/i);
     if (navMatch) {
       facts.navPath = navMatch[1];
     }

@@ -14,7 +14,7 @@ export default function PreviewPage() {
 
   const { features } = useFeatures();
 
-  // Steward action state
+  // Reviewer action state
   const [approving, setApproving] = useState(false);
   const [approved, setApproved] = useState(false);
   const [showRevisionForm, setShowRevisionForm] = useState(false);
@@ -82,7 +82,7 @@ export default function PreviewPage() {
   if (loading) {
     return (
       <>
-        <Nav userName="Steward" />
+        <Nav userName="Reviewer" />
         <div
           style={{
             display: "flex",
@@ -102,7 +102,7 @@ export default function PreviewPage() {
   if (error || !article) {
     return (
       <>
-        <Nav userName="Steward" />
+        <Nav userName="Reviewer" />
         <div
           style={{
             display: "flex",
@@ -124,7 +124,7 @@ export default function PreviewPage() {
       ? article.content.howto
       : article.content.wn;
 
-  // Determine steward action area content
+  // Determine reviewer action area content
   const isApproved = article.status === "approved";
   const isRevision = article.status === "revision";
 
@@ -133,14 +133,14 @@ export default function PreviewPage() {
       <style>{`
         @media print {
           .preview-banner,
-          .steward-note-banner,
-          .steward-actions {
+          .reviewer-note-banner,
+          .reviewer-actions {
             display: none !important;
           }
         }
       `}</style>
 
-      <Nav userName="Steward" />
+      <Nav userName="Reviewer" />
 
       {/* Shared preview banner */}
       <div
@@ -158,9 +158,9 @@ export default function PreviewPage() {
         Shared preview — read-only
       </div>
 
-      {/* Steward actions bar */}
+      {/* Reviewer actions bar */}
       <div
-        className="steward-actions"
+        className="reviewer-actions"
         style={{
           maxWidth: 860,
           margin: "0 auto",
@@ -244,7 +244,7 @@ export default function PreviewPage() {
 
         {features.approveWorkflow && !isApproved && !isRevision && !approved && !revisionSubmitted && (
           <div
-            data-testid="steward-action-buttons"
+            data-testid="reviewer-action-buttons"
             style={{ display: "flex", flexDirection: "column", gap: 12 }}
           >
             <div style={{ display: "flex", gap: 10 }}>
@@ -340,10 +340,10 @@ export default function PreviewPage() {
           padding: "16px 16px 48px",
         }}
       >
-        {/* Steward note */}
+        {/* Reviewer note */}
         {article.reviewNote && (
           <div
-            className="steward-note-banner"
+            className="reviewer-note-banner"
             style={{
               backgroundColor: "var(--teal-light, #e0f5f0)",
               border: "1px solid var(--teal, #2da887)",

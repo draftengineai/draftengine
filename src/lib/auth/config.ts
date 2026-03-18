@@ -2,9 +2,9 @@ import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 const USERS = [
-  { id: '1', name: 'User One', email: 'user1@redacted', password: 'REDACTED' },
-  { id: '2', name: 'User Two', email: 'user2@redacted', password: 'REDACTED' },
-  { id: '3', name: 'User Three', email: 'user3@redacted', password: 'REDACTED' },
+  { id: '1', name: 'Alex Writer', email: 'alex@example.com', password: 'REDACTED' },
+  { id: '2', name: 'Morgan Editor', email: 'morgan@example.com', password: 'REDACTED' },
+  { id: '3', name: 'Riley Admin', email: 'riley@example.com', password: 'REDACTED' },
 ];
 
 export const authOptions: NextAuthOptions = {

@@ -1,14 +1,14 @@
 # GateDoc
 
-GateDoc is a Next.js application that generates Knowledge Center articles for Gate Access (a web application used by Jehovah's Witnesses to coordinate prison ministry work). Writers enter feature specs via an intake form, and the AI generates How To and What's New articles using the Anthropic Claude API. Writers then edit, add screenshots, share with Stewards, and print to PDF.
+GateDoc is a Next.js application that generates Knowledge Center articles from feature specifications using AI. Writers enter feature specs via an intake form, and the AI generates How To and What's New articles. Writers then edit, add screenshots, share with Reviewers, and print to PDF.
 
 ## Tech Stack
 
 - **Framework:** Next.js 14+ (App Router, TypeScript, src directory)
-- **Styling:** Tailwind CSS + custom CSS variables matching v8 mockup
+- **Styling:** Tailwind CSS + custom CSS variables
 - **Auth:** Simple password gate via middleware (env var `GATEDOC_PASSWORD`) + Auth.js (next-auth) for user identity
 - **Persistence:** Vercel KV in production, local `store.json` fallback in dev
-- **AI:** Anthropic SDK (@anthropic-ai/sdk) — Claude for article generation
+- **AI:** Multi-provider (Anthropic Claude, OpenAI, Ollama) via `src/lib/ai/provider.ts`
 - **Testing:** Jest (unit) + Playwright (E2E)
 - **Deployment:** Vercel, project name "gatedoc"
 
@@ -50,8 +50,11 @@ src/
     screenshot-slot.tsx
     share-modal.tsx
     format-toolbar.tsx
+    export-menu.tsx                 # HTML + Markdown export dropdown
     generation-loading.tsx
   lib/
+    ai/
+      provider.ts                   # Multi-provider AI abstraction (Anthropic/OpenAI/Ollama)
     auth/config.ts
     prompts/
       how-to.ts                     # v0.2.0
@@ -65,6 +68,16 @@ src/
       terminology-seed.json
       modules.json
       features.ts                   # Feature flags system (KV + local JSON fallback)
+      templates/                    # Template system
+        index.ts                    # Loads active template from GATEDOC_TEMPLATE env var
+        default/                    # Default knowledge center template
+          writing-standards.ts
+          article-structure.ts
+          terminology.ts
+        technical-docs/             # Developer-focused template
+          writing-standards.ts
+          article-structure.ts
+          terminology.ts
     hooks/
       useFeatures.ts                # React hook for client-side feature flag access
     verified-facts/
@@ -77,14 +90,14 @@ src/
       verified-facts-store.json     # Local dev store for verified facts
 tests/
   fixtures/
-    ftr-3849-input.json
+    sample-feature-input.json
     pii-test-cases.json
     thin-data-input.json
     mock-anthropic.ts              # Mock Anthropic API / generate route for E2E
     mock-article.ts                # Pre-built Article objects for editor tests
     mock-scan-results.ts           # Mock scan API responses
     mock-update-results.ts         # Mock update API responses
-    sample-intake.ts               # FTR #3849 FeatureIntake data
+    sample-intake.ts               # Sample FeatureIntake data for tests
   e2e/
     writer-journey.spec.ts
     feedback-loop.spec.ts          # Full feedback loop integration (4 tests)
@@ -97,7 +110,7 @@ tests/
 
 ## Key Constraints
 
-- **PIIFreePayload**: Every payload sent to Anthropic MUST be typed as PIIFreePayload. No PII (user names, facility names, resident names, IDs) ever reaches the API.
+- **PIIFreePayload**: Every payload sent to the AI provider MUST be typed as PIIFreePayload. No PII (user names, organization names, customer names, IDs) ever reaches the API.
 - **Terminology**: Organization-specific terms loaded from `src/lib/config/terminology-seed.json`. Non-negotiable usage rules.
 - **Prompts**: Versioned in `src/lib/prompts/`. Each prompt file has a version constant and a builder function.
 - **Phase 2 fields in data model**: Article type includes `isUpdate`, `updatedSteps`, `updateReason`, `originals`, `parentArticleIds` from day one — all default to empty/false/null.
@@ -112,12 +125,18 @@ npm install
 # Run dev server
 npm run dev
 
-# Required environment variables (.env.local):
-ANTHROPIC_API_KEY=sk-ant-...
-NEXTAUTH_SECRET=<openssl rand -base64 32>
-NEXTAUTH_URL=http://localhost:3000
-GATEDOC_PASSWORD=<shared demo password>
-GATEDOC_ADMIN_PASSWORD=<admin dashboard password>
+# Configure environment (see .env.example for all variables):
+cp .env.example .env.local
+# Edit .env.local — required: ANTHROPIC_API_KEY, GATEDOC_PASSWORD, GATEDOC_ADMIN_PASSWORD, NEXTAUTH_SECRET
+
+# Optional — AI provider (default: anthropic):
+# AI_PROVIDER=openai|ollama
+# OPENAI_API_KEY=sk-...
+# OLLAMA_BASE_URL=http://localhost:11434
+# OLLAMA_MODEL=llama3.1
+
+# Optional — Template (default: "default"):
+# GATEDOC_TEMPLATE=technical-docs
 
 # Optional — Vercel KV (auto-set by Vercel when KV store is linked):
 # KV_REST_API_URL=https://...
@@ -149,15 +168,15 @@ Tests use mocked API responses — no real Anthropic API calls are made. Set `GA
 | `editor-whatsnew.spec.ts` | 7 | What's New editor: tab switching, title, overview, sections (intro/where/closing), tab persistence |
 | `flags.spec.ts` | 10 | Confidence flags: render, WHAT/WHY/ACTION fields, dismiss, sidebar count, persistence, verified-input skip |
 | `regenerate.spec.ts` | 8 | Regenerate button, modal pre-fill, optional feedback field, warning, cancel, content replacement, flag reset |
-| `share.spec.ts` | 7 | Share button, modal, preview URL, Steward note, save & copy, cancel |
-| `preview.spec.ts` | 10 | Preview banner, Steward label, article content, steps, bold, screenshots, no raw HTML, Steward note, no-auth access |
+| `share.spec.ts` | 7 | Share button, modal, preview URL, Reviewer note, save & copy, cancel |
+| `preview.spec.ts` | 10 | Preview banner, Reviewer label, article content, steps, bold, screenshots, no raw HTML, Reviewer note, no-auth access |
 | `thin-data.spec.ts` | 5 | Thin data detection, banner, write-manually recovery, regenerate from thin, INSUFFICIENT CONTEXT display |
 
 ### Test Fixtures (tests/fixtures/)
 
 - **mock-anthropic.ts** — Intercepts Anthropic API / `/api/generate` calls with deterministic responses. Provides `mockAnthropicApi(page)` for upstream interception and `mockGenerateApi(page)` for route-level interception.
 - **mock-article.ts** — Pre-built `Article` objects: `mockGeneratedArticle`, `mockEditingArticle`, `mockSharedArticle`. How To has 5 steps with 1 confidence flag on step 3; What's New has all 4 sections.
-- **sample-intake.ts** — FTR #3849 `FeatureIntake` data (`ftr3849Intake`): "Search Criteria for Volunteers", module Volunteers, 2 user stories.
+- **sample-intake.ts** — Sample `FeatureIntake` data (`sampleIntake`): "Add Search to Products Page", module Products, 2 user stories.
 
 ## Deployment
 
@@ -197,8 +216,8 @@ Phase 2 merged to main and deployed to Vercel on 2026-03-17. All features shippe
 - **Verified Facts Store** (`src/lib/verified-facts/store.ts`) — Module-scoped fact storage with per-article entries (Vercel KV / local JSON)
 - **Block Builder** (`src/lib/verified-facts/block-builder.ts`) — Builds VERIFIED FACTS prompt block from stored facts
 - **Prompt injection** — Generate route fetches module facts, builds block, injects into How To + What's New prompts before INPUT section
-- **Preview page Steward actions** — Approve/Request revision buttons on shared articles, success banners, approved/revision status display
-- **Editor revision banner** — Shows Steward's revision reason when article is in revision status
+- **Preview page Reviewer actions** — Approve/Request revision buttons on shared articles, success banners, approved/revision status display
+- **Editor revision banner** — Shows Reviewer's revision reason when article is in revision status
 - **Cross-module isolation** — Facts are scoped per module, no leakage between modules
 - **Tests:** `approve.spec.ts` (6), `approve-ui.spec.ts` (8), `verified-facts.spec.ts` (7), `feedback-loop.spec.ts` (4) — **25 tests**
 
@@ -213,8 +232,8 @@ Phase 2 merged to main and deployed to Vercel on 2026-03-17. All features shippe
 | `editor-whatsnew.spec.ts` | 7 | S1 | What's New editor: tabs, title, overview, sections, persistence |
 | `flags.spec.ts` | 10 | S1 | Confidence flags: render, WHAT/WHY/ACTION, dismiss, sidebar, persistence |
 | `regenerate.spec.ts` | 8 | S1 | Regenerate: modal, pre-fill, feedback, warning, cancel, replacement |
-| `share.spec.ts` | 7 | S1 | Share: button, modal, preview URL, Steward note, save & copy |
-| `preview.spec.ts` | 10 | S1 | Preview: banner, Steward label, content, steps, bold, screenshots |
+| `share.spec.ts` | 7 | S1 | Share: button, modal, preview URL, Reviewer note, save & copy |
+| `preview.spec.ts` | 10 | S1 | Preview: banner, Reviewer label, content, steps, bold, screenshots |
 | `thin-data.spec.ts` | 5 | S1 | Thin data: detection, banner, write-manually, regenerate, INSUFFICIENT CONTEXT |
 | `scan-api.spec.ts` | 3 | S2 | Scan API: valid scan, no matches, missing fields |
 | `scan-results.spec.ts` | 6 | S2 | Scan results: badges, checkboxes, update flow, landing badges |
@@ -222,7 +241,7 @@ Phase 2 merged to main and deployed to Vercel on 2026-03-17. All features shippe
 | `update-editor.spec.ts` | 7 | S2 | Editor update indicators: teal border, badges, view original, banner |
 | `update-intake.spec.ts` | 6 | S2 | Update intake: mode toggle, scan flow, checkboxes, update selected |
 | `approve.spec.ts` | 6 | S3 | Approve API: status, facts stored, merge, revision, facts removal |
-| `approve-ui.spec.ts` | 8 | S3 | Preview Steward actions, landing badges, editor revision banner |
+| `approve-ui.spec.ts` | 8 | S3 | Preview Reviewer actions, landing badges, editor revision banner |
 | `verified-facts.spec.ts` | 7 | S3 | Extractor, API, feedback loop integration, empty module |
 | `feedback-loop.spec.ts` | 4 | S3 | Full cycle, approve→revision, re-approve, cross-module isolation |
 | `accessibility.spec.ts` | 20 | A11y | Axe-core audit (9 screens), keyboard navigation (11 tests) |
@@ -243,8 +262,8 @@ All Phase 1 features are built, tested, and working. The full new-article flow (
 3. **Editor** — contenteditable text editing, screenshot placeholders, confidence flags with WHAT/WHY/ACTION detail
 4. **Regenerate with pre-filled inputs** — Re-run generation from the editor; replaces article in place
 5. **Thin data detection with recovery flow** — When specs are too sparse, offers Write manually + Regenerate options
-6. **Share with Steward** — Preview URL + optional note sent to Steward for review
-7. **Preview page** — Read-only HTML-rendered article with Steward note banner
+6. **Share with Reviewer** — Preview URL + optional note sent to Reviewer for review
+7. **Preview page** — Read-only HTML-rendered article with Reviewer note banner
 8. **Loading screen** — Animated step indicators showing generation progress
 9. **Update existing placeholder** — Phase 2 update mode visible with "Coming soon" state
 10. **Delete articles** — Remove articles from landing page
@@ -273,13 +292,13 @@ All Phase 1 features are built, tested, and working. The full new-article flow (
 1. **Article scanning** — AI-powered scan to find articles affected by feature changes, confidence-ranked results (HIGH/MEDIUM/LOW)
 2. **Article updates** — Generate revised articles preserving originals, teal change indicators, "View original" toggle
 3. **Update intake mode** — Mode toggle, scan flow with checkboxes, batch update selected articles
-4. **Approve flow** — Steward approves articles from preview page, extracts verified facts from content
-5. **Request revision flow** — Steward requests revision with reason, removes verified facts, revision banner in editor
+4. **Approve flow** — Reviewer approves articles from preview page, extracts verified facts from content
+5. **Request revision flow** — Reviewer requests revision with reason, removes verified facts, revision banner in editor
 6. **Verified facts extraction** — Parses bold UI elements, navigation paths, buttons, filters, cards from approved articles
 7. **Confidence feedback loop** — Approved article facts injected into subsequent generation prompts as VERIFIED FACTS block
 8. **Cross-module fact isolation** — Facts scoped per module, no cross-contamination
 9. **Landing page enhancements** — Contextual landing (empty state, action cards, attention card), status badges, revision sort
-10. **Preview page Steward actions** — Approve + Request revision buttons, success banners, status displays
+10. **Preview page Reviewer actions** — Approve + Request revision buttons, success banners, status displays
 11. **Kanban board** — Drag-and-drop board view with @dnd-kit, three columns (To Do / In Progress / Complete), view toggle with localStorage persistence
 12. **Admin dashboard** — Feature flag management with grouped toggles (Core Tools / Review Workflow), convenience buttons, stats
 13. **Accessibility audit** — axe-core across 9 screens, keyboard navigation, zero critical violations
@@ -288,7 +307,7 @@ All Phase 1 features are built, tested, and working. The full new-article flow (
 
 Feature flags are grouped into two categories:
 
-**Core Tools** (default: ON): `confidenceFlags`, `regenerate`, `deleteArticles`, `stewardNote`, `shareWithSteward`
+**Core Tools** (default: ON): `confidenceFlags`, `regenerate`, `deleteArticles`, `reviewerNote`, `shareWithReviewer`
 
 **Review Workflow** (default: OFF): `updateExisting`, `approveWorkflow`, `updateIndicators`, `completedSection`, `verifiedFacts`
 
@@ -331,23 +350,12 @@ Admin dashboard (`/admin/dashboard`) provides toggle management, "Enable Review 
 - `region` — Some content outside landmark regions
 - `page-has-heading-one` — Editor page has no h1 (uses toolbar title instead)
 
-## Spec Compliance (vs implementation-kickoff-v2.md)
-
-Audited 2026-03-15. Reference spec: `implementation-kickoff-v2.md` in project root.
-
-### Matches spec
+## Spec Compliance
 
 - **article.ts** — All Phase 2 fields present (`isUpdate`, `updatedSteps`, `updateReason`, `originals`, `parentArticleIds`) with correct types. `FeatureIntake` includes `isUpdate` and `targetArticleIds`. `ScanResult` interface defined.
 - **pii.ts** — `PIIFreePayload` includes all 3 scan-specific optional fields (`existingArticleContent`, `existingArticleOverview`, `existingArticleBoldElements`). `assertPIIFree` validates against `ALLOWED_FIELDS` set.
 - **Prompts** — All 4 files exist with version constants and builder functions: `how-to.ts` (v0.2.0), `whats-new.ts` (v0.2.0), `scan-articles.ts` (v0.1.0), `update-how-to.ts` (v0.1.0).
 - **Article CRUD** — `updateArticle` uses `Partial<Article>` spread, handles all fields. Generate route sets correct Phase 2 defaults.
 - **Phase 1 features** — All 11 spec items complete (types, generation API, CRUD, landing, intake, editor, share/preview, auth, print CSS, tests, CLAUDE.md).
-
-### Intentional divergences
-
-- **Intake modal update mode** — Spec defers update mode UI to Phase 2, but the modal now opens in update mode with a "Coming soon" placeholder when clicking "Update existing" on the landing page. This is a UX improvement over the original toast-only behavior — the mode toggle is visible so users understand both modes exist.
-- **Phase 2 API routes** — `api/scan/route.ts`, `api/update/route.ts`, `api/approve/route.ts`, `api/request-revision/route.ts`, `api/verified-facts/route.ts` all implemented. Original spec listed `api/revise/route.ts` which was implemented as `api/update/route.ts` instead.
-- **Phase 2 components** — Mode toggle logic is inline in `intake-form.tsx` rather than separate `mode-toggle.tsx`. Scanner and comparison view are inline in their respective components rather than separate files.
-- **Regenerate modal** — `regenerate-modal.tsx` exists but is not listed in the spec file structure. Added post-spec as a UX enhancement.
-- **Toast component** — `toast.tsx` exists but is not listed in the spec. Added for user feedback.
-- **Generation loading** — `generation-loading.tsx` exists but is not in the spec file structure. Added to match v8 mockup loading screen.
+- **Phase 2 API routes** — `api/scan/route.ts`, `api/update/route.ts`, `api/approve/route.ts`, `api/request-revision/route.ts`, `api/verified-facts/route.ts` all implemented.
+- **Phase 2 components** — Mode toggle logic is inline in `intake-form.tsx` rather than separate file. Scanner and comparison view are inline in their respective components.

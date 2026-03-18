@@ -60,14 +60,14 @@ test.describe('Share', () => {
     await expect(shareBtn).toBeVisible();
   });
 
-  test('2 — clicking Share link opens modal with "Share with your Steward" title', async ({ page }) => {
+  test('2 — clicking Share link opens modal with "Share with your Reviewer" title', async ({ page }) => {
     const articleRef = { current: cloneArticle() };
     await seedArticle(page, articleRef);
 
     await page.goto(`/editor/${articleRef.current.id}`);
     await page.locator('[data-toolbar] button:has-text("Share link")').click();
 
-    await expect(page.locator('h3:has-text("Share with your Steward")')).toBeVisible();
+    await expect(page.locator('h3:has-text("Share with your Reviewer")')).toBeVisible();
   });
 
   test('3 — preview URL is displayed in the modal', async ({ page }) => {
@@ -83,7 +83,7 @@ test.describe('Share', () => {
     await expect(urlDisplay).toContainText(`preview/${articleRef.current.id}`);
   });
 
-  test('4 — "Note to Steward (optional)" textarea is present with placeholder text', async ({ page }) => {
+  test('4 — "Note to Reviewer (optional)" textarea is present with placeholder text', async ({ page }) => {
     const articleRef = { current: cloneArticle() };
     await seedArticle(page, articleRef);
 
@@ -91,7 +91,7 @@ test.describe('Share', () => {
     await page.locator('[data-toolbar] button:has-text("Share link")').click();
 
     // Label
-    await expect(page.locator('text=Note to Steward')).toBeVisible();
+    await expect(page.locator('text=Note to Reviewer')).toBeVisible();
     await expect(page.locator('text=(optional)')).toBeVisible();
 
     // Textarea with placeholder
@@ -129,7 +129,7 @@ test.describe('Share', () => {
     await page.locator('button:has-text("Save & Copy Link")').click();
 
     // Wait for the PATCH to complete — modal closes via onShare callback
-    await expect(page.locator('h3:has-text("Share with your Steward")')).not.toBeVisible();
+    await expect(page.locator('h3:has-text("Share with your Reviewer")')).not.toBeVisible();
 
     // Verify the articleRef was updated via the PATCH interceptor
     expect(articleRef.current.reviewNote).toBe(noteText);
@@ -144,7 +144,7 @@ test.describe('Share', () => {
     await page.locator('[data-toolbar] button:has-text("Share link")').click();
 
     // Modal is open
-    await expect(page.locator('h3:has-text("Share with your Steward")')).toBeVisible();
+    await expect(page.locator('h3:has-text("Share with your Reviewer")')).toBeVisible();
 
     // Type something in the note
     await page.locator('.share-note').fill('Draft note');
@@ -153,7 +153,7 @@ test.describe('Share', () => {
     await page.locator('.share-footer button:has-text("Cancel")').click();
 
     // Modal should be gone
-    await expect(page.locator('h3:has-text("Share with your Steward")')).not.toBeVisible();
+    await expect(page.locator('h3:has-text("Share with your Reviewer")')).not.toBeVisible();
 
     // Article should NOT have been updated (no PATCH was sent)
     expect(articleRef.current.reviewNote).toBeNull();

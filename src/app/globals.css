@@ -143,7 +143,7 @@ a {
   [data-confidence-flag],
   [data-share-modal],
   [data-toast],
-  [data-steward-note-print-hide] {
+  [data-reviewer-note-print-hide] {
     display: none !important;
   }
 

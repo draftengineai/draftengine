@@ -63,14 +63,14 @@ test.describe('Landing page', () => {
       const card = page.locator('.article-card').first();
 
       // Title
-      await expect(card.locator('.ac-title')).toContainText('Search Criteria for Volunteers');
+      await expect(card.locator('.ac-title')).toContainText('Search Criteria for Users');
 
       // Type badges — How to, What's new
       await expect(card.locator('.badge', { hasText: 'How to' })).toBeVisible();
       await expect(card.locator('.badge', { hasText: "What's new" })).toBeVisible();
 
       // Module badge
-      await expect(card.locator('.badge', { hasText: 'Volunteers' })).toBeVisible();
+      await expect(card.locator('.badge', { hasText: 'Users' })).toBeVisible();
 
       // Status badge — Generated
       await expect(card.locator('.badge', { hasText: 'Generated' })).toBeVisible();

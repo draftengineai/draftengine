@@ -1,18 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
 import { getArticles } from '@/lib/db/storage';
 import { buildScanPrompt } from '@/lib/prompts/scan-articles';
 import type { Article, ScanResult } from '@/lib/types/article';
-
-function getAnthropicClient(): Anthropic {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      'ANTHROPIC_API_KEY environment variable is not set. Add it in the Vercel dashboard under Settings → Environment Variables.'
-    );
-  }
-  return new Anthropic({ apiKey });
-}
+import { generateAIResponse, getActiveProvider } from '@/lib/ai/provider';
 
 /** Extract bold element text from an article's How To steps and What's New content. */
 function extractBoldElements(article: Article): string[] {
@@ -94,17 +84,14 @@ export async function POST(request: NextRequest) {
       articles: summaries,
     });
 
-    const anthropic = getAnthropicClient();
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 4096,
+    const aiResponse = await generateAIResponse({
+      maxTokens: 4096,
       messages: [{ role: 'user', content: prompt }],
     });
 
-    const responseText = response.content
-      .filter((block): block is Anthropic.TextBlock => block.type === 'text')
-      .map(block => block.text)
-      .join('\n');
+    console.log('[scan] Response via', getActiveProvider());
+
+    const responseText = aiResponse.text;
 
     // Parse the JSON array from the response — strip markdown fences if present
     let jsonText = responseText.trim();

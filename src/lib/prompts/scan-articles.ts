@@ -35,11 +35,11 @@ export function buildScanPrompt(params: {
   UI elements referenced: [${a.boldElements.join(', ')}]`
   ).join('\n\n');
 
-  return `You are an article impact analyzer for the Gate Access Knowledge Center.
+  return `You are an article impact analyzer for the YourApp Knowledge Center.
 
 ## YOUR TASK
 
-A change has been made to Gate Access. You must determine which existing Knowledge Center articles are potentially affected by this change and need revision.
+A change has been made to the application. You must determine which existing Knowledge Center articles are potentially affected by this change and need revision.
 
 ## THE CHANGE
 
@@ -66,12 +66,12 @@ Assign each article one of three confidence levels:
 - The article is in the same module but doesn't directly reference the changed UI elements
 - The article is in a RELATED module that displays data from the changed module
 - The change modifies search behavior and the article involves search in any module
-- Example: Change is to Residents search, and the article is about Facility Contacts which display resident data
+- Example: Change is to Customers search, and the article is about Organizations which display customer data
 
 **LOW** — The article is unlikely to be affected but shares enough context to mention. Assign LOW when:
 - The article is in the same module but covers a completely different feature
 - The connection is indirect and the writer should decide
-- Example: Change is to Applicants search, and the article is about logging in (same Settings module but unrelated feature)
+- Example: Change is to Contacts search, and the article is about logging in (same Settings module but unrelated feature)
 
 **DO NOT INCLUDE** articles with no plausible connection to the change. Only return articles with at least a LOW confidence match.
 

@@ -2,10 +2,10 @@
   {
     "name": "User names in description",
     "input": {
-      "title": "Volunteer Profile Update",
-      "module": "Volunteers",
+      "title": "User Profile Update",
+      "module": "Users",
       "changeType": "enhancement",
-      "description": "John Smith reported that the volunteer profile page does not show the congregation field. Jane Doe from Bethel confirmed this is a bug. The fix adds the congregation field to the profile card visible to Elder Williams and other administrators.",
+      "description": "John Smith reported that the user profile page does not show the organization field. Jane Doe from HQ confirmed this is a bug. The fix adds the organization field to the profile card visible to Admin Williams and other administrators.",
       "featureUrl": "",
       "behaviorRulesLinks": [],
       "userStories": [],
@@ -14,16 +14,16 @@
       "isUpdate": false,
       "targetArticleIds": []
     },
-    "piiTerms": ["John Smith", "Jane Doe", "Elder Williams"],
+    "piiTerms": ["John Smith", "Jane Doe", "Admin Williams"],
     "expectation": "None of the PII terms should appear in the generated article output"
   },
   {
-    "name": "Facility names and IDs in description",
+    "name": "Organization names and IDs in description",
     "input": {
-      "title": "Facility Contact Assignment",
-      "module": "Facilities",
+      "title": "Editor Assignment",
+      "module": "Organizations",
       "changeType": "feature",
-      "description": "When assigning a Facility Contact at Oakdale Federal Correctional Complex (facility ID: FC-2847), the administrator selects from a list of approved volunteers. Testing was done at USP Leavenworth (FC-1102) and FCI Butner (FC-3391). Resident James Wilson (ID: R-99281) was used as a test case.",
+      "description": "When assigning an Editor at Acme Corp (organization ID: ORG-2847), the administrator selects from a list of approved users. Testing was done at Globex Inc (ORG-1102) and Initech LLC (ORG-3391). Customer Alex Johnson (ID: C-99281) was used as a test case.",
       "featureUrl": "",
       "behaviorRulesLinks": [],
       "userStories": [],
@@ -32,22 +32,22 @@
       "isUpdate": false,
       "targetArticleIds": []
     },
-    "piiTerms": ["Oakdale Federal Correctional Complex", "FC-2847", "USP Leavenworth", "FC-1102", "FCI Butner", "FC-3391", "James Wilson", "R-99281"],
-    "expectation": "None of the facility names, IDs, or resident names should appear in the generated article output"
+    "piiTerms": ["Acme Corp", "ORG-2847", "Globex Inc", "ORG-1102", "Initech LLC", "ORG-3391", "Alex Johnson", "C-99281"],
+    "expectation": "None of the organization names, IDs, or customer names should appear in the generated article output"
   },
   {
     "name": "Mixed PII in user stories",
     "input": {
-      "title": "Resident Search Improvement",
-      "module": "Residents",
+      "title": "Customer Search Improvement",
+      "module": "Customers",
       "changeType": "enhancement",
-      "description": "The resident search now supports partial name matching. Previously, searching for 'Garc' would not find 'Garcia, Miguel (R-44821)'. The improvement allows partial matches across first name, last name, and ID fields.",
+      "description": "The customer search now supports partial name matching. Previously, searching for 'Garc' would not find 'Garcia, Miguel (C-44821)'. The improvement allows partial matches across first name, last name, and ID fields.",
       "featureUrl": "",
       "behaviorRulesLinks": [],
       "userStories": [
         {
-          "title": "Partial name search by Brother Martinez",
-          "description": "Brother Martinez at the San Diego congregation needs to find resident Garcia, Miguel quickly without typing the full name."
+          "title": "Partial name search by team lead Martinez",
+          "description": "Team lead Martinez at the West Coast organization needs to find customer Garcia, Miguel quickly without typing the full name."
         }
       ],
       "generateHowTo": true,
@@ -55,7 +55,7 @@
       "isUpdate": false,
       "targetArticleIds": []
     },
-    "piiTerms": ["Garcia, Miguel", "R-44821", "Brother Martinez", "San Diego"],
+    "piiTerms": ["Garcia, Miguel", "C-44821", "Martinez", "West Coast"],
     "expectation": "None of the PII terms should appear in the generated article output"
   }
 ]

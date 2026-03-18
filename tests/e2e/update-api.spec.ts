@@ -96,7 +96,7 @@ test.describe('Update API', () => {
 
     // Originals preserved for before/after comparison
     expect(result.originals).toBeTruthy();
-    expect(result.originals['1']).toContain('Search Criteria');
+    expect(result.originals['1']).toContain('Search');
     expect(result.originals['4']).toContain('Reset');
   });
 
