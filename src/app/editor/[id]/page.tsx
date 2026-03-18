@@ -287,7 +287,7 @@ export default function EditorPage() {
   if (loading) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "var(--bg)" }}>
-        <Nav userName="Writer" showBack onBack={() => router.push("/")} />
+        <Nav userName="Writer" showBack onBack={() => router.push("/dashboard")} />
         <div
           style={{
             display: "flex",
@@ -307,7 +307,7 @@ export default function EditorPage() {
   if (error || !article) {
     return (
       <div style={{ minHeight: "100vh", backgroundColor: "var(--bg)" }}>
-        <Nav userName="Writer" showBack onBack={() => router.push("/")} />
+        <Nav userName="Writer" showBack onBack={() => router.push("/dashboard")} />
         <div
           style={{
             display: "flex",
@@ -338,7 +338,7 @@ export default function EditorPage() {
       <Nav
         userName={article.writer ?? "Writer"}
         showBack
-        onBack={() => router.push("/")}
+        onBack={() => router.push("/dashboard")}
       />
 
       {/* Revision banner */}

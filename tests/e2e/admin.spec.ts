@@ -19,7 +19,7 @@ test.describe('Admin dashboard', () => {
     await login(page);
     await page.goto('/admin/dashboard');
     // Middleware redirects writer to landing page
-    await page.waitForURL('/', { timeout: 10000 });
+    await page.waitForURL('/dashboard', { timeout: 10000 });
     await expect(page.locator('h1:has-text("DraftEngine Admin")')).not.toBeVisible();
   });
 

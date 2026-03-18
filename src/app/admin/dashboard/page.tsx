@@ -175,7 +175,7 @@ export default function AdminDashboard() {
           <h1 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>DraftEngine Admin</h1>
         </div>
         <Link
-          href="/"
+          href="/dashboard"
           style={{
             fontSize: 13,
             color: '#6b7280',
