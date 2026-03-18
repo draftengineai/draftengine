@@ -1,5 +1,4 @@
 import { Ratelimit } from '@upstash/ratelimit';
-import { kv } from '@vercel/kv';
 import { NextRequest, NextResponse } from 'next/server';
 
 // In-memory fallback for local dev (no KV)
@@ -9,8 +8,10 @@ function hasKV(): boolean {
   return !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
 }
 
-function createLimiter(maxRequests: number, window: `${number} ${'s' | 'm' | 'h' | 'd'}`) {
+async function createLimiter(maxRequests: number, window: `${number} ${'s' | 'm' | 'h' | 'd'}`) {
   if (hasKV()) {
+    // Dynamic import to avoid @vercel/kv throwing when env vars are missing
+    const { kv } = await import('@vercel/kv');
     return new Ratelimit({
       redis: kv,
       limiter: Ratelimit.slidingWindow(maxRequests, window),
@@ -24,13 +25,13 @@ function createLimiter(maxRequests: number, window: `${number} ${'s' | 'm' | 'h'
 let authLimiter: Ratelimit | null | undefined;
 let aiLimiter: Ratelimit | null | undefined;
 
-function getAuthLimiter() {
-  if (authLimiter === undefined) authLimiter = createLimiter(5, '1 m');
+async function getAuthLimiter() {
+  if (authLimiter === undefined) authLimiter = await createLimiter(5, '1 m');
   return authLimiter;
 }
 
-function getAILimiter() {
-  if (aiLimiter === undefined) aiLimiter = createLimiter(10, '1 h');
+async function getAILimiter() {
+  if (aiLimiter === undefined) aiLimiter = await createLimiter(10, '1 h');
   return aiLimiter;
 }
 
@@ -60,7 +61,7 @@ function checkMemoryLimit(key: string, maxRequests: number, windowMs: number): b
  */
 export async function checkAuthRateLimit(request: NextRequest): Promise<NextResponse | null> {
   const ip = getClientIP(request);
-  const limiter = getAuthLimiter();
+  const limiter = await getAuthLimiter();
 
   if (limiter) {
     const { success } = await limiter.limit(`auth:${ip}`);
@@ -87,7 +88,7 @@ export async function checkAuthRateLimit(request: NextRequest): Promise<NextResp
  */
 export async function checkAIRateLimit(request: NextRequest): Promise<NextResponse | null> {
   const ip = getClientIP(request);
-  const limiter = getAILimiter();
+  const limiter = await getAILimiter();
 
   if (limiter) {
     const { success } = await limiter.limit(`ai:${ip}`);
