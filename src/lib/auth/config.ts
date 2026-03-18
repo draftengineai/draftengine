@@ -17,7 +17,10 @@ function getUsers(): { id: string; name: string; email: string; password: string
     }
   }
   // Fallback: single writer user using the shared password
-  const pw = process.env.DRAFTENGINE_PASSWORD || 'test';
+  const pw = process.env.DRAFTENGINE_PASSWORD;
+  if (!pw) {
+    throw new Error('DRAFTENGINE_PASSWORD environment variable is required');
+  }
   return [
     { id: '1', name: 'Writer', email: 'writer@localhost', password: pw },
   ];

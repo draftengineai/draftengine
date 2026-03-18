@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState } from "react";
 import type { Step, ConfidenceFlag as ConfidenceFlagType } from "@/lib/types/article";
+import { sanitizeHTML } from "@/lib/sanitize";
 import ConfidenceFlag from "./confidence-flag";
 import ScreenshotSlot from "./screenshot-slot";
 
@@ -38,7 +39,7 @@ export default function StepEditor({
   // Set content via ref only when step.text changes externally (not during typing)
   useEffect(() => {
     if (textRef.current && textRef.current.innerHTML !== step.text) {
-      textRef.current.innerHTML = step.text;
+      textRef.current.innerHTML = sanitizeHTML(step.text);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step.text]);
@@ -184,7 +185,7 @@ export default function StepEditor({
                   </div>
                   <div
                     style={{ fontSize: 13, color: "#6b7280", lineHeight: 1.6 }}
-                    dangerouslySetInnerHTML={{ __html: originalText }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHTML(originalText) }}
                   />
                 </div>
               )}
