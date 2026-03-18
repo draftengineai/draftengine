@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-const PUBLIC_PATHS = ['/login', '/api/auth'];
+const PUBLIC_PATHS = ['/login', '/api/auth']
+const EXACT_PUBLIC_PATHS = ['/'];
 
 function parseAuthCookie(value: string | undefined): { role: string } | null {
   if (!value) return null;
@@ -21,6 +22,11 @@ export function middleware(request: NextRequest) {
 
   // Allow public paths
   if (PUBLIC_PATHS.some(p => pathname.startsWith(p))) {
+    return NextResponse.next();
+  }
+
+  // Allow exact public paths (e.g. public landing page at /)
+  if (EXACT_PUBLIC_PATHS.includes(pathname)) {
     return NextResponse.next();
   }
 
@@ -46,7 +52,7 @@ export function middleware(request: NextRequest) {
   // Admin routes require admin role
   if (pathname.startsWith('/admin')) {
     if (auth.role !== 'admin') {
-      const landingUrl = new URL('/', request.url);
+      const landingUrl = new URL('/dashboard', request.url);
       return NextResponse.redirect(landingUrl);
     }
   }
