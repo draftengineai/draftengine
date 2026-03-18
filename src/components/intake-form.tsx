@@ -22,9 +22,9 @@ const CHANGE_TYPES: { value: ChangeType; label: string }[] = [
 ];
 
 const MODE_DESCRIPTIONS: Record<Mode, string> = {
-  new: 'Describe a new feature or change and GateDoc will generate fresh How To and What\u2019s New articles.',
+  new: 'Describe a new feature or change and DraftEngine will generate fresh How To and What\u2019s New articles.',
   update:
-    'Describe what changed about an existing feature. GateDoc will find affected articles and revise only the steps that need updating.',
+    'Describe what changed about an existing feature. DraftEngine will find affected articles and revise only the steps that need updating.',
 };
 
 const CONFIDENCE_COLORS: Record<string, { bg: string; text: string }> = {
@@ -304,7 +304,7 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
           <div>
             <h2 id="intake-modal-title" style={styles.headerTitle}>New article</h2>
             <p style={styles.headerSubtitle}>
-              Describe the feature and GateDoc will draft the articles.
+              Describe the feature and DraftEngine will draft the articles.
             </p>
           </div>
           <button
@@ -617,7 +617,7 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
                   required
                 />
                 <p style={styles.helperText}>
-                  Include enough detail for GateDoc to write accurate steps. Mention UI labels,
+                  Include enough detail for DraftEngine to write accurate steps. Mention UI labels,
                   button names, and navigation paths.
                 </p>
                 {description.trim().length > 0 && description.trim().length < 50 && (

@@ -1,11 +1,11 @@
 /**
  * Template System — Loader
  *
- * Loads the active template based on GATEDOC_TEMPLATE env var.
+ * Loads the active template based on DRAFTENGINE_TEMPLATE env var.
  * Defaults to "default" if not set.
  *
  * Available templates:
- * - "default" — Knowledge center documentation (original GateDoc style)
+ * - "default" — Knowledge center documentation (original DraftEngine style)
  * - "technical-docs" — Developer-focused docs with code examples and API references
  */
 
@@ -26,7 +26,7 @@ const templates: Record<TemplateName, Template> = {
 };
 
 function getTemplateName(): TemplateName {
-  const name = process.env.GATEDOC_TEMPLATE?.toLowerCase();
+  const name = process.env.DRAFTENGINE_TEMPLATE?.toLowerCase();
   if (name && name in templates) return name as TemplateName;
   return 'default';
 }

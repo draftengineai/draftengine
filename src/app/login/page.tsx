@@ -79,7 +79,7 @@ export default function LoginPage() {
         maxWidth: '380px',
       }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-          GateDoc
+          DraftEngine
         </h1>
         <p style={{ color: '#6b7280', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
           Enter the password to continue

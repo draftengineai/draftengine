@@ -172,7 +172,7 @@ export default function AdminDashboard() {
         justifyContent: 'space-between',
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <h1 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>GateDoc Admin</h1>
+          <h1 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>DraftEngine Admin</h1>
         </div>
         <Link
           href="/"

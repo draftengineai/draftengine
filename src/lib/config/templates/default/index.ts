@@ -1,7 +1,7 @@
 /**
  * Default Template
  *
- * The built-in GateDoc template for knowledge center documentation.
+ * The built-in DraftEngine template for knowledge center documentation.
  */
 
 export { writingStandards } from './writing-standards';

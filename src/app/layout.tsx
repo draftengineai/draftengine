@@ -10,7 +10,7 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "GateDoc — Writer",
+  title: "DraftEngine — Writer",
   description: "Generate knowledge base articles from feature specifications using AI",
 };
 

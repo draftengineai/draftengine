@@ -35,7 +35,7 @@ export function middleware(request: NextRequest) {
   }
 
   // Check auth cookie
-  const authCookie = request.cookies.get('gatedoc_auth');
+  const authCookie = request.cookies.get('draftengine_auth');
   const auth = parseAuthCookie(authCookie?.value);
 
   if (!auth) {

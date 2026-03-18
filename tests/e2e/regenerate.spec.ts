@@ -19,7 +19,7 @@ async function seedAndMock(page: Page): Promise<{ current: Article }> {
   const articleRef = { current: cloneArticle() };
 
   await page.context().addCookies([
-    { name: 'gatedoc_auth', value: 'test', domain: 'localhost', path: '/' },
+    { name: 'draftengine_auth', value: 'test', domain: 'localhost', path: '/' },
   ]);
 
   // Intercept article CRUD

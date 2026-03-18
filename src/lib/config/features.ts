@@ -1,5 +1,5 @@
 /**
- * Feature flags system. Stored in Vercel KV (key: "gatedoc:features")
+ * Feature flags system. Stored in Vercel KV (key: "draftengine:features")
  * with local JSON fallback for dev.
  *
  * Types, defaults, and constants are defined in feature-flags.ts (client-safe).
@@ -18,7 +18,7 @@ export {
 import type { FeatureFlags } from './feature-flags';
 import { DEFAULT_FLAGS } from './feature-flags';
 
-const FEATURES_KEY = 'gatedoc:features';
+const FEATURES_KEY = 'draftengine:features';
 
 function useKV(): boolean {
   return !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);

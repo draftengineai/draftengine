@@ -1,7 +1,7 @@
 /**
  * Default Template — Writing Standards
  *
- * Standards for the default GateDoc documentation template.
+ * Standards for the default DraftEngine documentation template.
  * Covers tone, voice, formatting rules, and style guidelines.
  */
 

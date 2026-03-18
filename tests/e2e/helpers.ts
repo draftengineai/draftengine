@@ -1,11 +1,11 @@
 import { Page } from '@playwright/test';
 
-const TEST_PASSWORD = process.env.GATEDOC_PASSWORD || 'test';
-const TEST_ADMIN_PASSWORD = process.env.GATEDOC_ADMIN_PASSWORD || 'admin-test';
+const TEST_PASSWORD = process.env.DRAFTENGINE_PASSWORD || 'test';
+const TEST_ADMIN_PASSWORD = process.env.DRAFTENGINE_ADMIN_PASSWORD || 'admin-test';
 
 /**
  * Log in via the login page as a writer. After this call the browser has the
- * `gatedoc_auth` cookie and is redirected to the landing page.
+ * `draftengine_auth` cookie and is redirected to the landing page.
  */
 export async function login(page: Page) {
   await page.goto('/login');
@@ -24,7 +24,7 @@ export async function loginAdmin(page: Page) {
   await page.click('[data-testid="admin-access-link"]');
   await page.fill('[data-testid="admin-password-input"]', TEST_ADMIN_PASSWORD);
   await page.click('[data-testid="admin-login-btn"]');
-  await page.waitForSelector('h1:has-text("GateDoc Admin")', { timeout: 15000 });
+  await page.waitForSelector('h1:has-text("DraftEngine Admin")', { timeout: 15000 });
 }
 
 /**

@@ -11,7 +11,7 @@ test.describe('Admin dashboard', () => {
 
   test('admin login with correct password accesses /admin/dashboard', async ({ page }) => {
     await loginAdmin(page);
-    await expect(page.locator('h1', { hasText: 'GateDoc Admin' })).toBeVisible();
+    await expect(page.locator('h1', { hasText: 'DraftEngine Admin' })).toBeVisible();
     await expect(page.locator('h2', { hasText: 'Feature Flags' })).toBeVisible();
   });
 
@@ -20,7 +20,7 @@ test.describe('Admin dashboard', () => {
     await page.goto('/admin/dashboard');
     // Middleware redirects writer to landing page
     await page.waitForURL('/', { timeout: 10000 });
-    await expect(page.locator('h1:has-text("GateDoc Admin")')).not.toBeVisible();
+    await expect(page.locator('h1:has-text("DraftEngine Admin")')).not.toBeVisible();
   });
 
   // -----------------------------------------------------------------------

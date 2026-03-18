@@ -1,16 +1,16 @@
-# GateDoc
+# DraftEngine
 
-GateDoc is a Next.js application that generates Knowledge Center articles from feature specifications using AI. Writers enter feature specs via an intake form, and the AI generates How To and What's New articles. Writers then edit, add screenshots, share with Reviewers, and print to PDF.
+DraftEngine is a Next.js application that generates Knowledge Center articles from feature specifications using AI. Writers enter feature specs via an intake form, and the AI generates How To and What's New articles. Writers then edit, add screenshots, share with Reviewers, and print to PDF.
 
 ## Tech Stack
 
 - **Framework:** Next.js 14+ (App Router, TypeScript, src directory)
 - **Styling:** Tailwind CSS + custom CSS variables
-- **Auth:** Simple password gate via middleware (env var `GATEDOC_PASSWORD`) + Auth.js (next-auth) for user identity
+- **Auth:** Simple password gate via middleware (env var `DRAFTENGINE_PASSWORD`) + Auth.js (next-auth) for user identity
 - **Persistence:** Vercel KV in production, local `store.json` fallback in dev
 - **AI:** Multi-provider (Anthropic Claude, OpenAI, Ollama) via `src/lib/ai/provider.ts`
 - **Testing:** Jest (unit) + Playwright (E2E)
-- **Deployment:** Vercel, project name "gatedoc"
+- **Deployment:** Vercel, project name "draftengine"
 
 ## File Structure
 
@@ -69,7 +69,7 @@ src/
       modules.json
       features.ts                   # Feature flags system (KV + local JSON fallback)
       templates/                    # Template system
-        index.ts                    # Loads active template from GATEDOC_TEMPLATE env var
+        index.ts                    # Loads active template from DRAFTENGINE_TEMPLATE env var
         default/                    # Default knowledge center template
           writing-standards.ts
           article-structure.ts
@@ -127,7 +127,7 @@ npm run dev
 
 # Configure environment (see .env.example for all variables):
 cp .env.example .env.local
-# Edit .env.local — required: ANTHROPIC_API_KEY, GATEDOC_PASSWORD, GATEDOC_ADMIN_PASSWORD, NEXTAUTH_SECRET
+# Edit .env.local — required: ANTHROPIC_API_KEY, DRAFTENGINE_PASSWORD, DRAFTENGINE_ADMIN_PASSWORD, NEXTAUTH_SECRET
 
 # Optional — AI provider (default: anthropic):
 # AI_PROVIDER=openai|ollama
@@ -136,7 +136,7 @@ cp .env.example .env.local
 # OLLAMA_MODEL=llama3.1
 
 # Optional — Template (default: "default"):
-# GATEDOC_TEMPLATE=technical-docs
+# DRAFTENGINE_TEMPLATE=technical-docs
 
 # Optional — Vercel KV (auto-set by Vercel when KV store is linked):
 # KV_REST_API_URL=https://...
@@ -155,7 +155,7 @@ npm run test:ui           # open Playwright UI mode
 npm run test:unit
 ```
 
-Tests use mocked API responses — no real Anthropic API calls are made. Set `GATEDOC_PASSWORD=test` and `ANTHROPIC_API_KEY=test-key` when running outside of `.env.local`.
+Tests use mocked API responses — no real Anthropic API calls are made. Set `DRAFTENGINE_PASSWORD=test` and `ANTHROPIC_API_KEY=test-key` when running outside of `.env.local`.
 
 ### Sprint 1 Test Summary — 10 spec files, 73 tests
 
@@ -181,7 +181,7 @@ Tests use mocked API responses — no real Anthropic API calls are made. Set `GA
 ## Deployment
 
 - Platform: Vercel
-- Project name: `gatedoc`
+- Project name: `draftengine`
 - Environment variables must be set in Vercel dashboard
 
 ## Current Status — Phase 2 MERGED TO MAIN (2026-03-17)
