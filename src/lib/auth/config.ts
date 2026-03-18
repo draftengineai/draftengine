@@ -1,11 +1,27 @@
 import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
-const USERS = [
-  { id: '1', name: 'Alex Writer', email: 'alex@example.com', password: 'REDACTED' },
-  { id: '2', name: 'Morgan Editor', email: 'morgan@example.com', password: 'REDACTED' },
-  { id: '3', name: 'Riley Admin', email: 'riley@example.com', password: 'REDACTED' },
-];
+/**
+ * Parse DRAFTENGINE_USERS env var (JSON array) or fall back to a single
+ * default user derived from DRAFTENGINE_PASSWORD.
+ *
+ * Format: [{"id":"1","name":"Writer","email":"writer@example.com","password":"secret"}]
+ */
+function getUsers(): { id: string; name: string; email: string; password: string }[] {
+  const raw = process.env.DRAFTENGINE_USERS;
+  if (raw) {
+    try {
+      return JSON.parse(raw);
+    } catch {
+      console.warn('[auth] Failed to parse DRAFTENGINE_USERS — using default user');
+    }
+  }
+  // Fallback: single writer user using the shared password
+  const pw = process.env.DRAFTENGINE_PASSWORD || 'test';
+  return [
+    { id: '1', name: 'Writer', email: 'writer@localhost', password: pw },
+  ];
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -17,7 +33,8 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-        const user = USERS.find(
+        const users = getUsers();
+        const user = users.find(
           u => u.email === credentials.email && u.password === credentials.password
         );
         if (!user) return null;
