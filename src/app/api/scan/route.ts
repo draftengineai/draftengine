@@ -3,6 +3,7 @@ import { getArticles } from '@/lib/db/storage';
 import { buildScanPrompt } from '@/lib/prompts/scan-articles';
 import type { Article, ScanResult } from '@/lib/types/article';
 import { generateAIResponse, getActiveProvider } from '@/lib/ai/provider';
+import { checkAIRateLimit } from '@/lib/auth/rate-limit';
 
 /** Extract bold element text from an article's How To steps and What's New content. */
 function extractBoldElements(article: Article): string[] {
@@ -49,6 +50,10 @@ function buildArticleSummary(article: Article) {
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 10 requests per hour per IP
+  const rateLimited = await checkAIRateLimit(request);
+  if (rateLimited) return rateLimited;
+
   try {
     const body = await request.json();
     const { changeDescription, module, changeType } = body;

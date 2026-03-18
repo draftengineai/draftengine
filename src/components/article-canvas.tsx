@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect } from "react";
 import type { Article, Step, ConfidenceFlag } from "@/lib/types/article";
+import { sanitizeHTML } from "@/lib/sanitize";
 import StepEditor from "./step-editor";
 
 interface ArticleCanvasProps {
@@ -33,7 +34,7 @@ function EditableSection({
   // Set initial content only once; let the browser handle editing natively
   useEffect(() => {
     if (ref.current && ref.current.innerHTML !== html) {
-      ref.current.innerHTML = html;
+      ref.current.innerHTML = sanitizeHTML(html);
     }
     // Only run on mount or when html changes externally (not during typing)
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -167,7 +168,7 @@ export default function ArticleCanvas({
   // Set overview content only when article data changes externally (not during typing)
   useEffect(() => {
     if (overviewRef.current && overviewRef.current.innerHTML !== overview) {
-      overviewRef.current.innerHTML = overview;
+      overviewRef.current.innerHTML = sanitizeHTML(overview);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [overview]);

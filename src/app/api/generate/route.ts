@@ -10,6 +10,7 @@ import { buildVerifiedFactsBlock } from '@/lib/verified-facts/block-builder';
 import { getFeatures } from '@/lib/config/features';
 import terminologySeed from '@/lib/config/terminology-seed.json';
 import { generateAIResponse, getActiveProvider } from '@/lib/ai/provider';
+import { checkAIRateLimit } from '@/lib/auth/rate-limit';
 
 function buildPIIFreePayload(intake: FeatureIntake): PIIFreePayload {
   const payload: Record<string, unknown> = {
@@ -451,6 +452,10 @@ FLAGGING RULE: Steps that use ONLY information from VERIFIED INPUTS or explicitl
 }
 
 export async function POST(request: NextRequest) {
+  // Rate limit: 10 requests per hour per IP
+  const rateLimited = await checkAIRateLimit(request);
+  if (rateLimited) return rateLimited;
+
   try {
     const intake: FeatureIntake = await request.json();
 

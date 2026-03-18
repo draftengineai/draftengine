@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Nav from "@/components/nav";
 import { useFeatures } from "@/lib/hooks/useFeatures";
+import { sanitizeHTML } from "@/lib/sanitize";
 import type { Article } from "@/lib/types/article";
 
 export default function PreviewPage() {
@@ -430,7 +431,7 @@ export default function PreviewPage() {
                     lineHeight: 1.6,
                     color: "var(--text)",
                   }}
-                  dangerouslySetInnerHTML={{ __html: article.content.howto.overview }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHTML(article.content.howto.overview) }}
                 />
               </div>
 
@@ -463,7 +464,7 @@ export default function PreviewPage() {
                       lineHeight: 1.6,
                       color: "var(--text)",
                     }}
-                    dangerouslySetInnerHTML={{ __html: step.text }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHTML(step.text) }}
                   />
                   {step.imgPath && (
                     <div
@@ -540,7 +541,7 @@ export default function PreviewPage() {
                           lineHeight: 1.6,
                           color: "var(--text)",
                         }}
-                        dangerouslySetInnerHTML={{ __html: section.text }}
+                        dangerouslySetInnerHTML={{ __html: sanitizeHTML(section.text) }}
                       />
                     </div>
                   )

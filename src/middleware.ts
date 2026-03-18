@@ -1,23 +1,36 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { jwtVerify } from 'jose';
 
 const PUBLIC_PATHS = ['/login', '/api/auth']
 const EXACT_PUBLIC_PATHS = ['/'];
 
-function parseAuthCookie(value: string | undefined): { role: string } | null {
+function getSecret(): Uint8Array {
+  const secret = process.env.DRAFTENGINE_SECRET;
+  if (!secret) {
+    // In development/test, allow a fallback to avoid breaking dev workflow
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('DRAFTENGINE_SECRET environment variable is required in production');
+    }
+    return new TextEncoder().encode('dev-secret-not-for-production');
+  }
+  return new TextEncoder().encode(secret);
+}
+
+async function verifyAuthCookie(value: string | undefined): Promise<{ role: string } | null> {
   if (!value) return null;
-  // Support both new JSON format and legacy "authenticated" string
-  if (value === 'authenticated') return { role: 'writer' };
+
   try {
-    const parsed = JSON.parse(value);
-    if (parsed && typeof parsed.role === 'string') return parsed;
+    const { payload } = await jwtVerify(value, getSecret());
+    if (typeof payload.role === 'string') {
+      return { role: payload.role };
+    }
   } catch {
-    // Not JSON — treat as legacy authenticated
-    return { role: 'writer' };
+    // Invalid or expired token
   }
   return null;
 }
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Allow public paths
@@ -40,9 +53,9 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check auth cookie
+  // Verify signed auth cookie
   const authCookie = request.cookies.get('draftengine_auth');
-  const auth = parseAuthCookie(authCookie?.value);
+  const auth = await verifyAuthCookie(authCookie?.value);
 
   if (!auth) {
     const loginUrl = new URL('/login', request.url);
