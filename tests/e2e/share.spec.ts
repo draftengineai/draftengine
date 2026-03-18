@@ -16,7 +16,7 @@ function cloneArticle(): Article {
  */
 async function seedArticle(page: Page, articleRef: { current: Article }) {
   await page.context().addCookies([
-    { name: 'gatedoc_auth', value: 'test', domain: 'localhost', path: '/' },
+    { name: 'draftengine_auth', value: 'test', domain: 'localhost', path: '/' },
   ]);
 
   await page.route(`**/api/articles/${articleRef.current.id}`, async (route) => {
@@ -77,7 +77,7 @@ test.describe('Share', () => {
     await page.goto(`/editor/${articleRef.current.id}`);
     await page.locator('[data-toolbar] button:has-text("Share link")').click();
 
-    // The share modal shows: gatedoc.vercel.app/preview/<id>
+    // The share modal shows: draftengine.vercel.app/preview/<id>
     const urlDisplay = page.locator('.share-url');
     await expect(urlDisplay).toBeVisible();
     await expect(urlDisplay).toContainText(`preview/${articleRef.current.id}`);

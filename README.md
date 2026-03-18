@@ -1,10 +1,10 @@
-# GateDoc — AI-Powered Knowledge Center Documentation Engine
+# DraftEngine — AI-Powered Knowledge Center Documentation Engine
 
 Generate, edit, and manage knowledge center articles from feature specs using AI.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fyour-org%2Fgatedoc&env=ANTHROPIC_API_KEY,GATEDOC_PASSWORD,GATEDOC_ADMIN_PASSWORD&envDescription=API%20key%20for%20AI%20generation%2C%20writer%20password%2C%20and%20admin%20password&envLink=https%3A%2F%2Fgithub.com%2Fyour-org%2Fgatedoc%23configuration&project-name=gatedoc&repository-name=gatedoc)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fdraftengineai%2Fdraftengine&env=ANTHROPIC_API_KEY,DRAFTENGINE_PASSWORD,DRAFTENGINE_ADMIN_PASSWORD&envDescription=API%20key%20for%20AI%20generation%2C%20writer%20password%2C%20and%20admin%20password&envLink=https%3A%2F%2Fgithub.com%2Fdraftengineai%2Fdraftengine%23configuration&project-name=draftengine&repository-name=draftengine)
 
-<!-- TODO: Replace "your-org" in the deploy URL with the actual GitHub org/user once the repo is public. -->
+<!-- TODO: Replace "draftengineai" in the deploy URL with the actual GitHub org/user once the repo is public. -->
 
 ---
 
@@ -31,8 +31,8 @@ Click the **Deploy with Vercel** button above. You'll be prompted to set:
 | Variable | Description |
 |---|---|
 | `ANTHROPIC_API_KEY` | Your Anthropic API key (`sk-ant-...`) |
-| `GATEDOC_PASSWORD` | Shared password for writer login |
-| `GATEDOC_ADMIN_PASSWORD` | Password for admin dashboard |
+| `DRAFTENGINE_PASSWORD` | Shared password for writer login |
+| `DRAFTENGINE_ADMIN_PASSWORD` | Password for admin dashboard |
 
 Vercel auto-generates `NEXTAUTH_SECRET` and sets `NEXTAUTH_URL`. Link a [Vercel KV](https://vercel.com/docs/storage/vercel-kv) store for persistent article storage (optional — falls back to local JSON).
 
@@ -40,8 +40,8 @@ Vercel auto-generates `NEXTAUTH_SECRET` and sets `NEXTAUTH_URL`. Link a [Vercel 
 
 ```bash
 # Clone and install
-git clone https://github.com/your-org/gatedoc.git
-cd gatedoc
+git clone https://github.com/draftengineai/draftengine.git
+cd draftengine
 npm install
 
 # Configure environment
@@ -68,7 +68,7 @@ Set `AI_PROVIDER` to choose your AI backend:
 
 ### Templates
 
-Set `GATEDOC_TEMPLATE` to switch documentation style:
+Set `DRAFTENGINE_TEMPLATE` to switch documentation style:
 
 | Template | Description |
 |---|---|
@@ -142,7 +142,7 @@ npm run test:ui
 npm run test:unit
 ```
 
-All tests use mocked AI responses — no real API calls. Set `GATEDOC_PASSWORD=test` and `ANTHROPIC_API_KEY=test-key` when running tests.
+All tests use mocked AI responses — no real API calls. Set `DRAFTENGINE_PASSWORD=test` and `ANTHROPIC_API_KEY=test-key` when running tests.
 
 ## Tech Stack
 

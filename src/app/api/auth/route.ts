@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   const { password, role } = await request.json();
-  const writerPassword = process.env.GATEDOC_PASSWORD;
-  const adminPassword = process.env.GATEDOC_ADMIN_PASSWORD;
+  const writerPassword = process.env.DRAFTENGINE_PASSWORD;
+  const adminPassword = process.env.DRAFTENGINE_ADMIN_PASSWORD;
 
   if (!writerPassword) {
-    return NextResponse.json({ error: 'GATEDOC_PASSWORD not configured' }, { status: 500 });
+    return NextResponse.json({ error: 'DRAFTENGINE_PASSWORD not configured' }, { status: 500 });
   }
 
   // Admin login
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid admin password' }, { status: 401 });
     }
     const response = NextResponse.json({ success: true, role: 'admin' });
-    response.cookies.set('gatedoc_auth', JSON.stringify({ role: 'admin' }), {
+    response.cookies.set('draftengine_auth', JSON.stringify({ role: 'admin' }), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
   }
 
   const response = NextResponse.json({ success: true, role: 'writer' });
-  response.cookies.set('gatedoc_auth', JSON.stringify({ role: 'writer' }), {
+  response.cookies.set('draftengine_auth', JSON.stringify({ role: 'writer' }), {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',

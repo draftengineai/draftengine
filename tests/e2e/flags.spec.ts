@@ -19,7 +19,7 @@ function cloneArticle(): Article {
 async function seedArticle(page: Page, articleRef: { current: Article }) {
   // Auth cookie
   await page.context().addCookies([
-    { name: 'gatedoc_auth', value: 'test', domain: 'localhost', path: '/' },
+    { name: 'draftengine_auth', value: 'test', domain: 'localhost', path: '/' },
   ]);
 
   // GET /api/articles/:id

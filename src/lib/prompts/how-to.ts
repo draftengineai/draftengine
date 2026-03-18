@@ -1,5 +1,5 @@
 /**
- * GateDoc — How To Article Generation Prompt
+ * DraftEngine — How To Article Generation Prompt
  * Version: 0.2.0
  * Last modified: 2026-03-17
  * Change: v0.2.0 — Removed PDF download link from template. Added @media print CSS for browser-to-PDF workflow.

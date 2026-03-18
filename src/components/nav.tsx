@@ -64,7 +64,7 @@ export default function Nav({ userName, showBack, onBack }: NavProps) {
               letterSpacing: "-0.01em",
             }}
           >
-            GateDoc
+            DraftEngine
           </span>
           <span
             style={{

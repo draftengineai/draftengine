@@ -48,7 +48,7 @@ export default function ShareModal({
 
   if (!isOpen) return null;
 
-  const previewUrl = `gatedoc.vercel.app/preview/${articleId}`;
+  const previewUrl = `draftengine.vercel.app/preview/${articleId}`;
 
   async function handleSaveAndCopy() {
     setSharing(true);

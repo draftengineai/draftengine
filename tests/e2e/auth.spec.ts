@@ -1,13 +1,13 @@
 import { test, expect } from '@playwright/test';
 import { login } from './helpers';
 
-const TEST_PASSWORD = process.env.GATEDOC_PASSWORD || 'test';
+const TEST_PASSWORD = process.env.DRAFTENGINE_PASSWORD || 'test';
 
 test.describe('Authentication', () => {
   test('login page renders at /login with password field and Sign in button', async ({ page }) => {
     await page.goto('/login');
 
-    await expect(page.locator('h1')).toHaveText('GateDoc');
+    await expect(page.locator('h1')).toHaveText('DraftEngine');
     await expect(page.locator('input[type="password"]')).toBeVisible();
     await expect(page.locator('button[type="submit"]')).toHaveText('Sign in');
   });

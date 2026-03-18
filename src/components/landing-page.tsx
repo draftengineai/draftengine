@@ -22,14 +22,14 @@ export default function LandingPage() {
   const { features } = useFeatures();
   const [viewMode, setViewMode] = useState<'list' | 'board'>(() => {
     if (typeof window !== 'undefined') {
-      return (localStorage.getItem('gatedoc_view') as 'list' | 'board') || 'list';
+      return (localStorage.getItem('draftengine_view') as 'list' | 'board') || 'list';
     }
     return 'list';
   });
 
   const handleViewChange = (mode: 'list' | 'board') => {
     setViewMode(mode);
-    localStorage.setItem('gatedoc_view', mode);
+    localStorage.setItem('draftengine_view', mode);
   };
 
   const handlePriorityUpdate = async (articleId: string, newPriority: number) => {
@@ -137,7 +137,7 @@ export default function LandingPage() {
               minHeight: 'calc(100vh - 200px)',
             }}
           >
-            {/* GateDoc icon */}
+            {/* DraftEngine icon */}
             <div style={{
               width: 56,
               height: 56,
@@ -169,7 +169,7 @@ export default function LandingPage() {
               lineHeight: 1.6,
               marginBottom: 28,
             }}>
-              Paste a feature spec and GateDoc will draft a How To and What&apos;s New article following your writing standards.
+              Paste a feature spec and DraftEngine will draft a How To and What&apos;s New article following your writing standards.
             </p>
             <button
               data-testid="get-started-btn"
