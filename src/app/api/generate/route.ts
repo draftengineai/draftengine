@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
 import { v4 as uuidv4 } from 'uuid';
 import { Article, FeatureIntake, HowToContent, WhatsNewContent, ConfidenceFlag, Step } from '@/lib/types/article';
 import { PIIFreePayload, assertPIIFree } from '@/lib/types/pii';
@@ -10,16 +9,7 @@ import { getFacts } from '@/lib/verified-facts/store';
 import { buildVerifiedFactsBlock } from '@/lib/verified-facts/block-builder';
 import { getFeatures } from '@/lib/config/features';
 import terminologySeed from '@/lib/config/terminology-seed.json';
-
-function getAnthropicClient(): Anthropic {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      'ANTHROPIC_API_KEY environment variable is not set. Add it in the Vercel dashboard under Settings → Environment Variables.'
-    );
-  }
-  return new Anthropic({ apiKey });
-}
+import { generateAIResponse, getActiveProvider } from '@/lib/ai/provider';
 
 function buildPIIFreePayload(intake: FeatureIntake): PIIFreePayload {
   const payload: Record<string, unknown> = {
@@ -30,7 +20,7 @@ function buildPIIFreePayload(intake: FeatureIntake): PIIFreePayload {
     behaviorRules: intake.behaviorRulesLinks.join('\n'),
     userStories: intake.userStories.map(s => `${s.title}: ${s.description}`).join('\n'),
     terminologySeed: JSON.stringify(terminologySeed),
-    writingStandards: 'PWP Writing Standards v2025-11',
+    writingStandards: 'Documentation Standards v2025-11',
   };
   return assertPIIFree(payload);
 }
@@ -151,7 +141,7 @@ function parseConfidenceFlags(
         flagMap.set(stepIdx, {
           what: f.what || 'Needs verification',
           why: f.why || f.what || 'AI generated content needs verification',
-          action: f.action || 'Verify against the live Gate Access application',
+          action: f.action || 'Verify against the live application',
         });
       }
     }
@@ -168,7 +158,7 @@ function parseConfidenceFlags(
       return {
         what: note.length > 60 ? note.split(/[—\-.:]/)[0].trim() || note.slice(0, 60) : note,
         why: note,
-        action: 'Verify against the live Gate Access application',
+        action: 'Verify against the live application',
       };
     }
     return null;
@@ -462,7 +452,6 @@ FLAGGING RULE: Steps that use ONLY information from VERIFIED INPUTS or explicitl
 
 export async function POST(request: NextRequest) {
   try {
-    const anthropic = getAnthropicClient();
     const intake: FeatureIntake = await request.json();
 
     // Validate required fields
@@ -540,23 +529,17 @@ export async function POST(request: NextRequest) {
         verifiedSection + '## INPUT FOR THIS ARTICLE',
       );
 
-      const howToResponse = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 8192,
+      const howToAIResponse = await generateAIResponse({
+        maxTokens: 8192,
         messages: [{ role: 'user', content: howToPrompt + HOW_TO_JSON_SUFFIX }],
       });
 
-      console.log('[generate] HowTo response — stop_reason:', howToResponse.stop_reason,
-        'content blocks:', howToResponse.content.length,
-        'usage:', JSON.stringify(howToResponse.usage));
+      console.log('[generate] HowTo response via', getActiveProvider());
 
-      const howToText = howToResponse.content
-        .filter((block): block is Anthropic.TextBlock => block.type === 'text')
-        .map(block => block.text)
-        .join('\n');
+      const howToText = howToAIResponse.text;
 
       if (!howToText) {
-        console.error('[generate] No text content in HowTo response. Block types:', howToResponse.content.map(b => b.type));
+        console.error('[generate] No text content in HowTo response');
       } else {
         console.log('[generate] HowTo raw text length:', howToText.length);
         console.log('[generate] HowTo raw text (first 1000):', howToText.substring(0, 1000));
@@ -589,20 +572,14 @@ export async function POST(request: NextRequest) {
         verifiedFacts: verifiedFactsBlock,
       });
 
-      const wnResponse = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 8192,
+      const wnAIResponse = await generateAIResponse({
+        maxTokens: 8192,
         messages: [{ role: 'user', content: wnPrompt + WN_JSON_SUFFIX }],
       });
 
-      console.log('[generate] WN response — stop_reason:', wnResponse.stop_reason,
-        'content blocks:', wnResponse.content.length,
-        'usage:', JSON.stringify(wnResponse.usage));
+      console.log('[generate] WN response via', getActiveProvider());
 
-      const wnText = wnResponse.content
-        .filter((block): block is Anthropic.TextBlock => block.type === 'text')
-        .map(block => block.text)
-        .join('\n');
+      const wnText = wnAIResponse.text;
       console.log('[generate] WN raw text length:', wnText.length);
       const wnParsed = parseWhatsNewResponse(wnText);
 

@@ -425,7 +425,7 @@ export default function EditorSidebar({
 
         {/* 4. Share */}
         <CheckItem
-          label="Share with Steward"
+          label="Share with Reviewer"
           done={sharedDone}
           isCurrent={currentIndex === checkIdx}
         />

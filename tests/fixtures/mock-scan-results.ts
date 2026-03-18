@@ -7,21 +7,30 @@ import type { ScanResult } from '../../src/lib/types/article';
 export const mockScanMatches: ScanResult[] = [
   {
     articleId: 'mock-article-001',
-    title: 'Search Criteria for Volunteers',
-    module: 'Volunteers',
+    title: 'Search Criteria for Users',
+    module: 'Users',
     types: ['howto', 'wn'],
     confidence: 'high',
     reason:
-      'This article references the Search Criteria button and Availability filter in Steps 2, 3, and 4, which are directly affected by the described change to filter behavior.',
+      'This article references the Search button and Category filter in Steps 2, 3, and 4, which are directly affected by the described change to filter behavior.',
   },
   {
     articleId: 'mock-article-002',
-    title: 'Managing Volunteer Assignments',
-    module: 'Volunteers',
+    title: 'Managing User Listings',
+    module: 'Users',
     types: ['howto'],
     confidence: 'medium',
     reason:
-      'This article covers the Volunteers module and references Assignment Status in the overview, which may be indirectly affected by changes to search filtering.',
+      'This article covers the Users module and references Availability Status in the overview, which may be indirectly affected by changes to search filtering.',
+  },
+  {
+    articleId: 'mock-article-003',
+    title: 'Users Overview Dashboard',
+    module: 'Users',
+    types: ['howto'],
+    confidence: 'low',
+    reason:
+      'Mentions user filtering in passing but is unlikely to need updates.',
   },
 ];
 

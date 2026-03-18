@@ -24,7 +24,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Allow preview routes (shareable with Stewards)
+  // Allow preview routes (shareable with Reviewers)
   if (pathname.startsWith('/preview/')) {
     return NextResponse.next();
   }

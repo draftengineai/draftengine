@@ -50,9 +50,9 @@ test.describe('Scan results', () => {
     await expect(matches).toHaveCount(3);
 
     // Check titles
-    await expect(matches.nth(0)).toContainText('Search Criteria for Volunteers');
-    await expect(matches.nth(1)).toContainText('Managing Volunteer Assignments');
-    await expect(matches.nth(2)).toContainText('Volunteer Overview Dashboard');
+    await expect(matches.nth(0)).toContainText('Search Criteria for Users');
+    await expect(matches.nth(1)).toContainText('Managing User Listings');
+    await expect(matches.nth(2)).toContainText('Users Overview Dashboard');
 
     // Check confidence badges
     await expect(page.locator('[data-testid="confidence-high"]')).toHaveText('HIGH');
@@ -60,7 +60,7 @@ test.describe('Scan results', () => {
     await expect(page.locator('[data-testid="confidence-low"]')).toHaveText('LOW');
 
     // Check reason text visible
-    await expect(matches.nth(0)).toContainText('directly covers the Search Criteria');
+    await expect(matches.nth(0)).toContainText('directly covers the Search feature');
     await expect(matches.nth(2)).toContainText('unlikely to need updates');
   });
 
@@ -142,8 +142,8 @@ test.describe('Scan results', () => {
       const now = new Date().toISOString();
       const article = {
         id: articleId,
-        title: 'Search Criteria for Volunteers',
-        module: 'Volunteers',
+        title: 'Search Criteria for Users',
+        module: 'Users',
         source: 'update',
         changeType: 'enhancement',
         status: 'generated',

@@ -1,31 +1,30 @@
 {
   "_version": "0.1.0",
-  "_source": "Extracted from PWP Writing Standards 2025-11 + example KC articles",
+  "_source": "Extracted from Documentation Standards + example KC articles",
   "_note": "Seed list for organizational terms. These override dynamic inference. Dynamic UI terms (button labels, card names, tab names) come from crawl/behavior rules.",
 
   "roles": {
-    "_rule": "Always capitalize. Never substitute with generic terms like 'user' or 'member'.",
+    "_rule": "Always capitalize. Never substitute with generic terms like 'person' or 'individual'.",
     "terms": [
-      "Volunteer",
-      "Facility Contact",
-      "Zone Contact",
-      "Regional Contact",
-      "Administrator"
+      "User",
+      "Editor",
+      "Manager",
+      "Admin"
     ]
   },
 
   "application": {
-    "_rule": "Always refer to the application as 'Gate Access'. Never 'the app', 'the system', 'the platform', 'GateAccess' (no space), or 'the website'.",
-    "name": "Gate Access",
-    "incorrect_variants": ["GateAccess", "the app", "the system", "the platform", "the website", "the tool", "GA"]
+    "_rule": "Always refer to the application as 'YourApp'. Never 'the app', 'the system', 'the platform', or 'the website'.",
+    "name": "YourApp",
+    "incorrect_variants": ["the app", "the system", "the platform", "the website", "the tool"]
   },
 
   "navigation": {
     "_rule": "These are standard navigation/UI areas referenced across multiple articles. Bold when used as UI labels in How To steps. Do not bold in What's New Introduction sections.",
     "terms": [
-      "Navigation Panel",
+      "Sidebar",
       "Global Header",
-      "My Ministry",
+      "Dashboard",
       "Knowledge Center"
     ]
   },
@@ -33,13 +32,13 @@
   "modules": {
     "_rule": "Capitalize module names. These correspond to main navigation sections.",
     "terms": [
-      "My Ministry",
-      "Experiences",
-      "Statistics",
-      "Volunteers",
-      "Residents",
-      "Facilities",
-      "Applicants",
+      "Dashboard",
+      "Reports",
+      "Analytics",
+      "Products",
+      "Customers",
+      "Organizations",
+      "Contacts",
       "Settings"
     ]
   },
@@ -60,14 +59,14 @@
     "_rule": "Capitalize feature or module names as proper nouns.",
     "terms": [
       "Support Chatbot",
-      "Resident Creation Wizard",
-      "Resident Locator"
+      "Customer Wizard",
+      "Customer Locator"
     ]
   },
 
   "login_terminology": {
     "_rule_noun": "Use 'login' (one word) when referring to a button, link, screen label, or as an adjective. E.g., 'login credentials', 'Login button'.",
-    "_rule_verb": "Use 'log in' (two words) when instructing an action. E.g., 'After you log in to Gate Access'.",
+    "_rule_verb": "Use 'log in' (two words) when instructing an action. E.g., 'After you log in to YourApp'.",
     "noun_adjective": "login",
     "verb": "log in"
   },
@@ -76,7 +75,7 @@
     "oxford_comma": true,
     "numbers": {
       "rule": "Spell out one through nine; use numerals for 10 and above.",
-      "examples": ["three updates", "12 facilities"]
+      "examples": ["three updates", "12 organizations"]
     },
     "ui_elements_bold": {
       "how_to": "Bold UI elements in all steps",
@@ -85,22 +84,14 @@
   },
 
   "organizational_terms": {
-    "_rule": "JW ministry-specific terms. Use exactly as listed. Never paraphrase or substitute with generic religious language.",
+    "_rule": "Organization-specific terms. Use exactly as listed. Customize this section for your organization.",
     "terms": [
-      "congregation",
-      "circuit",
-      "territory",
-      "pioneer",
-      "publisher",
-      "elder",
-      "ministerial servant",
-      "brothers",
-      "sisters",
-      "brothers and sisters",
-      "Bethel",
-      "overseer",
-      "circuit overseer"
+      "workspace",
+      "team",
+      "project",
+      "department",
+      "organization"
     ],
-    "_note": "PENDING: Full terminology reference guide from Google Doc (ID: 1NupajunczmzmqYiWIq1ZQR7UwI1bJmLB) not yet accessible. Update this list when available."
+    "_note": "Add your organization-specific terms here. These will be enforced in generated articles."
   }
 }

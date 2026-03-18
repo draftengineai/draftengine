@@ -243,12 +243,17 @@ test.describe('Keyboard navigation', () => {
     // Tab to Share link button
     await page.keyboard.press('Tab');
     const focused1 = page.locator(':focus');
-    await expect(focused1).toHaveAttribute('aria-label', 'Share link with Steward');
+    await expect(focused1).toHaveAttribute('aria-label', 'Share link with Reviewer');
+
+    // Tab to Export button
+    await page.keyboard.press('Tab');
+    const focused2 = page.locator(':focus');
+    await expect(focused2).toHaveAttribute('aria-label', 'Export article');
 
     // Tab to Print button
     await page.keyboard.press('Tab');
-    const focused2 = page.locator(':focus');
-    await expect(focused2).toHaveAttribute('aria-label', 'Print article');
+    const focused3 = page.locator(':focus');
+    await expect(focused3).toHaveAttribute('aria-label', 'Print article');
   });
 
   test('Enter/Space activates sidebar checklist items', async ({ page }) => {

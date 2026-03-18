@@ -38,7 +38,7 @@ test.describe('Authentication', () => {
   });
 
   test('preview routes are accessible without auth', async ({ page }) => {
-    // Preview pages are public for Stewards — no redirect to /login.
+    // Preview pages are public for Reviewers — no redirect to /login.
     // The page may show a 404 for a non-existent article, but it should
     // NOT redirect to /login.
     const response = await page.goto('/preview/any-id');

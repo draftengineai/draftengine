@@ -30,10 +30,10 @@ async function seedPreview(page: Page, article: Article) {
 }
 
 // ---------------------------------------------------------------------------
-// Preview Page — Steward Actions
+// Preview Page — Reviewer Actions
 // ---------------------------------------------------------------------------
 
-test.describe('Preview Page — Steward Actions', () => {
+test.describe('Preview Page — Reviewer Actions', () => {
   test('1 — shows Approve and Request revision buttons for shared article', async ({ page }) => {
     const article = cloneArticle(mockSharedArticle);
     await seedPreview(page, article);
@@ -272,7 +272,7 @@ test.describe('Editor — Revision Banner', () => {
     // Revision banner should be visible
     const banner = page.getByTestId('revision-banner');
     await expect(banner).toBeVisible();
-    await expect(banner).toContainText('Revision requested by Steward:');
+    await expect(banner).toContainText('Revision requested by Reviewer:');
     await expect(banner).toContainText(
       'Step 3 screenshot does not match the current UI'
     );

@@ -540,7 +540,7 @@ export default function IntakeForm({ isOpen, initialMode, onClose, onGenerate, o
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g. Bulk volunteer import"
+                  placeholder="e.g. Bulk user import"
                   style={styles.formInput}
                   required
                 />

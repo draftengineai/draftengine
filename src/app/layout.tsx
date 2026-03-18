@@ -11,7 +11,7 @@ const dmSans = DM_Sans({
 
 export const metadata: Metadata = {
   title: "GateDoc — Writer",
-  description: "Knowledge Center article generator for Gate Access",
+  description: "Generate knowledge base articles from feature specifications using AI",
 };
 
 export default function RootLayout({

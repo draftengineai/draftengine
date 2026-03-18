@@ -1,0 +1,28 @@
+{
+  "title": "Contacts Search",
+  "module": "Contacts",
+  "changeType": "feature",
+  "description": "The Contacts module now includes a search feature that allows Administrators and Managers to search for contacts by name, organization, or status. The search is accessible from the Contacts landing page via a new Search card. Users can enter partial names, select an organization from a dropdown, or filter by contact status (Pending, Approved, Denied, Withdrawn). Results display in a sortable table with columns for Name, Organization, Status, and Date Submitted. Clicking a result opens the contact's profile. The search supports pagination with 25 results per page.",
+  "featureUrl": "https://jira.example.com/browse/PROD-1024",
+  "behaviorRulesLinks": [
+    "https://wiki.example.com/behavior-rules/contacts-search"
+  ],
+  "userStories": [
+    {
+      "title": "Administrator searches by name",
+      "description": "As an Administrator, I want to search for contacts by entering a partial name so that I can quickly find a specific contact without scrolling through the full list."
+    },
+    {
+      "title": "Manager filters by status",
+      "description": "As a Manager, I want to filter contacts by status (Pending, Approved, Denied, Withdrawn) so that I can review all contacts at a specific stage of the process."
+    },
+    {
+      "title": "Search results pagination",
+      "description": "As a user, I want search results to be paginated at 25 per page so that the page loads quickly even with hundreds of contacts."
+    }
+  ],
+  "generateHowTo": true,
+  "generateWhatsNew": true,
+  "isUpdate": false,
+  "targetArticleIds": []
+}

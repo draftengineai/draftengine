@@ -65,7 +65,7 @@ test.describe('Thin data handling', () => {
     await mockGenerateApiThinData(page);
 
     await openNewArticleIntake(page);
-    await page.fill('input[placeholder="e.g. Bulk volunteer import"]', 'New Feature');
+    await page.fill('input[placeholder="e.g. Bulk user import"]', 'New Feature');
     await page.locator('form#intake-form select').first().selectOption({ label: 'Settings' });
     await page.fill('textarea', 'A search feature');
     await page.click('button:has-text("Generate articles")');

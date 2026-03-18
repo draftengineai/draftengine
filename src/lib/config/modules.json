@@ -1,12 +1,13 @@
 {
   "modules": [
-    "My Ministry",
-    "Experiences",
-    "Statistics",
-    "Volunteers",
-    "Residents",
-    "Facilities",
-    "Applicants",
+    "Dashboard",
+    "Reports",
+    "Analytics",
+    "Users",
+    "Products",
+    "Customers",
+    "Organizations",
+    "Contacts",
     "Settings"
   ]
 }

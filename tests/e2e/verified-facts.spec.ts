@@ -16,7 +16,7 @@ function makeArticleWithSteps(
   return {
     ...mockSharedArticle,
     id: 'extractor-test',
-    module: 'Applicants',
+    module: 'Contacts',
     content: {
       howto: {
         overview: 'Test article overview.',
@@ -36,15 +36,15 @@ function makeApproveableArticle(id: string) {
   return {
     ...mockSharedArticle,
     id,
-    module: 'Applicants',
+    module: 'Contacts',
     status: 'shared' as const,
     content: {
       howto: {
-        overview: 'How to search for applicants in the Applicants module.',
+        overview: 'How to search for contacts in the Contacts module.',
         steps: [
           {
             heading: 'Step 1 of 3:',
-            text: '<p>After logging in to Gate Access, in the Navigation Panel, select <b>Applicants</b>.</p>',
+            text: '<p>After logging in to YourApp, in the sidebar, select <b>Contacts</b>.</p>',
             imgDesc: 'Nav panel',
             imgPath: null,
           },
@@ -92,13 +92,13 @@ test.describe('Verified Facts — Extractor & Feedback Loop', () => {
   });
 
   // -----------------------------------------------------------------------
-  // 2. Extractor identifies navigation path from Step 1 (Navigation Panel)
+  // 2. Extractor identifies navigation path from Step 1 (sidebar)
   // -----------------------------------------------------------------------
   test('extractor identifies navigation path from Step 1', () => {
     const article = makeArticleWithSteps([
       {
         heading: 'Step 1 of 2:',
-        text: '<p>After logging in to Gate Access, in the Navigation Panel, select <b>Applicants</b>.</p>',
+        text: '<p>After logging in to YourApp, in the sidebar, select <b>Contacts</b>.</p>',
         imgDesc: 'Nav',
         imgPath: null,
       },
@@ -111,7 +111,7 @@ test.describe('Verified Facts — Extractor & Feedback Loop', () => {
     ]);
 
     const facts = extractFacts(article);
-    expect(facts.navPath).toBe('Applicants');
+    expect(facts.navPath).toBe('Contacts');
   });
 
   // -----------------------------------------------------------------------
@@ -121,7 +121,7 @@ test.describe('Verified Facts — Extractor & Feedback Loop', () => {
     const article = makeArticleWithSteps([
       {
         heading: 'Step 1 of 3:',
-        text: '<p>Navigate to the <b>Applicants</b> module.</p>',
+        text: '<p>Navigate to the <b>Contacts</b> module.</p>',
         imgDesc: 'Nav',
         imgPath: null,
       },
@@ -140,8 +140,8 @@ test.describe('Verified Facts — Extractor & Feedback Loop', () => {
     ]);
 
     const facts = extractFacts(article);
-    expect(facts.module).toBe('Applicants');
-    expect(facts.navPath).toBe('Applicants');
+    expect(facts.module).toBe('Contacts');
+    expect(facts.navPath).toBe('Contacts');
     expect(facts.cards.length).toBeGreaterThan(0);
     expect(facts.buttons.length).toBeGreaterThan(0);
     expect(facts.filters.length).toBeGreaterThan(0);
@@ -170,15 +170,15 @@ test.describe.serial('Verified Facts — API & Feedback Loop', () => {
       data: { articleId: art.id },
     });
 
-    const res = await page.request.get('/api/verified-facts?module=Applicants');
+    const res = await page.request.get('/api/verified-facts?module=Contacts');
     expect(res.status()).toBe(200);
     const facts = await res.json();
     expect(facts.length).toBeGreaterThan(0);
 
     const entry = facts.find((f: { articleId: string }) => f.articleId === art.id);
     expect(entry).toBeTruthy();
-    expect(entry.facts.module).toBe('Applicants');
-    expect(entry.facts.navPath).toBe('Applicants');
+    expect(entry.facts.module).toBe('Contacts');
+    expect(entry.facts.navPath).toBe('Contacts');
     expect(entry.facts.uiElements).toContain('Search');
     expect(entry.facts.uiElements).toContain('Apply');
 
@@ -207,7 +207,7 @@ test.describe.serial('Verified Facts — API & Feedback Loop', () => {
   test('feedback loop: verified facts from approved article appear in generated prompt', async ({
     page,
   }) => {
-    // (a) Create and approve an article for the Applicants module
+    // (a) Create and approve an article for the Contacts module
     const art = makeApproveableArticle('vf-test-6');
     await page.request.post('/api/articles', { data: art });
     await page.request.post('/api/approve', {
@@ -215,7 +215,7 @@ test.describe.serial('Verified Facts — API & Feedback Loop', () => {
     });
 
     // (b) Fetch the stored facts via API (same call the generate route makes)
-    const factsRes = await page.request.get('/api/verified-facts?module=Applicants');
+    const factsRes = await page.request.get('/api/verified-facts?module=Contacts');
     const storedFacts = await factsRes.json();
     expect(storedFacts.length).toBeGreaterThan(0);
 
@@ -223,15 +223,15 @@ test.describe.serial('Verified Facts — API & Feedback Loop', () => {
     const verifiedFactsBlock = buildVerifiedFactsBlock(storedFacts);
     expect(verifiedFactsBlock).toContain('VERIFIED FACTS');
     expect(verifiedFactsBlock).toContain('confirmed by human review');
-    expect(verifiedFactsBlock).toContain('Applicants');
+    expect(verifiedFactsBlock).toContain('Contacts');
     expect(verifiedFactsBlock).toContain('Apply');
     expect(verifiedFactsBlock).toContain('Do NOT flag steps that use only these verified elements');
 
     // (d) Verify the prompt builder inserts the block correctly
     const prompt = buildHowToPrompt({
-      featureTitle: 'Applicant Status Tracking',
-      featureDescription: 'Track applicant status changes.',
-      module: 'Applicants',
+      featureTitle: 'Contact Status Tracking',
+      featureDescription: 'Track contact status changes.',
+      module: 'Contacts',
       terminologySeed: {},
       verifiedFacts: verifiedFactsBlock,
     });
@@ -239,7 +239,7 @@ test.describe.serial('Verified Facts — API & Feedback Loop', () => {
     // The VERIFIED FACTS block must appear in the prompt
     expect(prompt).toContain('VERIFIED FACTS');
     expect(prompt).toContain('confirmed by human review');
-    expect(prompt).toContain('Navigation: In the Navigation Panel, select Applicants');
+    expect(prompt).toContain('Navigation: In the sidebar, select Contacts');
     expect(prompt).toContain('Apply');
 
     // Verify ordering: VERIFIED FACTS before INPUT FOR THIS ARTICLE

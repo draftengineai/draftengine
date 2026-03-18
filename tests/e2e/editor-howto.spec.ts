@@ -19,7 +19,7 @@ test.describe('Editor — How To', () => {
   // 1. Editor loads with article title and "How to" badge in header
   test('editor loads with article title and How to badge', async ({ page }) => {
     const toolbar = page.locator('[data-toolbar]');
-    await expect(toolbar).toContainText('Search Criteria for Volunteers');
+    await expect(toolbar).toContainText('Search Criteria for Users');
     await expect(toolbar.locator('span', { hasText: 'How to' })).toBeVisible();
   });
 
@@ -31,7 +31,7 @@ test.describe('Editor — How To', () => {
     await expect(overview).toHaveCSS('font-style', 'italic');
     // Contains the mock overview text
     await expect(overview).toContainText(
-      'Search Criteria feature in the Volunteers module'
+      'new Search feature in the Users module'
     );
   });
 
@@ -47,13 +47,13 @@ test.describe('Editor — How To', () => {
 
   // 4. Bold elements render as bold in step text
   test('bold elements render as bold in step text', async ({ page }) => {
-    // Step 1 has <b>Volunteers</b>
+    // Step 1 has <b>Users</b>
     const step0 = page.locator('[data-step="0"]');
-    await expect(step0.locator('b', { hasText: 'Volunteers' })).toBeVisible();
+    await expect(step0.locator('b', { hasText: 'Users' })).toBeVisible();
 
-    // Step 2 has <b>Search Criteria</b>
+    // Step 2 has <b>Search</b>
     const step1 = page.locator('[data-step="1"]');
-    await expect(step1.locator('b', { hasText: 'Search Criteria' })).toBeVisible();
+    await expect(step1.locator('b', { hasText: 'Search' })).toBeVisible();
 
     // Step 4 has <b>Apply</b>
     const step3 = page.locator('[data-step="3"]');
@@ -70,7 +70,7 @@ test.describe('Editor — How To', () => {
     const firstSlot = slots.first();
     await expect(firstSlot.locator('svg')).toBeVisible();
     await expect(firstSlot).toContainText('Click to add');
-    await expect(firstSlot).toContainText('Screenshot showing the main menu with Volunteers highlighted');
+    await expect(firstSlot).toContainText('Screenshot showing the main menu with Users highlighted');
   });
 
   // 6. Contenteditable typing works correctly (not backwards)
@@ -117,7 +117,7 @@ test.describe('Editor — How To', () => {
     await expect(sidebar.getByText('Review flags')).toBeVisible();
     await expect(sidebar.getByText('1 remaining')).toBeVisible();
 
-    // Share with Steward
-    await expect(sidebar.getByText('Share with Steward')).toBeVisible();
+    // Share with Reviewer
+    await expect(sidebar.getByText('Share with Reviewer')).toBeVisible();
   });
 });

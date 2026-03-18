@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { login, openNewArticleIntake } from './helpers';
-import { ftr3849Intake } from '../fixtures/sample-intake';
+import { sampleIntake } from '../fixtures/sample-intake';
 import { mockGenerateApi } from '../fixtures/mock-anthropic';
 import { mockGeneratedArticle } from '../fixtures/mock-article';
 
@@ -40,7 +40,7 @@ test.describe('Generate flow', () => {
     await expect(generateBtn).toBeDisabled();
 
     // Fill only title — still disabled (module + description missing)
-    await page.fill('input[placeholder="e.g. Bulk volunteer import"]', 'Test Feature');
+    await page.fill('input[placeholder="e.g. Bulk user import"]', 'Test Feature');
     await expect(generateBtn).toBeDisabled();
   });
 
@@ -52,8 +52,8 @@ test.describe('Generate flow', () => {
     await openNewArticleIntake(page);
 
     // Fill all required fields
-    await page.fill('input[placeholder="e.g. Bulk volunteer import"]', 'Test Feature');
-    await page.locator('form#intake-form select').first().selectOption({ label: 'Volunteers' });
+    await page.fill('input[placeholder="e.g. Bulk user import"]', 'Test Feature');
+    await page.locator('form#intake-form select').first().selectOption({ label: 'Users' });
     await page.fill('textarea', 'Short desc');
 
     // Warning appears for description under 50 chars
@@ -81,9 +81,9 @@ test.describe('Generate flow', () => {
     await openNewArticleIntake(page);
 
     // Fill form with sample-intake fixture data
-    await page.fill('input[placeholder="e.g. Bulk volunteer import"]', ftr3849Intake.title);
-    await page.locator('form#intake-form select').first().selectOption({ label: ftr3849Intake.module });
-    await page.fill('textarea', ftr3849Intake.description);
+    await page.fill('input[placeholder="e.g. Bulk user import"]', sampleIntake.title);
+    await page.locator('form#intake-form select').first().selectOption({ label: sampleIntake.module });
+    await page.fill('textarea', sampleIntake.description);
 
     // Submit
     await page.click('button:has-text("Generate articles")');
@@ -96,7 +96,7 @@ test.describe('Generate flow', () => {
     await page.waitForURL(/\/editor\//, { timeout: 15000 });
 
     // Editor should show the article title and content
-    await expect(page.locator('[data-toolbar]')).toContainText('Search Criteria for Volunteers', { timeout: 10000 });
+    await expect(page.locator('[data-toolbar]')).toContainText('Search Criteria for Users', { timeout: 10000 });
 
     // Cleanup
     await page.request.delete(`/api/articles/${mockGeneratedArticle.id}`);
@@ -152,9 +152,9 @@ test.describe('Generate flow', () => {
     await expect(whatsNewCheckbox).not.toBeChecked();
 
     // Fill required fields
-    await page.fill('input[placeholder="e.g. Bulk volunteer import"]', ftr3849Intake.title);
-    await page.locator('form#intake-form select').first().selectOption({ label: ftr3849Intake.module });
-    await page.fill('textarea', ftr3849Intake.description);
+    await page.fill('input[placeholder="e.g. Bulk user import"]', sampleIntake.title);
+    await page.locator('form#intake-form select').first().selectOption({ label: sampleIntake.module });
+    await page.fill('textarea', sampleIntake.description);
 
     // Submit
     await page.click('button:has-text("Generate articles")');

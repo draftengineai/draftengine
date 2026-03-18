@@ -14,29 +14,29 @@ function makeSecondArticle(id: string) {
   return {
     ...mockGeneratedArticle,
     id,
-    title: 'Bulk Assignment for Volunteers',
-    module: 'Volunteers',
+    title: 'Bulk Assignment for Users',
+    module: 'Users',
     status: 'shared' as const,
     sharedAt: '2026-03-16T12:00:00.000Z',
     content: {
       howto: {
-        overview: 'How to use the bulk assignment feature in the Volunteers module.',
+        overview: 'How to use the bulk assignment feature in the Users module.',
         steps: [
           {
             heading: 'Step 1 of 3:',
-            text: '<p>Navigate to the <b>Volunteers</b> module from the main menu.</p>',
+            text: '<p>Navigate to the <b>Users</b> module from the main menu.</p>',
             imgDesc: 'Main menu',
             imgPath: null,
           },
           {
             heading: 'Step 2 of 3:',
-            text: '<p>Select multiple volunteers and click the <b>Bulk Assign</b> button in the toolbar.</p>',
+            text: '<p>Select multiple users and click the <b>Bulk Assign</b> button in the toolbar.</p>',
             imgDesc: 'Bulk assign button',
             imgPath: null,
           },
           {
             heading: 'Step 3 of 3:',
-            text: '<p>In the <b>Assignment Dialog</b>, choose a facility and click <b>Confirm</b>.</p>',
+            text: '<p>In the <b>Assignment Dialog</b>, choose an organization and click <b>Confirm</b>.</p>',
             imgDesc: 'Assignment dialog',
             imgPath: null,
           },
@@ -76,7 +76,7 @@ test.describe.serial('Approve & Request Revision', () => {
 
     // Verify facts were stored
     const factsRes = await page.request.get(
-      `/api/verified-facts?module=Volunteers`
+      `/api/verified-facts?module=Users`
     );
     const facts = await factsRes.json();
     expect(facts.length).toBeGreaterThan(0);
@@ -84,7 +84,7 @@ test.describe.serial('Approve & Request Revision', () => {
       (f: { articleId: string }) => f.articleId === art.id
     );
     expect(entry).toBeTruthy();
-    expect(entry.facts.module).toBe('Volunteers');
+    expect(entry.facts.module).toBe('Users');
     expect(entry.facts.uiElements.length).toBeGreaterThan(0);
 
     // Cleanup
@@ -120,7 +120,7 @@ test.describe.serial('Approve & Request Revision', () => {
 
     // Verify both entries exist in facts store
     const factsRes = await page.request.get(
-      `/api/verified-facts?module=Volunteers`
+      `/api/verified-facts?module=Users`
     );
     const facts = await factsRes.json();
 
@@ -196,7 +196,7 @@ test.describe.serial('Approve & Request Revision', () => {
 
     // Verify first article's facts were removed, but second's remain
     const factsRes = await page.request.get(
-      `/api/verified-facts?module=Volunteers`
+      `/api/verified-facts?module=Users`
     );
     const facts = await factsRes.json();
     const ids = facts.map((f: { articleId: string }) => f.articleId);

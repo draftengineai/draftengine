@@ -1,19 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
 import { Article, ConfidenceFlag, Step } from '@/lib/types/article';
 import { buildUpdateHowToPrompt } from '@/lib/prompts/update-how-to';
 import { getArticle, updateArticle } from '@/lib/db/storage';
 import terminologySeed from '@/lib/config/terminology-seed.json';
-
-function getAnthropicClient(): Anthropic {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      'ANTHROPIC_API_KEY environment variable is not set. Add it in the Vercel dashboard under Settings → Environment Variables.'
-    );
-  }
-  return new Anthropic({ apiKey });
-}
+import { generateAIResponse, getActiveProvider } from '@/lib/ai/provider';
 
 interface UpdateRequestBody {
   articleId: string;
@@ -89,18 +79,15 @@ export async function POST(request: NextRequest) {
       terminologySeed: JSON.stringify(terminologySeed),
     });
 
-    // Call Anthropic API
-    const anthropic = getAnthropicClient();
-    const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 8192,
+    // Call AI provider
+    const aiResponse = await generateAIResponse({
+      maxTokens: 8192,
       messages: [{ role: 'user', content: prompt }],
     });
 
-    const responseText = response.content
-      .filter((block): block is Anthropic.TextBlock => block.type === 'text')
-      .map((block) => block.text)
-      .join('\n');
+    console.log('[update] Response via', getActiveProvider());
+
+    const responseText = aiResponse.text;
 
     // Parse JSON response — strip markdown fences if present
     let jsonText = responseText.trim();

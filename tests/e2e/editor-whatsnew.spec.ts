@@ -53,7 +53,7 @@ test.describe('Editor — What\'s New', () => {
     await expect(overview).toBeVisible();
     await expect(overview).toHaveCSS('font-style', 'italic');
     await expect(overview).toContainText(
-      'Search Criteria feature that lets you filter volunteer lists'
+      'Search feature that lets you filter user listings'
     );
   });
 
@@ -67,7 +67,7 @@ test.describe('Editor — What\'s New', () => {
 
     // The introduction content div (sibling after header) should contain no <b> tags
     // The Introduction EditableSection's contenteditable body has the actual content
-    // Our mock introduction does have <b>Search Criteria</b> in it (from the fixture),
+    // Our mock introduction does have <b>Search</b> in it (from the fixture),
     // but the hint is what the UI displays — verify the hint is present
     await expect(page.locator('span', { hasText: 'No bold' })).toBeVisible();
   });
@@ -96,7 +96,7 @@ test.describe('Editor — What\'s New', () => {
     await expect(page.locator('span', { hasText: 'Closing' }).first()).toBeVisible();
 
     // Closing content from mock: "Now it's easier than ever..."
-    await expect(page.getByText("easier than ever to find the right volunteers")).toBeVisible();
+    await expect(page.getByText("easier than ever to find the right users")).toBeVisible();
   });
 
   // 7. Switching back to How to tab preserves How to content
@@ -116,7 +116,7 @@ test.describe('Editor — What\'s New', () => {
     // Overview should have How To content
     const overview = page.locator('[data-article-overview]');
     await expect(overview).toContainText(
-      'Search Criteria feature in the Volunteers module'
+      'new Search feature in the Users module'
     );
   });
 });

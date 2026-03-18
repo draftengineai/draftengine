@@ -97,7 +97,7 @@ test.describe('Update Intake', () => {
     await openUpdateIntake(page);
 
     // Fill required fields
-    await page.locator('form#update-form select').first().selectOption({ label: 'Volunteers' });
+    await page.locator('form#update-form select').first().selectOption({ label: 'Users' });
     await page.locator('form#update-form textarea').fill(
       'The Search Criteria filter panel now includes a date range picker for availability.',
     );
@@ -110,17 +110,17 @@ test.describe('Update Intake', () => {
 
     // Two matches displayed
     const matches = page.locator('[data-testid="scan-match"]');
-    await expect(matches).toHaveCount(2);
+    await expect(matches).toHaveCount(3);
 
     // First match — HIGH confidence badge (red)
     const firstMatch = matches.first();
-    await expect(firstMatch).toContainText('Search Criteria for Volunteers');
+    await expect(firstMatch).toContainText('Search Criteria for Users');
     await expect(firstMatch.locator('[data-testid="confidence-high"]')).toBeVisible();
     await expect(firstMatch.locator('[data-testid="confidence-high"]')).toContainText('HIGH');
 
     // Second match — MEDIUM confidence badge (amber)
     const secondMatch = matches.nth(1);
-    await expect(secondMatch).toContainText('Managing Volunteer Assignments');
+    await expect(secondMatch).toContainText('Managing User Listings');
     await expect(secondMatch.locator('[data-testid="confidence-medium"]')).toBeVisible();
     await expect(secondMatch.locator('[data-testid="confidence-medium"]')).toContainText('MEDIUM');
 
@@ -133,25 +133,13 @@ test.describe('Update Intake', () => {
   // -------------------------------------------------------------------------
 
   test('checkboxes pre-checked for HIGH/MEDIUM, unchecked for LOW', async ({ page }) => {
-    // Add a LOW confidence match to the mock results
-    const matchesWithLow = [
-      ...mockScanMatches,
-      {
-        articleId: 'mock-article-003',
-        title: 'Volunteer FAQ',
-        module: 'Volunteers',
-        types: ['howto'] as const,
-        confidence: 'low' as const,
-        reason: 'Tangentially related — mentions Volunteers module but no overlapping UI elements.',
-      },
-    ];
-
+    // mockScanMatches includes HIGH, MEDIUM, and LOW matches
     await page.route('**/api/scan', (route) => {
       if (route.request().method() === 'POST') {
         return route.fulfill({
           status: 200,
           contentType: 'application/json',
-          body: JSON.stringify({ matches: matchesWithLow }),
+          body: JSON.stringify({ matches: mockScanMatches }),
         });
       }
       return route.continue();
@@ -159,7 +147,7 @@ test.describe('Update Intake', () => {
 
     await openUpdateIntake(page);
 
-    await page.locator('form#update-form select').first().selectOption({ label: 'Volunteers' });
+    await page.locator('form#update-form select').first().selectOption({ label: 'Users' });
     await page.locator('form#update-form textarea').fill('Date range picker added to Search Criteria panel.');
     await page.click('button:has-text("Find affected articles")');
 
@@ -225,7 +213,7 @@ test.describe('Update Intake', () => {
     });
 
     await openUpdateIntake(page);
-    await page.locator('form#update-form select').first().selectOption({ label: 'Volunteers' });
+    await page.locator('form#update-form select').first().selectOption({ label: 'Users' });
     await page.locator('form#update-form textarea').fill('Reset button renamed to Clear.');
     await page.click('button:has-text("Find affected articles")');
 
@@ -263,7 +251,7 @@ test.describe('Update Intake', () => {
     });
 
     await openUpdateIntake(page);
-    await page.locator('form#update-form select').first().selectOption({ label: 'Volunteers' });
+    await page.locator('form#update-form select').first().selectOption({ label: 'Users' });
     await page.locator('form#update-form textarea').fill('Some change that matches nothing.');
     await page.click('button:has-text("Find affected articles")');
 

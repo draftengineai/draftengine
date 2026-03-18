@@ -76,8 +76,8 @@ test.describe('Confidence Flags', () => {
     await page.goto(`/editor/${articleRef.current.id}`);
     await page.waitForSelector('[data-step="2"]');
 
-    // The WHAT label + value: "Assignment Status filter location"
-    const whatText = page.locator('text=Assignment Status filter location');
+    // The WHAT label + value: "Availability Status filter location"
+    const whatText = page.locator('text=Availability Status filter location');
     await expect(whatText).toBeVisible();
 
     // Verify it's brief (under 15 words)
@@ -119,7 +119,7 @@ test.describe('Confidence Flags', () => {
     await page.waitForSelector('[data-step="2"]');
 
     const actionText = page.locator(
-      'text=Open the Search Criteria panel in Gate Access and verify',
+      'text=Open the Search panel in YourApp and verify',
     );
     await expect(actionText).toBeVisible();
   });
@@ -214,7 +214,7 @@ test.describe('Confidence Flags', () => {
     await page.goto(`/editor/${articleRef.current.id}`);
     await page.waitForSelector('[data-step="0"]');
 
-    // Step 1 text: "Navigate to the Volunteers module" — the module name came
+    // Step 1 text: "Navigate to the Users module" — the module name came
     // from the intake form (VERIFIED INPUT), so no flag should be present.
     const step1 = page.locator('[data-step="0"]');
     await expect(step1).toBeVisible();

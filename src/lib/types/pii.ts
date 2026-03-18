@@ -16,7 +16,7 @@ export interface PIIFreePayload {
   existingArticleContent?: string;
   existingArticleOverview?: string;
   existingArticleBoldElements?: string[];
-  // NEVER add: user names, facility names, resident names,
+  // NEVER add: user names, organization names, customer names,
   // identification numbers, or any field from user data
 }
 

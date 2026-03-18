@@ -32,8 +32,8 @@ test.describe('Scan API', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          changeDescription: 'The Search Criteria filter panel in Volunteers now includes a date range picker.',
-          module: 'Volunteers',
+          changeDescription: 'The Search Criteria filter panel in Users now includes a date range picker.',
+          module: 'Users',
           changeType: 'enhancement',
         }),
       });
@@ -43,7 +43,7 @@ test.describe('Scan API', () => {
     expect(body.status).toBe(200);
     expect(body.data).toHaveProperty('matches');
     expect(Array.isArray(body.data.matches)).toBe(true);
-    expect(body.data.matches.length).toBe(2);
+    expect(body.data.matches.length).toBe(3);
 
     // First match — HIGH confidence
     const high = body.data.matches[0];
@@ -89,7 +89,7 @@ test.describe('Scan API', () => {
   test('POST /api/scan with missing fields returns 400 error', async ({ page }) => {
     // Missing changeDescription
     const res1 = await page.request.post('/api/scan', {
-      data: { module: 'Volunteers', changeType: 'enhancement' },
+      data: { module: 'Users', changeType: 'enhancement' },
     });
     expect(res1.status()).toBe(400);
     const body1 = await res1.json();
@@ -103,7 +103,7 @@ test.describe('Scan API', () => {
 
     // Missing changeType
     const res3 = await page.request.post('/api/scan', {
-      data: { changeDescription: 'Some change', module: 'Volunteers' },
+      data: { changeDescription: 'Some change', module: 'Users' },
     });
     expect(res3.status()).toBe(400);
 

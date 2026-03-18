@@ -3,14 +3,14 @@ import { assertPIIFree } from '../../src/lib/types/pii';
 describe('PIIFreePayload', () => {
   test('accepts valid payload', () => {
     const payload = {
-      featureTitle: 'Applicants Search',
-      featureDescription: 'Search for applicants by name',
-      module: 'Applicants',
+      featureTitle: 'Contacts Search',
+      featureDescription: 'Search for contacts by name',
+      module: 'Contacts',
       changeType: 'feature',
       behaviorRules: '',
       userStories: '',
       terminologySeed: '{}',
-      writingStandards: 'PWP Writing Standards v2025-11',
+      writingStandards: 'Documentation Standards v2025-11',
     };
     expect(() => assertPIIFree(payload)).not.toThrow();
   });
@@ -30,7 +30,7 @@ describe('PIIFreePayload', () => {
     expect(() => assertPIIFree(payload)).toThrow('PIIFreePayload violation');
   });
 
-  test('rejects payload with facility ID field', () => {
+  test('rejects payload with organization ID field', () => {
     const payload = {
       featureTitle: 'Test',
       featureDescription: 'Test',
@@ -40,7 +40,7 @@ describe('PIIFreePayload', () => {
       userStories: '',
       terminologySeed: '{}',
       writingStandards: '',
-      facilityId: 'FC-2847', // PII!
+      organizationId: 'ORG-2847', // PII!
     };
     expect(() => assertPIIFree(payload)).toThrow('PIIFreePayload violation');
   });

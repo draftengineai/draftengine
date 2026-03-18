@@ -61,7 +61,8 @@ test.describe('Editor — Update Indicators', () => {
     await expect(originalBox).toBeVisible();
     await expect(originalBox).toContainText('Original:');
     // The original text for step index 1
-    await expect(originalBox).toContainText('Search Criteria link in the left sidebar navigation');
+    await expect(originalBox).toContainText('Search');
+    await expect(originalBox).toContainText('link in the left sidebar navigation');
   });
 
   // 5. "Hide original" collapses the original text
@@ -85,7 +86,7 @@ test.describe('Editor — Update Indicators', () => {
     const banner = page.locator('[data-testid="update-banner"]');
     await expect(banner).toBeVisible();
     await expect(banner).toContainText(
-      'This article was updated based on: Search Criteria button moved to the sidebar in v8.3'
+      'This article was updated based on: Search button moved to the sidebar in v8.3'
     );
     await expect(banner).toContainText('2 of 5 steps were revised');
   });

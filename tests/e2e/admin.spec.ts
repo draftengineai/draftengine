@@ -72,9 +72,9 @@ test.describe('Admin dashboard', () => {
     await expect(page.locator('[data-testid="action-card-update"]')).not.toBeVisible();
   });
 
-  test('disabling shareWithSteward hides Share link button in editor', async ({ page }) => {
-    // Mock features with shareWithSteward disabled
-    await mockFeatures(page, { shareWithSteward: false });
+  test('disabling shareWithReviewer hides Share link button in editor', async ({ page }) => {
+    // Mock features with shareWithReviewer disabled
+    await mockFeatures(page, { shareWithReviewer: false });
 
     await login(page);
 
@@ -113,8 +113,8 @@ test.describe('Admin dashboard', () => {
     expect(flags.confidenceFlags).toBe(true);
     expect(flags.regenerate).toBe(true);
     expect(flags.deleteArticles).toBe(true);
-    expect(flags.stewardNote).toBe(true);
-    expect(flags.shareWithSteward).toBe(true);
+    expect(flags.reviewerNote).toBe(true);
+    expect(flags.shareWithReviewer).toBe(true);
     // Review Workflow — default false
     expect(flags.updateExisting).toBe(false);
     expect(flags.approveWorkflow).toBe(false);
