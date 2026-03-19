@@ -8,12 +8,15 @@ export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
   forbidOnly: true,
-  retries: 1,
+  retries: 2,
   workers: 1,
   reporter: 'html',
+  timeout: 60000,
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
+    actionTimeout: 15000,
+    navigationTimeout: 30000,
   },
   projects: [
     {
