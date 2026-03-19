@@ -1,4 +1,5 @@
 import { test, expect, Page } from '@playwright/test';
+import { signTestCookie } from './helpers';
 import { mockGeneratedArticle } from '../fixtures/mock-article';
 import type { Article } from '../../src/lib/types/article';
 
@@ -17,9 +18,10 @@ function cloneArticle(): Article {
  * subsequent GET calls within the same test.
  */
 async function seedArticle(page: Page, articleRef: { current: Article }) {
-  // Auth cookie
+  // Signed auth cookie
+  const token = await signTestCookie();
   await page.context().addCookies([
-    { name: 'draftengine_auth', value: 'test', domain: 'localhost', path: '/' },
+    { name: 'draftengine_auth', value: token, domain: 'localhost', path: '/' },
   ]);
 
   // GET /api/articles/:id

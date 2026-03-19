@@ -1,7 +1,21 @@
 import { Page } from '@playwright/test';
+import { SignJWT } from 'jose';
 
 const TEST_PASSWORD = process.env.DRAFTENGINE_PASSWORD || 'test';
 const TEST_ADMIN_PASSWORD = process.env.DRAFTENGINE_ADMIN_PASSWORD || 'admin-test';
+const TEST_SECRET = process.env.DRAFTENGINE_SECRET || 'dev-secret-not-for-production';
+
+/**
+ * Generate a signed auth cookie value for tests that bypass the login page.
+ */
+export async function signTestCookie(role: string = 'writer'): Promise<string> {
+  const secret = new TextEncoder().encode(TEST_SECRET);
+  return new SignJWT({ role })
+    .setProtectedHeader({ alg: 'HS256' })
+    .setIssuedAt()
+    .setExpirationTime('1h')
+    .sign(secret);
+}
 
 /**
  * Log in via the login page as a writer. After this call the browser has the
