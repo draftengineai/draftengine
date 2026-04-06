@@ -9,7 +9,7 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: true,
   retries: 2,
-  workers: 1,
+  workers: 2,
   reporter: 'html',
   timeout: 90000,
   use: {
@@ -25,7 +25,7 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'npm run build && npm start',
+    command: 'npm start',
     url: 'http://localhost:3000',
     reuseExistingServer: false,
     timeout: 120000,
