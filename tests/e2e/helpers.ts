@@ -26,9 +26,9 @@ export async function login(page: Page) {
   await page.fill('input[type="password"]#login-password', TEST_PASSWORD);
   await page.click('button[type="submit"]');
   // Wait for navigation to /dashboard, then for the page content to render.
-  // Production builds are slower to hydrate on CI runners.
-  await page.waitForURL('**/dashboard', { timeout: 30000 });
-  await page.waitForSelector('h1:has-text("My articles"), [data-testid="welcome-card"]', { timeout: 30000 });
+  // Production builds are slower to hydrate on CI runners — use generous timeout.
+  await page.waitForURL('**/dashboard', { timeout: 60000 });
+  await page.waitForSelector('h1:has-text("My articles"), [data-testid="welcome-card"]', { timeout: 60000 });
 }
 
 /**
@@ -39,7 +39,7 @@ export async function loginAdmin(page: Page) {
   await page.click('[data-testid="admin-access-link"]');
   await page.fill('[data-testid="admin-password-input"]', TEST_ADMIN_PASSWORD);
   await page.click('[data-testid="admin-login-btn"]');
-  await page.waitForSelector('h1:has-text("DraftEngine Admin")', { timeout: 30000 });
+  await page.waitForSelector('h1:has-text("DraftEngine Admin")', { timeout: 60000 });
 }
 
 /**

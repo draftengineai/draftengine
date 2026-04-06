@@ -27,8 +27,8 @@ test.describe('Authentication', () => {
     await page.click('button[type="submit"]');
 
     // Landing page shows either "My articles" (has articles) or "Generate your first article" (empty)
-    await page.waitForURL('**/dashboard', { timeout: 30000 });
-    await page.waitForSelector('h1:has-text("My articles"), [data-testid="welcome-card"]', { timeout: 30000 });
+    await page.waitForURL('**/dashboard', { timeout: 60000 });
+    await page.waitForSelector('h1:has-text("My articles"), [data-testid="welcome-card"]', { timeout: 60000 });
     expect(page.url()).not.toContain('/login');
   });
 

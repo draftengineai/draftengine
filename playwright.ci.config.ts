@@ -11,12 +11,12 @@ export default defineConfig({
   retries: 2,
   workers: 1,
   reporter: 'html',
-  timeout: 60000,
+  timeout: 90000,
   use: {
     baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
-    actionTimeout: 15000,
-    navigationTimeout: 30000,
+    actionTimeout: 30000,
+    navigationTimeout: 60000,
   },
   projects: [
     {
