@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { sanitizeHTML } from '@/lib/sanitize';
 
 const SAMPLE_STEPS = [
   {
@@ -254,7 +255,7 @@ export default function PublicLanding() {
                   </h4>
                   <p
                     style={{ fontSize: 14, color: '#1A1A18', lineHeight: 1.6 }}
-                    dangerouslySetInnerHTML={{ __html: step.body }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHTML(step.body) }}
                   />
                   {step.screenshot && (
                     <ScreenshotPlaceholder description={step.screenshot} />

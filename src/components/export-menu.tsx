@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import type { Article } from "@/lib/types/article";
+import { sanitizeHTML } from "@/lib/sanitize";
 
 interface ExportMenuProps {
   article: Article;
@@ -99,20 +100,20 @@ function buildHTML(article: Article): string {
   if (el) {
     return el.innerHTML;
   }
-  // Fallback: build from article data
+  // Fallback: build from article data (sanitize to prevent XSS in clipboard)
   if (activeType === "howto" && article.content.howto) {
     const ht = article.content.howto;
     const stepsHtml = ht.steps
       .map(
         (s) =>
-          `<h2>${s.heading}</h2>\n${s.text}`
+          `<h2>${sanitizeHTML(s.heading)}</h2>\n${sanitizeHTML(s.text)}`
       )
       .join("\n\n");
-    return `<h1>${article.title}</h1>\n<p><em>${ht.overview}</em></p>\n\n${stepsHtml}`;
+    return `<h1>${sanitizeHTML(article.title)}</h1>\n<p><em>${sanitizeHTML(ht.overview)}</em></p>\n\n${stepsHtml}`;
   }
   if (activeType === "wn" && article.content.wn) {
     const wn = article.content.wn;
-    return `<h1>${article.title}</h1>\n<p><em>${wn.overview}</em></p>\n<h2>Introduction</h2>\n${wn.introduction}\n<h2>Where to Find It</h2>\n${wn.whereToFind}\n<p><strong>${wn.closing}</strong></p>`;
+    return `<h1>${sanitizeHTML(article.title)}</h1>\n<p><em>${sanitizeHTML(wn.overview)}</em></p>\n<h2>Introduction</h2>\n${sanitizeHTML(wn.introduction)}\n<h2>Where to Find It</h2>\n${sanitizeHTML(wn.whereToFind)}\n<p><strong>${sanitizeHTML(wn.closing)}</strong></p>`;
   }
   return "";
 }
