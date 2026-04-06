@@ -211,7 +211,9 @@ test.describe.serial('Approve & Request Revision', () => {
   // 6. Request revision on non-approved/non-shared article returns 400
   test('request revision on non-approved article returns 400', async ({
     page,
-  }) => {
+  }, testInfo) => {
+    // This is the last test in a serial block — CI runner is under pressure by now
+    testInfo.setTimeout(120000);
     const genArticle = {
       ...mockGeneratedArticle,
       id: 'approve-t6',
