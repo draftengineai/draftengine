@@ -144,6 +144,29 @@ npm run test:unit
 
 All tests use mocked AI responses — no real API calls. Set `DRAFTENGINE_PASSWORD=test` and `ANTHROPIC_API_KEY=test-key` when running tests.
 
+## Security Notes
+
+### Starter Auth Model
+
+This repo uses a **shared-password authentication model** intended for demos and small-team use. A single writer password and a single admin password are set via environment variables. Auth cookies are signed JWTs (via `jose`), verified in middleware on every request.
+
+**This is not production-grade auth.** For production deployments, consider:
+- Per-user identity (replace with Auth.js providers, SSO, or your own user table)
+- MFA and session revocation
+- User-level audit logging
+
+### Preview URLs
+
+Preview links (`/preview/:id`) are **intentionally public** — they act as bearer links for sharing articles with reviewers. Anyone with the URL can view the article. Do not share preview links for sensitive content unless you add access controls.
+
+### Rate Limiting
+
+Auth and AI endpoints are rate-limited. In production with Vercel KV linked, limits use persistent Redis-backed storage. Without KV (local dev), an in-memory fallback is used — this resets on restart and does not work across multiple instances.
+
+### Content Sanitization
+
+All user-generated HTML is sanitized with DOMPurify (via `isomorphic-dompurify`) on both server and client. The sanitizer strips scripts, event handlers, and dangerous attributes while preserving basic formatting tags.
+
 ## Tech Stack
 
 - **Framework:** Next.js 14+ (App Router, TypeScript)
